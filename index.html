@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformer Failure Code Reference</title>
+    <style>
+        :root {
+            --primary-color: #1b365d;
+            --secondary-color: #2b6cb0;
+            --accent-color: #3182ce;
+            --bg-color: #f4f6f9;
+            --text-color: #2c3e50;
+            --border-color: #cbd5e0;
+        }
+
+        body {
+            font-family: 'Tahoma', 'Sarabun', sans-serif;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-banner {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            margin: -20px -20px 20px -20px;
+            padding: 25px 20px;
+            text-align: center;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            border-bottom: 4px solid var(--accent-color);
+        }
+
+        .header-banner h1 {
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: 0.5px;
+        }
+
+        .header-banner p {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        h2 {
+            font-size: 16px;
+            color: var(--primary-color);
+            border-left: 4px solid var(--accent-color);
+            padding-left: 10px;
+            margin-top: 30px;
+            margin-bottom: 12px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f7fafc;
+        }
+
+        .code-col {
+            width: 18%;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .desc-col {
+            width: 38%;
+        }
+
+        .cause-col {
+            width: 44%;
+            color: #4a5568;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #718096;
+            margin-top: 30px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-banner">
+            <h1>Transformer Failure Code Reference</h1>
+            <p>คู่มือรหัสความผิดพลาดและสาเหตุของหม้อแปลงไฟฟ้า (Transformer Failure Codes)</p>
+        </div>
+
+        <h2>1. หมวดความเสียหายทั่วไปและน้ำมันรั่วซึม (General & Oil Leakage)</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Failure Code</th>
+                        <th>Description</th>
+                        <th>สาเหตุ / อาการผิดปกติ (Failure Cause)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="code-col">T006</td>
+                        <td class="desc-col">น้ำมันรั่วซึมด้านบนหม้อแปลง</td>
+                        <td class="cause-col">ซีลเสื่อมสภาพ</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T007</td>
+                        <td class="desc-col">น้ำมันรั่วซึมที่ Bushing หม้อแปลง</td>
+                        <td class="cause-col">ซีลเสื่อมสภาพ / แตกหัก / ติดตั้งไม่ตามมาตรฐาน / ความเสียหายจากการเคลื่อนที่</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T008</td>
+                        <td class="desc-col">น้ำมันรั่วซึมที่ Cable box</td>
+                        <td class="cause-col">ซีลเสื่อมสภาพ / ติดตั้งไม่ตามมาตรฐาน / ความร้อนสูงเกินไป</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T009</td>
+                        <td class="desc-col">น้ำมันรั่วซึมที่ Radiator</td>
+                        <td class="cause-col">ซีลเสื่อมสภาพ / ติดตั้งไม่ตามมาตรฐาน / แรงดันภายในสูง / การเสื่อมจากสิ่งสกปรก</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T012</td>
+                        <td class="desc-col">น้ำมันหม้อแปลงต่ำ</td>
+                        <td class="cause-col">ระบบระบายความร้อนทำงานผิดปกติ / ซีลเสื่อมสภาพ</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T210</td>
+                        <td class="desc-col">น้ำมันรั่วซึมที่ฝาบ่อ OLTC</td>
+                        <td class="cause-col">ซีลเสื่อมสภาพ</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T303</td>
+                        <td class="desc-col">Oil filter unit มีน้ำมันรั่วซึม</td>
+                        <td class="cause-col">ซีลเสื่อมสภาพ</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T212</td>
+                        <td class="desc-col">ระดับน้ำมันต่ำที่ OLTC</td>
+                        <td class="cause-col">OLTC ระดับน้ำมันต่ำ, ซีลเสื่อมสภาพ</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>2. หมวดอุปกรณ์วัดและควบคุม (Control & Monitoring Devices)</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Failure Code</th>
+                        <th>Description</th>
+                        <th>สาเหตุ / อาการผิดปกติ (Failure Cause)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="code-col">T101</td>
+                        <td class="desc-col">Control desk tap อ่านไม่ตรง</td>
+                        <td class="cause-col">อายุใช้งานเสื่อมสภาพ / ความชื้น / สิ่งสกปรก</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T102</td>
+                        <td class="desc-col">Control desk หลอดขาด</td>
+                        <td class="cause-col">เสื่อมสภาพจากอายุใช้งาน</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T103</td>
+                        <td class="desc-col">Control พัดลมชำรุด</td>
+                        <td class="cause-col">เสื่อมสภาพจากอายุใช้งาน</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T105</td>
+                        <td class="desc-col">Differential relay เปลี่ยน</td>
+                        <td class="cause-col">เสื่อมสภาพจากอายุใช้งาน</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T107</td>
+                        <td class="desc-col">Tripping relay เปลี่ยน</td>
+                        <td class="cause-col">เสื่อมสภาพจากอายุใช้งาน</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T001</td>
+                        <td class="desc-col">Counter Lightning Arrester ชำรุด</td>
+                        <td class="cause-col">โครงแตก / ซีลเสื่อมสภาพ / กลไกชำรุด</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T002</td>
+                        <td class="desc-col">Oil level gauge ชำรุด</td>
+                        <td class="cause-col">โครงแตก / กลไกชำรุด</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T003</td>
+                        <td class="desc-col">Oil temp ชำรุด</td>
+                        <td class="cause-col">โครงแตก / เสื่อมสภาพ / กลไกชำรุด</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T004</td>
+                        <td class="desc-col">Silicagel เปลี่ยนสี/Air Breather ชำรุด</td>
+                        <td class="cause-col">Silicagel เสื่อมสภาพ / การอุดตัน / ฝุ่นละออง</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T005</td>
+                        <td class="desc-col">Winding temp ชำรุด</td>
+                        <td class="cause-col">โครงแตก / เสื่อมสภาพ / กลไกชำรุด</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>3. หมวดโครงสร้างหลักและขดลวด (Core, Winding & Bushing)</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Failure Code</th>
+                        <th>Description</th>
+                        <th>สาเหตุ / อาการผิดปกติ (Failure Cause)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="code-col">T015</td>
+                        <td class="desc-col">เปลี่ยนหม้อแปลงชำรุด</td>
+                        <td class="cause-col">การรั่วซึมของน้ำมัน / การเกิดไฟฟ้าลัดวงจร / อายุการใช้งานเสื่อมสภาพ / ความร้อนสะสมเกินไป</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T018</td>
+                        <td class="desc-col">เปลี่ยนพัดลมหม้อแปลง</td>
+                        <td class="cause-col">สึกหรอจากการใช้งานนาน</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T019</td>
+                        <td class="desc-col">พัดลมหม้อแปลงถอดไปซ่อม</td>
+                        <td class="cause-col">สึกหรอจากการใช้งานนาน</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T020</td>
+                        <td class="desc-col">พัดลมหม้อแปลงไม่ทำงาน</td>
+                        <td class="cause-col">การเสียหายของมอเตอร์</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T023</td>
+                        <td class="desc-col">ขดลวดหม้อแปลงชำรุด</td>
+                        <td class="cause-col">การโอเวอร์โหลด / ความผิดปกติของแรงดัน / การผลิตที่ไม่ดี / การเกิดความชื้น</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T024</td>
+                        <td class="desc-col">แกนเหล็กหม้อแปลงชำรุด</td>
+                        <td class="cause-col">การออกแบบที่ผิดพลาด / ความเครียดการเปลี่ยนกระแสไฟฟ้า / การสะสมของความร้อน</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T025</td>
+                        <td class="desc-col">HV Bushing หม้อแปลงชำรุด</td>
+                        <td class="cause-col">เสื่อมสภาพ</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T026</td>
+                        <td class="desc-col">MV Bushing หม้อแปลงชำรุด</td>
+                        <td class="cause-col">เสื่อมสภาพ</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T027</td>
+                        <td class="desc-col">OFF LOAD TAP หม้อแปลงชำรุด</td>
+                        <td class="cause-col">เสื่อมสภาพ</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>4. หมวดรีเลย์และระบบป้องกัน (Relays & Protective Devices)</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Failure Code</th>
+                        <th>Description</th>
+                        <th>สาเหตุ / อาการผิดปกติ (Failure Cause)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="code-col">T028</td>
+                        <td class="desc-col">Buchholz relay ชำรุด</td>
+                        <td class="cause-col">Short circuit / การติดตั้งไม่ถูกต้อง / เสื่อมสภาพจากอายุใช้งาน / อุณหภูมิสูงเกิน / กลไกติดขัด</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T029</td>
+                        <td class="desc-col">Pressure relief ชำรุด</td>
+                        <td class="cause-col">การติดตั้งไม่ถูกต้อง / กลไกติดขัด / เสื่อมสภาพจากอายุใช้งาน / แรงดันเกินขีดจำกัดบ่อยเกิน</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T104</td>
+                        <td class="desc-col">Differential relay ชำรุด</td>
+                        <td class="cause-col">ระบบควบคุมทำงานผิดพลาด / Transformer malfunction / การตั้งค่าผิด / ระบบภายนอกสัญญาณผิดปกติ</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T106</td>
+                        <td class="desc-col">Tripping relay ชำรุด</td>
+                        <td class="cause-col">เสื่อมสภาพจากอายุใช้งาน</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T016</td>
+                        <td class="desc-col">หม้อแปลง Trip</td>
+                        <td class="cause-col">การทำงานผิดพลาดของรีเลย์</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>5. หมวด OLTC และอุปกรณ์ประกอบ (OLTC & Accessories)</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Failure Code</th>
+                        <th>Description</th>
+                        <th>สาเหตุ / อาการผิดปกติ (Failure Cause)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="code-col">T211</td>
+                        <td class="desc-col">เปลี่ยน Tap แล้วมีเสียงดัง</td>
+                        <td class="cause-col">เปลี่ยน Tap แล้วมีเสียง</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T215</td>
+                        <td class="desc-col">Tap protective relay ชำรุด</td>
+                        <td class="cause-col">กลไกเสื่อมสภาพ / ความชื้น, ฝุ่น ฯ / ต่อสายผิด, Short</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T216</td>
+                        <td class="desc-col">Main contact ชำรุด</td>
+                        <td class="cause-col">อาร์ก ระหว่างเปลี่ยน Tap บ่อย / อุณหภูมิสูงเกินจากกระแสเกิน / น้ำมัน OLTC เสื่อมสภาพ</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T217</td>
+                        <td class="desc-col">Transition contact ชำรุด</td>
+                        <td class="cause-col">อาร์ก ขณะสลับ Tap / น้ำมัน OLTC เสื่อมสภาพ / สปริง/กลไก Contact เสีย / ค่าต้านทาน Contact เพิ่ม</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T218</td>
+                        <td class="desc-col">Gear unit ชำรุด</td>
+                        <td class="cause-col">สึกหรอ</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T219</td>
+                        <td class="desc-col">OLTC Accessories ชำรุด</td>
+                        <td class="cause-col">ชำรุดจาก Accessories</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T220</td>
+                        <td class="desc-col">Motor drive control board ชำรุด</td>
+                        <td class="cause-col">แรงดันผิดปกติ / ฝุ่นละอองฯ ในกล่องควบคุม / เสื่อมสภาพจากอายุใช้งาน</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T206</td>
+                        <td class="desc-col">Counter Tap ไม่ทำงาน</td>
+                        <td class="cause-col">กลไกติดขัด / ชุดเฟืองภายในชำรุด / Lubrication / เสื่อมสภาพจากอายุใช้งาน</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T208</td>
+                        <td class="desc-col">Micro sw. Lower & upper limit ค้าง</td>
+                        <td class="cause-col">กลไกติดขัด</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T209</td>
+                        <td class="desc-col">OLTC เปลี่ยน Tap ทางไฟฟ้าไม่ได้</td>
+                        <td class="cause-col">OLTC ไม่ทำงาน</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>6. หมวดระบบกรองน้ำมันและสถานะรอการดำเนินการ (Oil Filter & Waiting Status)</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Failure Code</th>
+                        <th>Description</th>
+                        <th>สาเหตุ / อาการผิดปกติ (Failure Cause)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="code-col">T301</td>
+                        <td class="desc-col">Counter oil filter ทำงานผิดปกติ</td>
+                        <td class="cause-col">การรบกวนจากสัญญาณไฟฟ้า / CF ทำงานผิดปกติ</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T302</td>
+                        <td class="desc-col">Motor oil filter หมุนกลับทาง</td>
+                        <td class="cause-col">Motor oil filter ต่อท่อผิดด้าน / MF หมุนกลับทาง</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T304</td>
+                        <td class="desc-col">Oil filter ไม่ทำงานหลังจากเปลี่ยน Tap</td>
+                        <td class="cause-col">ปั๊มน้ำมัน OLTC เสีย / OF ไม่ทำงานหลังเปลี่ยน Tap</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T305</td>
+                        <td class="desc-col">Pressure gauge oil filter เสีย</td>
+                        <td class="cause-col">แรงดันน้ำมันเกิน / สิ่งสกปรกเข้าไปในเกจ</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">T213 / L212 / L106</td>
+                        <td class="desc-col">งานตรวจสอบแล้ว รอจัดซื้ออะไหล่</td>
+                        <td class="cause-col">WAITING / รอจัดซื้ออะไหล่</td>
+                    </tr>
+                    <tr>
+                        <td class="code-col">L010 / L213 / H204</td>
+                        <td class="desc-col">งานตรวจสอบแล้ว ไม่มีอะไหล่ และไม่มีผลกระทบ</td>
+                        <td class="cause-col">WAITING / ไม่มีอะไหล่ ไม่มีผลกระทบต่อการจ่ายไฟ</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            Transformer Failure Code Reference Document — Responsive Web Version
+        </div>
+    </div>
+
+</body>
+</html>
