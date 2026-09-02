@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ตารางรหัสความเสียหายหม้อแปลง — Failure Code Lookup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#10151a;
+    --panel:#171e25;
+    --panel-2:#1d252d;
+    --border:#2a333c;
+    --text:#e7ecf0;
+    --muted:#8b98a3;
+    --amber:#e8a33d;
+    --amber-dim:#4a3a20;
+    --teal:#4fb8a6;
+    --teal-dim:#1c3a37;
+    --danger:#d9694f;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 85% -10%, #1a2733 0%, transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Noto Sans Thai', system-ui, sans-serif;
+    min-height:100vh;
+  }
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  /* ---------- Top bar ---------- */
+  header{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:rgba(16,21,26,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+    padding:22px 28px 18px;
+  }
+  .header-inner{
+    max-width:1100px;
+    margin:0 auto;
+  }
+  .title-row{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  h1{
+    font-size:1.35rem;
+    font-weight:700;
+    margin:0;
+    letter-spacing:0.2px;
+  }
+  h1 .accent{color:var(--amber);}
+  .subtitle{
+    color:var(--muted);
+    font-size:0.85rem;
+    margin-top:4px;
+  }
+  .count-badge{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.8rem;
+    color:var(--teal);
+    background:var(--teal-dim);
+    border:1px solid #2c5952;
+    border-radius:4px;
+    padding:5px 10px;
+    white-space:nowrap;
+  }
+  .count-badge b{font-size:1rem;}
+
+  .search-wrap{
+    position:relative;
+    margin-bottom:14px;
+  }
+  #search{
+    width:100%;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    font-family:inherit;
+    font-size:0.95rem;
+    padding:12px 14px 12px 40px;
+    border-radius:6px;
+    outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  #search:focus{
+    border-color:var(--amber);
+    box-shadow:0 0 0 3px rgba(232,163,61,0.15);
+  }
+  .search-wrap svg{
+    position:absolute;
+    left:13px;
+    top:50%;
+    transform:translateY(-50%);
+    width:16px;height:16px;
+    stroke:var(--muted);
+  }
+
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .chip{
+    font-size:0.78rem;
+    padding:6px 12px;
+    border-radius:100px;
+    border:1px solid var(--border);
+    background:var(--panel-2);
+    color:var(--muted);
+    cursor:pointer;
+    user-select:none;
+    transition:all .12s ease;
+    white-space:nowrap;
+  }
+  .chip:hover{border-color:#3a4550; color:var(--text);}
+  .chip.active{
+    background:var(--amber-dim);
+    border-color:var(--amber);
+    color:var(--amber);
+  }
+
+  /* ---------- Content ---------- */
+  main{
+    max-width:1100px;
+    margin:0 auto;
+    padding:24px 28px 60px;
+  }
+
+  .empty{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--muted);
+  }
+  .empty .big{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:2rem;
+    color:var(--border);
+    margin-bottom:8px;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.88rem;
+  }
+  thead th{
+    text-align:left;
+    font-size:0.72rem;
+    text-transform:none;
+    color:var(--muted);
+    font-weight:600;
+    padding:0 12px 10px;
+    border-bottom:1px solid var(--border);
+  }
+  thead th.num{width:44px;}
+  thead th.code{width:110px;}
+  thead th.cat{width:200px;}
+
+  tbody tr{
+    border-bottom:1px solid var(--border);
+  }
+  tbody tr:hover{background:var(--panel);}
+  tbody td{
+    padding:12px;
+    vertical-align:top;
+  }
+  td.num{
+    color:var(--muted);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+  }
+  .code-pill{
+    display:inline-block;
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-size:0.82rem;
+    color:var(--amber);
+    background:var(--amber-dim);
+    border-left:3px solid var(--amber);
+    padding:3px 8px 3px 7px;
+    border-radius:3px;
+    letter-spacing:0.3px;
+  }
+  .code-pill.wait{
+    color:var(--teal);
+    background:var(--teal-dim);
+    border-left-color:var(--teal);
+  }
+  td.desc{color:var(--text);}
+  td.cause{color:var(--muted);}
+  td.catcell{
+    color:var(--muted);
+    font-size:0.78rem;
+  }
+  mark{
+    background:rgba(232,163,61,0.32);
+    color:inherit;
+    border-radius:2px;
+    padding:0 1px;
+  }
+
+  /* ---------- Top-level codes strip ---------- */
+  .toplevel{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(190px,1fr));
+    gap:10px;
+    margin-bottom:28px;
+  }
+  .tl-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px 14px;
+  }
+  .tl-code{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    font-weight:600;
+    color:var(--danger);
+    letter-spacing:0.4px;
+  }
+  .tl-desc{
+    font-size:0.8rem;
+    color:var(--muted);
+    margin-top:4px;
+    line-height:1.4;
+  }
+
+  .section-label{
+    font-size:0.78rem;
+    color:var(--muted);
+    margin:0 0 12px 2px;
+  }
+
+  footer{
+    max-width:1100px;
+    margin:0 auto;
+    padding:0 28px 40px;
+    color:var(--muted);
+    font-size:0.75rem;
+  }
+
+  @media (max-width:640px){
+    header{padding:16px 16px 14px;}
+    main{padding:18px 16px 40px;}
+    thead th.cat, td.catcell{display:none;}
+    thead th.num, td.num{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="title-row">
+      <div>
+        <h1>ตารางรหัสความเสียหาย<span class="accent">หม้อแปลงไฟฟ้า</span></h1>
+        <div class="subtitle">Transformer Failure Code Lookup — ค้นหาด้วยรหัส สาเหตุ หรือคำอธิบาย</div>
+      </div>
+      <div class="count-badge">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</div>
+    </div>
+
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input id="search" type="text" placeholder="พิมพ์รหัส เช่น T028, สาเหตุ เช่น ซีลเสื่อมสภาพ, หรืออาการ เช่น Bushing…" autocomplete="off">
+    </div>
+
+    <div class="chips" id="chips"></div>
+  </div>
+</header>
+
+<main>
+  <div class="section-label">รหัสหลัก (Top-level)</div>
+  <div class="toplevel" id="toplevel"></div>
+
+  <div class="section-label">รายละเอียดรหัสความเสียหาย</div>
+  <table>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th class="cause">สาเหตุ (Cause)</th>
+        <th class="code">รหัส</th>
+        <th class="desc">คำอธิบายอาการ</th>
+        <th class="cat">หมวดหมู่</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div class="empty" id="emptyState" style="display:none;">
+    <div class="big">∅</div>
+    ไม่พบรายการที่ตรงกับคำค้นหา
+  </div>
+</main>
+
+<footer>
+  ข้อมูลจัดทำจากตารางรหัส Failure Code หม้อแปลงไฟฟ้า — ใช้สำหรับอ้างอิงภายในเท่านั้น
+</footer>
+
+<script>
+const DATA = {"top_level": [{"code": "DAMAGED", "desc": "พัง, ชำรุด, ระเบิด, เสื่อม"}, {"code": "EQUIPMENT ERROR", "desc": "อุปกรณ์ทำงานผิดพลาด"}, {"code": "EXHAUSTION", "desc": "การเสื่อมสภาพ/หมดสภาพ"}, {"code": "OIL LEAK", "desc": "น้ำมันรั่วซึมด้านบนหม้อแปลง ซีลเสื่อมสภาพ"}, {"code": "WAITING", "desc": "รอ"}], "records": [{"no": 1, "cause": "ซีลเสื่อมสภาพ", "code": "T006", "desc": "น้ำมันรั่วซึมด้านบนหม้อแปลง", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 2, "cause": "ซีลเสื่อมสภาพ", "code": "T007", "desc": "น้ำมันรั่วซึมที่ Bushing หม้อแปลง", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 3, "cause": "แตกหัก", "code": "T007", "desc": "น้ำมันรั่วซึมที่ Bushing หม้อแปลง", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 4, "cause": "ติดตั้งไม่ตามมาตรฐาน", "code": "T007", "desc": "น้ำมันรั่วซึมที่ Bushing หม้อแปลง", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 5, "cause": "ความเสียหายจากการเคลื่อนที่", "code": "T007", "desc": "น้ำมันรั่วซึมที่ Bushing หม้อแปลง", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 6, "cause": "ซีลเสื่อมสภาพ", "code": "T008", "desc": "น้ำมันรั่วซึมที่ Cable box", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 7, "cause": "ติดตั้งไม่ตามมาตรฐาน", "code": "T008", "desc": "น้ำมันรั่วซึมที่ Cable box", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 8, "cause": "ความร้อนสูงเกินไป", "code": "T008", "desc": "น้ำมันรั่วซึมที่ Cable box", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 9, "cause": "ซีลเสื่อมสภาพ", "code": "T009", "desc": "น้ำมันรั่วซึมที่ Radiator", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 10, "cause": "ติดตั้งไม่ตามมาตรฐาน", "code": "T009", "desc": "น้ำมันรั่วซึมที่ Radiator", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 11, "cause": "แรงดันภายในสูง", "code": "T009", "desc": "น้ำมันรั่วซึมที่ Radiator", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 12, "cause": "การเสื่อมจากสิ่งสกปรก", "code": "T009", "desc": "น้ำมันรั่วซึมที่ Radiator", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 13, "cause": "ระบบระบายความร้อนทำงานผิดปกติ", "code": "T012", "desc": "น้ำมันหม้อแปลงต่ำ", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 14, "cause": "ซีลเสื่อมสภาพ", "code": "T012", "desc": "น้ำมันหม้อแปลงต่ำ", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 15, "cause": "ซีลเสื่อมสภาพ", "code": "T210", "desc": "น้ำมันรั่วซึมที่ฝาบ่อ OLTC", "cat": "OLTC"}, {"no": 16, "cause": "OLTC ระดับน้ำมันต่ำ ซีลเสื่อมสภาพ", "code": "T212", "desc": "ระดับน้ำมันต่ำที่ OLTC", "cat": "OLTC"}, {"no": 17, "cause": "ซีลเสื่อมสภาพ", "code": "T303", "desc": "Oil filter unit มีน้ำมันรั่วซึมหม้อแปลง", "cat": "ชุดกรองน้ำมัน (Oil Filter)"}, {"no": 18, "cause": "อายุใช้งานเสื่อมสภาพ", "code": "T101", "desc": "Control desk tap อ่านไม่ตรง", "cat": "ตู้ควบคุม / รีเลย์"}, {"no": 19, "cause": "ความชื้น/สิ่งสกปรก", "code": "T101", "desc": "Control desk tap อ่านไม่ตรง", "cat": "ตู้ควบคุม / รีเลย์"}, {"no": 20, "cause": "เสื่อมสภาพจากอายุใช้งาน", "code": "T102", "desc": "Control desk หลอดขาด", "cat": "ตู้ควบคุม / รีเลย์"}, {"no": 21, "cause": "เสื่อมสภาพจากอายุใช้งาน", "code": "T103", "desc": "Control พัดลมชำรุด", "cat": "ตู้ควบคุม / รีเลย์"}, {"no": 22, "cause": "เสื่อมสภาพจากอายุใช้งาน", "code": "T105", "desc": "Differential relay เปลี่ยน", "cat": "ตู้ควบคุม / รีเลย์"}, {"no": 23, "cause": "เสื่อมสภาพจากอายุใช้งาน", "code": "T107", "desc": "Tripping relay เปลี่ยน", "cat": "ตู้ควบคุม / รีเลย์"}, {"no": 24, "cause": "โครงแตก", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 25, "cause": "ซีลเสื่อมสภาพ", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 26, "cause": "โครงแตก", "code": "T002", "desc": "Oil level gauge ชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 27, "cause": "โครงแตก", "code": "T003", "desc": "Oil temp ชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 28, "cause": "เสื่อมสภาพ", "code": "T003", "desc": "Oil temp ชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 29, "cause": "SILICAGEL เสื่อมสภาพ", "code": "T004", "desc": "Silicagel เปลี่ยนสี/Air Breather ชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 30, "cause": "โครงแตก", "code": "T005", "desc": "Winding temp ชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 31, "cause": "เสื่อมสภาพ", "code": "T005", "desc": "Winding temp ชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 32, "cause": "การรั่วซึมของน้ำมัน", "code": "T015", "desc": "เปลี่ยนหม้อแปลงชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 33, "cause": "การเกิดไฟฟ้าลัดวงจร", "code": "T015", "desc": "เปลี่ยนหม้อแปลงชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 34, "cause": "อายุการใช้งานเสื่อมสภาพ", "code": "T015", "desc": "เปลี่ยนหม้อแปลงชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 35, "cause": "ความร้อนสะสมเกินไป", "code": "T015", "desc": "เปลี่ยนหม้อแปลงชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 36, "cause": "สึกหรอจากการใช้งานนาน", "code": "T018", "desc": "เปลี่ยนพัดลมหม้อแปลง", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 37, "cause": "สึกหรอจากการใช้งานนาน", "code": "T019", "desc": "พัดลมหม้อแปลงถอดไปซ่อม", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 38, "cause": "การเสียหายของมอเตอร์", "code": "T020", "desc": "พัดลมหม้อแปลงไม่ทำงาน", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 39, "cause": "WAITING", "code": "L212", "desc": "งานตรวจสอบแล้ว รอจัดซื้ออะไหล่", "cat": "รอดำเนินการ / อะไหล่"}, {"no": 40, "cause": "WAITING", "code": "L010", "desc": "งานตรวจสอบแล้ว ไม่มีอะไหล่ ไม่มีผลกระทบ", "cat": "รอดำเนินการ / อะไหล่"}, {"no": 41, "cause": "WAITING", "code": "L213", "desc": "ต่อการจ่ายไฟ หรืออื่น ๆ ตามเห็นสมควร", "cat": "รอดำเนินการ / อะไหล่"}, {"no": 42, "cause": "การโอเวอร์โหลด (OVERLOAD)", "code": "T023", "desc": "ขดลวดหม้อแปลงชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 43, "cause": "ความผิดปกติของแรงดัน", "code": "T023", "desc": "ขดลวดหม้อแปลงชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 44, "cause": "การผลิตที่ไม่ดี", "code": "T023", "desc": "ขดลวดหม้อแปลงชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 45, "cause": "การเกิดความชื้น", "code": "T023", "desc": "ขดลวดหม้อแปลงชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 46, "cause": "การออกแบบที่ผิดพลาด", "code": "T024", "desc": "แกนเหล็กหม้อแปลงชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 47, "cause": "ความเครียดการเปลี่ยนกระแสไฟฟ้า", "code": "T024", "desc": "แกนหม้อแปลงชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 48, "cause": "การสะสมของความร้อน", "code": "T024", "desc": "แกนเหล็กหม้อแปลงชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 49, "cause": "เสื่อมสภาพ", "code": "T025", "desc": "HV Bushing หม้อแปลงชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 50, "cause": "เสื่อมสภาพ", "code": "T026", "desc": "MV Bushing หม้อแปลงชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 51, "cause": "เสื่อมสภาพ", "code": "T027", "desc": "OFF LOAD TAP หม้อแปลงชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 52, "cause": "SHORT CIRCUIT", "code": "T028", "desc": "Buchholz relay ชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 53, "cause": "การติดตั้งไม่ถูกต้อง", "code": "T028", "desc": "Buchholz relay ชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 54, "cause": "เสื่อมสภาพจากอายุใช้งาน", "code": "T028", "desc": "Buchholz relay ชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 55, "cause": "อุณหภูมิสูงเกิน", "code": "T028", "desc": "Buchholz relay ชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 56, "cause": "กลไกติดขัด", "code": "T028", "desc": "Buchholz relay ชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 57, "cause": "การติดตั้งไม่ถูกต้อง", "code": "T029", "desc": "Pressure relief ชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 58, "cause": "กลไกติดขัด", "code": "T029", "desc": "Pressure relief ชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 59, "cause": "เสื่อมสภาพจากอายุใช้งาน", "code": "T029", "desc": "Pressure relief ชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 60, "cause": "แรงดันเกินขีดจำกัดบ่อยเกิน", "code": "T029", "desc": "Pressure relief ชำรุด", "cat": "ขดลวด / แกนเหล็ก / บุชชิ่ง / รีเลย์ป้องกัน"}, {"no": 61, "cause": "ระบบควบคุมทำงานผิดพลาด", "code": "T104", "desc": "Differential relay ชำรุด", "cat": "ตู้ควบคุม / รีเลย์"}, {"no": 62, "cause": "TRANSFORMER MALFUNCTION", "code": "T104", "desc": "Differential relay ชำรุด", "cat": "ตู้ควบคุม / รีเลย์"}, {"no": 63, "cause": "การตั้งค่าผิด", "code": "T104", "desc": "Differential relay ชำรุด", "cat": "ตู้ควบคุม / รีเลย์"}, {"no": 64, "cause": "ระบบภายนอกสัญญาณผิดปกติ", "code": "T104", "desc": "Differential relay ชำรุด", "cat": "ตู้ควบคุม / รีเลย์"}, {"no": 65, "cause": "เสื่อมสภาพจากอายุใช้งาน", "code": "T106", "desc": "Tripping relay ชำรุด", "cat": "ตู้ควบคุม / รีเลย์"}, {"no": 66, "cause": "เปลี่ยน TAP แล้วมีเสียง", "code": "T211", "desc": "เปลี่ยน Tap แล้วมีเสียงดัง", "cat": "OLTC"}, {"no": 67, "cause": "WAITING", "code": "T213", "desc": "ตรวจสอบแล้ว รอจัดซื้ออะไหล่", "cat": "OLTC"}, {"no": 68, "cause": "WAITING", "code": "L106", "desc": "ตรวจสอบแล้ว ไม่มีอะไหล่ ไม่มีผลกระทบ", "cat": "รอดำเนินการ / อะไหล่"}, {"no": 69, "cause": "กลไกเสื่อมสภาพ", "code": "T215", "desc": "Tap protective relay ชำรุด", "cat": "OLTC"}, {"no": 70, "cause": "ความชื้น, ฝุ่นฯ", "code": "T215", "desc": "Tap protective relay ชำรุด", "cat": "OLTC"}, {"no": 71, "cause": "ต่อสายผิด, SHORT", "code": "T215", "desc": "Tap protective relay ชำรุด", "cat": "OLTC"}, {"no": 72, "cause": "อาร์ก ระหว่างเปลี่ยน TAP บ่อย", "code": "T216", "desc": "Main contact ชำรุด", "cat": "OLTC"}, {"no": 73, "cause": "อุณหภูมิสูงเกินจากกระแสเกิน", "code": "T216", "desc": "Main contact ชำรุด", "cat": "OLTC"}, {"no": 74, "cause": "น้ำมัน OLTC เสื่อมสภาพ", "code": "T216", "desc": "Main contact ชำรุด", "cat": "OLTC"}, {"no": 75, "cause": "อุณหภูมิสูงจากกระแสเกิน", "code": "T216", "desc": "Main contact ชำรุด", "cat": "OLTC"}, {"no": 76, "cause": "อาร์ก ขณะสลับ TAP", "code": "T217", "desc": "Transition contact ชำรุด", "cat": "OLTC"}, {"no": 77, "cause": "น้ำมัน OLTC เสื่อมสภาพ", "code": "T217", "desc": "Transition contact ชำรุด", "cat": "OLTC"}, {"no": 78, "cause": "สปริง/กลไก CONTACT เสีย", "code": "T217", "desc": "Transition contact ชำรุด", "cat": "OLTC"}, {"no": 79, "cause": "ค่าต้านทาน CONTACT เพิ่ม", "code": "T217", "desc": "Transition contact ชำรุด", "cat": "OLTC"}, {"no": 80, "cause": "สึกหรอ", "code": "T218", "desc": "Gear unit ชำรุด", "cat": "OLTC"}, {"no": 81, "cause": "ชำรุดจาก ACCESSORIES", "code": "T219", "desc": "OLTC Accessories ชำรุด", "cat": "OLTC"}, {"no": 82, "cause": "แรงดัน V ผิดปกติ", "code": "T220", "desc": "Motor drive control board ชำรุด", "cat": "OLTC"}, {"no": 83, "cause": "ฝุ่นละอองฯ ในกล่องควบคุม", "code": "T220", "desc": "Control board ชำรุด", "cat": "OLTC"}, {"no": 84, "cause": "เสื่อมสภาพจากอายุใช้งาน", "code": "T220", "desc": "Control board ชำรุด", "cat": "OLTC"}, {"no": 85, "cause": "แรงดันน้ำมันเกิน", "code": "T305", "desc": "Pressure gauge oil filter เสีย", "cat": "ชุดกรองน้ำมัน (Oil Filter)"}, {"no": 86, "cause": "สิ่งสกปรกเข้าไปในเกจ", "code": "T305", "desc": "Pressure oil filter เสีย", "cat": "ชุดกรองน้ำมัน (Oil Filter)"}, {"no": 87, "cause": "WAITING", "code": "T306", "desc": "ตรวจสอบ รอจัดซื้ออะไหล่", "cat": "ชุดกรองน้ำมัน (Oil Filter)"}, {"no": 88, "cause": "WAITING", "code": "H204", "desc": "ตรวจสอบ ไม่มีอะไหล่ ไม่มีผลกระทบ", "cat": "รอดำเนินการ / อะไหล่"}, {"no": 89, "cause": "กลไกชำรุด", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 90, "cause": "กลไกชำรุด", "code": "T002", "desc": "Oil level gauge ชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 91, "cause": "กลไกชำรุด", "code": "T003", "desc": "Oil temp ชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 92, "cause": "กลไกชำรุด", "code": "T005", "desc": "Winding temp ชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 93, "cause": "การทำงานผิดพลาดของรีเลย์", "code": "T016", "desc": "หม้อแปลง Trip", "cat": "อุปกรณ์ประกอบหม้อแปลง"}, {"no": 94, "cause": "กลไกติดขัด", "code": "T206", "desc": "Counter Tap ไม่ทำงาน", "cat": "OLTC"}, {"no": 95, "cause": "ชุดเฟืองภายในชำรุด", "code": "T206", "desc": "Counter Tap ไม่ทำงาน", "cat": "OLTC"}, {"no": 96, "cause": "LUBRICATION", "code": "T206", "desc": "Counter Tap ไม่ทำงาน", "cat": "OLTC"}, {"no": 97, "cause": "เสื่อมสภาพจากอายุใช้งาน", "code": "T206", "desc": "Counter Tap ไม่ทำงาน", "cat": "OLTC"}, {"no": 98, "cause": "กลไกติดขัด", "code": "T208", "desc": "Micro sw. Lower & upper limit ค้าง", "cat": "OLTC"}, {"no": 99, "cause": "OLTC ไม่ทำงาน", "code": "T209", "desc": "OLTC เปลี่ยน Tap ทางไฟฟ้าไม่ได้", "cat": "OLTC"}, {"no": 100, "cause": "การรบกวนจากสัญญาณไฟฟ้า", "code": "T301", "desc": "Counter oil filter ทำงานผิดปกติ", "cat": "ชุดกรองน้ำมัน (Oil Filter)"}, {"no": 101, "cause": "MOTOR OIL FILTER ต่อท่อผิดด้าน", "code": "T302", "desc": "Motor oil filter หมุนกลับทาง", "cat": "ชุดกรองน้ำมัน (Oil Filter)"}, {"no": 102, "cause": "ปั๊มน้ำมัน OLTC เสีย", "code": "T304", "desc": "Oil filter ไม่ทำงานหลังจากเปลี่ยน Tap", "cat": "ชุดกรองน้ำมัน (Oil Filter)"}, {"no": 103, "cause": "การอุดตัน / ฝุ่นละออง", "code": "T004", "desc": "Silicagel เปลี่ยนสี/Air Breather ชำรุด", "cat": "อุปกรณ์ประกอบหม้อแปลง"}]};
+
+const records = DATA.records;
+const categories = [...new Set(records.map(r => r.cat))];
+let activeCat = "ALL";
+let query = "";
+
+// ---- render top-level codes ----
+const tlWrap = document.getElementById('toplevel');
+DATA.top_level.forEach(tl => {
+  const div = document.createElement('div');
+  div.className = 'tl-card';
+  div.innerHTML = `<div class="tl-code mono">${escapeHtml(tl.code)}</div><div class="tl-desc">${escapeHtml(tl.desc)}</div>`;
+  tlWrap.appendChild(div);
+});
+
+// ---- render category chips ----
+const chipsWrap = document.getElementById('chips');
+function renderChips(){
+  chipsWrap.innerHTML = '';
+  const allChip = makeChip('ทั้งหมด', 'ALL');
+  chipsWrap.appendChild(allChip);
+  categories.forEach(c => chipsWrap.appendChild(makeChip(c, c)));
+}
+function makeChip(label, val){
+  const c = document.createElement('div');
+  c.className = 'chip' + (activeCat === val ? ' active' : '');
+  c.textContent = label;
+  c.addEventListener('click', () => { activeCat = val; renderChips(); renderTable(); });
+  return c;
+}
+
+// ---- table render ----
+const tbody = document.getElementById('tbody');
+const emptyState = document.getElementById('emptyState');
+const visibleCountEl = document.getElementById('visibleCount');
+const totalCountEl = document.getElementById('totalCount');
+totalCountEl.textContent = records.length;
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function highlight(text, q){
+  const esc = escapeHtml(text);
+  if(!q) return esc;
+  try{
+    const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+    return esc.replace(re, '<mark>$1</mark>');
+  }catch(e){ return esc; }
+}
+
+function renderTable(){
+  const q = query.trim().toLowerCase();
+  const filtered = records.filter(r => {
+    if(activeCat !== 'ALL' && r.cat !== activeCat) return false;
+    if(!q) return true;
+    return (
+      r.code.toLowerCase().includes(q) ||
+      r.cause.toLowerCase().includes(q) ||
+      r.desc.toLowerCase().includes(q) ||
+      r.cat.toLowerCase().includes(q)
+    );
+  });
+
+  tbody.innerHTML = '';
+  filtered.forEach(r => {
+    const tr = document.createElement('tr');
+    const isWait = r.code[0] === 'L' || r.code[0] === 'H';
+    tr.innerHTML = `
+      <td class="num">${r.no}</td>
+      <td class="cause">${highlight(r.cause, q)}</td>
+      <td><span class="code-pill mono${isWait ? ' wait' : ''}">${highlight(r.code, q)}</span></td>
+      <td class="desc">${highlight(r.desc, q)}</td>
+      <td class="catcell">${escapeHtml(r.cat)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  visibleCountEl.textContent = filtered.length;
+  emptyState.style.display = filtered.length === 0 ? 'block' : 'none';
+}
+
+document.getElementById('search').addEventListener('input', (e) => {
+  query = e.target.value;
+  renderTable();
+});
+
+renderChips();
+renderTable();
+</script>
+</body>
+</html>
