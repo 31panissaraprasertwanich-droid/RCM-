@@ -563,7 +563,7 @@ let query = "";
 let currentTab = 'fmea';
 
 function initApp() {
-  const saved = localStorage.getItem('rcm_excel_data_v8');
+  const saved = localStorage.getItem('rcm_excel_data_v9');
   if (saved) {
     try { records = JSON.parse(saved); } catch(e) { console.error(e); }
   }
@@ -769,7 +769,6 @@ function renderTable(){
       </tr>
     `;
     
-    // จัดกลุ่มตาม Component เพื่อแสดงแถวสรุปแยกตามอุปกรณ์ย่อย (ตามรูปตัวอย่าง)
     const grouped = {};
     filtered.forEach(r => {
       if (!grouped[r.component]) grouped[r.component] = [];
@@ -810,21 +809,20 @@ function renderTable(){
         `;
       });
 
-      // คำนวณ CEHI (%) ของอุปกรณ์ตัวนี้
       const compCehi = compSmaxWi > 0 ? ((compSiWi / compSmaxWi) * 100).toFixed(2) : '0.00';
 
       globalTotalSiWi += compSiWi;
       globalTotalSmaxWi += compSmaxWi;
 
-      // แทรกแถวสรุปยอดรวม และ ค่า CEHI ของอุปกรณ์ตัวนี้ ตามรูปตัวอย่างที่คุณต้องการ
+      // เพิ่มแถวสรุปยอดรวม (Total) และ ค่า CEHI (%) ของตัวนี้ไว้ใต้อุปกรณ์ย่อยแต่ละตัว
       htmlRows += `
         <tr style="background:var(--panel-2); border-top:1px dashed var(--border);">
-          <td colspan="7" style="text-align:right; font-weight:600; color:var(--primary); padding:8px 12px;">👉 ยอดรวมของ ${comp}:</td>
+          <td colspan="7" style="text-align:right; font-weight:600; color:var(--primary); padding:8px 12px;">👉 ยอดรวมของ ${comp} (Total):</td>
           <td style="text-align:center; font-weight:600;" class="mono">${compSiWi.toFixed(2)}</td>
           <td style="text-align:center; font-weight:600;" class="mono">${compSmaxWi.toFixed(2)}</td>
         </tr>
-        <tr style="background:var(--panel-2); border-bottom:2px solid var(--border); margin-bottom:10px;">
-          <td colspan="7" style="text-align:right; font-weight:700; color:var(--teal); padding:8px 12px;">👉 CEHI ของ ${comp} (%):</td>
+        <tr style="background:var(--panel-2); border-bottom:3px solid var(--border); margin-bottom:12px;">
+          <td colspan="7" style="text-align:right; font-weight:700; color:var(--teal); padding:8px 12px;">👉 ค่า CEHI ของ ${comp} (%):</td>
           <td colspan="2" style="text-align:center; font-weight:700; color:var(--teal);" class="mono">${compCehi} %</td>
         </tr>
       `;
@@ -832,17 +830,16 @@ function renderTable(){
 
     tbody.innerHTML = htmlRows;
 
-    // คำนวณภาพรวมทั้งหมด (Grand Total) สำหรับ Footer
     const grandCehi = globalTotalSmaxWi > 0 ? ((globalTotalSiWi / globalTotalSmaxWi) * 100).toFixed(2) : '0.00';
 
     tfoot.innerHTML = `
       <tr style="background:var(--panel-2); font-weight:bold; border-top:3px solid var(--border);">
-        <td colspan="7" style="text-align:right; padding:14px; font-size:0.9rem;">รวมทั้งหมด (Total Stations):</td>
+        <td colspan="7" style="text-align:right; padding:14px; font-size:0.9rem;">รวมทั้งหมดทุกอุปกรณ์ (Grand Total):</td>
         <td style="text-align:center;" class="mono">${globalTotalSiWi.toFixed(2)}</td>
         <td style="text-align:center;" class="mono">${globalTotalSmaxWi.toFixed(2)}</td>
       </tr>
       <tr style="background:var(--panel-2); font-weight:bold; color:var(--primary);">
-        <td colspan="7" style="text-align:right; padding:14px; font-size:0.95rem;">ค่า CEHI สุทธิ (%) ของระบบ:</td>
+        <td colspan="7" style="text-align:right; padding:14px; font-size:0.95rem;">ค่า CEHI สุทธิ (%) ภาพรวมระบบ:</td>
         <td colspan="2" style="text-align:center; font-size:1.2rem;" class="mono">${grandCehi} %</td>
       </tr>
     `;
@@ -915,7 +912,7 @@ function updateField(id, field, val) {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v8', JSON.stringify(records));
+  localStorage.setItem('rcm_excel_data_v9', JSON.stringify(records));
   alert('✨ บันทึกข้อมูลคะแนนและแผนงานของคุณลงในเบราว์เซอร์เรียบร้อยแล้ว!');
 }
 
