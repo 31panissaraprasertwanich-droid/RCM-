@@ -563,7 +563,7 @@ let query = "";
 let currentTab = 'fmea';
 
 function initApp() {
-  const saved = localStorage.getItem('rcm_excel_data_v12');
+  const saved = localStorage.getItem('rcm_excel_data_v13');
   if (saved) {
     try { records = JSON.parse(saved); } catch(e) { console.error(e); }
   }
@@ -627,7 +627,7 @@ function switchTab(tab) {
   
   if(tab === 'fmea') {
     document.getElementById('modeTitle').textContent = "FMEA & RPN Assessment";
-    document.getElementById('tableInstruction').textContent = "คลิกช่องคะแนน (S, O, D) ระบบจะคำนวณค่า RPN ให้ทันที";
+    document.getElementById('tableInstruction').textContent = "คลิกช่องคะแนน (S, O, D) เพื่อประเมินค่า RPN ให้ทันที";
     document.getElementById('searchBoxWrap').style.display = 'block';
     document.getElementById('chips').style.display = 'flex';
   } else if(tab === 'cehi') {
@@ -729,11 +729,14 @@ function renderTable(){
       </tr>
     `;
     
+    let totalRpnSum = 0;
+
     tbody.innerHTML = filtered.map(r => {
       const s = Number(r.s) || 0;
       const o = Number(r.o) || 0;
       const d = Number(r.d) || 0;
-      const rpn = s > 0 && o > 0 && d > 0 ? s * o * d : '';
+      const rpn = s > 0 && o > 0 && d > 0 ? s * o * d : 0;
+      totalRpnSum += rpn;
       
       let badgeClass = 'rpn-low';
       if (rpn >= 100) badgeClass = 'rpn-high';
@@ -749,10 +752,18 @@ function renderTable(){
           <td style="text-align:center;"><input type="number" min="1" max="10" class="score-input" value="${r.s !== undefined ? r.s : ''}" oninput="updateField(${r.id}, 's', this.value)"></td>
           <td style="text-align:center;"><input type="number" min="1" max="10" class="score-input" value="${r.o !== undefined ? r.o : ''}" oninput="updateField(${r.id}, 'o', this.value)"></td>
           <td style="text-align:center;"><input type="number" min="1" max="10" class="score-input" value="${r.d !== undefined ? r.d : ''}" oninput="updateField(${r.id}, 'd', this.value)"></td>
-          <td style="text-align:center;"><span class="rpn-badge ${rpn !== '' ? badgeClass : ''}">${rpn !== '' ? rpn : '-'}</span></td>
+          <td style="text-align:center;"><span class="rpn-badge ${rpn > 0 ? badgeClass : ''}">${rpn > 0 ? rpn : '-'}</span></td>
         </tr>
       `;
     }).join('');
+
+    // เพิ่มแถวสรุปผลรวม RPN ที่ท้ายตาราง FMEA
+    tfoot.innerHTML = `
+      <tr style="background:var(--panel-2); font-weight:bold; border-top:3px solid var(--primary);">
+        <td colspan="8" style="text-align:right; padding:14px; font-size:1rem;">ผลรวมคะแนน RPN (Total RPN Sum):</td>
+        <td style="text-align:center; font-size:1.1rem; color:var(--primary);" class="mono">${totalRpnSum}</td>
+      </tr>
+    `;
 
   } else if (currentTab === 'cehi') {
     thead.innerHTML = `
@@ -911,7 +922,7 @@ function updateField(id, field, val) {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v12', JSON.stringify(records));
+  localStorage.setItem('rcm_excel_data_v13', JSON.stringify(records));
   alert('✨ บันทึกข้อมูลคะแนนและแผนงานของคุณลงในเบราว์เซอร์เรียบร้อยแล้ว!');
 }
 
