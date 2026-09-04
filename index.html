@@ -563,7 +563,7 @@ let query = "";
 let currentTab = 'fmea';
 
 function initApp() {
-  const saved = localStorage.getItem('rcm_excel_data_v11');
+  const saved = localStorage.getItem('rcm_excel_data_v12');
   if (saved) {
     try { records = JSON.parse(saved); } catch(e) { console.error(e); }
   }
@@ -911,7 +911,7 @@ function updateField(id, field, val) {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v11', JSON.stringify(records));
+  localStorage.setItem('rcm_excel_data_v12', JSON.stringify(records));
   alert('✨ บันทึกข้อมูลคะแนนและแผนงานของคุณลงในเบราว์เซอร์เรียบร้อยแล้ว!');
 }
 
