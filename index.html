@@ -549,7 +549,7 @@ let records = [
   {id:214, component:"เสา/สาย", code:"SM26", desc:"ชุด Interrupter ไม่ทำงาน", cause:"Technical Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
   {id:215, component:"เสา/สาย", code:"SM27", desc:"switching ปลดสวิตซ์ในสายส่ง", cause:"Technical Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
   {id:216, component:"เสา/สาย", code:"SM28", desc:"ปลดสวิตซ์ผิดตัว", cause:"Technical Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
-  {id:217, component:"เส/สาย", code:"SM29", desc:"อุปกรณ์ชำรุดภายในสถานี กฟน.", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:217, component:"เสา/สาย", code:"SM29", desc:"อุปกรณ์ชำรุดภายในสถานี กฟน.", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
   {id:218, component:"เสา/สาย", code:"SM30", desc:"ต้นไม้ (โดนอุปกรณ์สถานี กฟน.)", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
   {id:219, component:"เสา/สาย", code:"SM31", desc:"อุปกรณ์ชำรุดภายในสถานี กฟผ./กฟภ.", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
   {id:220, component:"เสา/สาย", code:"SM32", desc:"อุปกรณ์ชำรุดภายในสถานี ลูกค้า", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
@@ -814,7 +814,6 @@ function renderTable(){
       globalTotalSiWi += compSiWi;
       globalTotalSmaxWi += compSmaxWi;
 
-      // จัดระเบียบตัวหนังสือ ฟอนต์ และการจัดวางช่องตัวเลขผลรวมแต่ละตัวให้ตรงคอลัมน์สวยงาม
       htmlRows += `
         <tr style="background:var(--panel-2); border-top:1px solid var(--border);">
           <td colspan="7" style="text-align:right; font-weight:600; color:var(--primary); padding:10px 14px;">👉 ยอดรวมของ ${escapeHtml(comp)} (Total):</td>
