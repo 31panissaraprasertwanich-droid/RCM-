@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* กำหนดตัวแปรธีมสีเริ่มต้น (Dark Mode + สีทองเหลือง Amber) */
   :root {
     --bg: #10151a;
     --panel: #171e25;
@@ -24,7 +23,6 @@
     --danger: #d9694f;
   }
 
-  /* ธีม Light Mode (เมื่อกดสว่าง) */
   body.light-mode {
     --bg: #f4f7f9;
     --panel: #ffffff;
@@ -88,28 +86,17 @@
     flex-wrap: wrap;
   }
 
-  /* ปุ่มปรับแต่งธีม (โหมดสว่าง/มืด และเลือกสี) */
-  .theme-tools {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    padding: 4px 8px;
-    border-radius: 6px;
-  }
-  .color-dot {
-    width: 16px; height: 16px; border-radius: 50%; cursor: pointer; border: 2px solid transparent;
-    transition: transform 0.1s;
-  }
-  .color-dot:hover { transform: scale(1.2); }
-  .color-dot.active { border-color: #fff; }
-
   .mode-toggle-btn {
-    background: none; border: none; cursor: pointer; color: var(--text);
-    font-size: 1rem; padding: 2px 6px; border-radius: 4px;
+    background: var(--panel-2); 
+    border: 1px solid var(--border); 
+    cursor: pointer; 
+    color: var(--text);
+    font-size: 0.9rem; 
+    padding: 6px 10px; 
+    border-radius: 6px;
+    transition: all 0.15s;
   }
-  .mode-toggle-btn:hover { background: var(--border); }
+  .mode-toggle-btn:hover { border-color: var(--primary); }
 
   .nav-tabs{display:flex; gap:6px;}
   .tab-btn{
@@ -266,14 +253,8 @@
       </div>
       
       <div class="header-controls">
-        <!-- เครื่องมือปรับความสว่างและเปลี่ยนสีธีม -->
-        <div class="theme-tools">
-          <div class="color-dot active" style="background:#e8a33d;" onclick="setThemeColor('#e8a33d', '#4a3a20')" title="สีทอง (Amber)"></div>
-          <div class="color-dot" style="background:#4fb8a6;" onclick="setThemeColor('#4fb8a6', '#1c3a37')" title="สีเทอร์ควอยซ์ (Teal)"></div>
-          <div class="color-dot" style="background:#3b82f6;" onclick="setThemeColor('#3b82f6', '#1e3a8a')" title="สีน้ำเงิน (Blue)"></div>
-          <div class="color-dot" style="background:#a855f7;" onclick="setThemeColor('#a855f7', '#3b0764')" title="สีม่วง (Purple)"></div>
-          <button class="mode-toggle-btn" id="modeToggleBtn" onclick="toggleLightDarkMode()" title="สลับโหมด มืด/สว่าง">🌙</button>
-        </div>
+        <!-- ปุ่มสลับโหมด สว่าง / มืด -->
+        <button class="mode-toggle-btn" id="modeToggleBtn" onclick="toggleLightDarkMode()" title="สลับโหมด มืด/สว่าง">🌙 โหมดมืด</button>
 
         <div class="nav-tabs">
           <button class="tab-btn active" onclick="switchTab('fmea')">1. FMEA & RPN</button>
@@ -313,7 +294,6 @@
 </footer>
 
 <script>
-// ข้อมูลเรคอร์ด 223 รายการ
 let records = [
   {id:1, component:"TR_Counter L/A", code:"T001", desc:"Counter Lightning Arrester ชำรุด", cause:"โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
   {id:2, component:"TR_OLevelGauge", code:"T002", desc:"Oil level gauge ชำรุด", cause:"โครงแตก, กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
@@ -545,21 +525,16 @@ let query = "";
 let currentTab = 'fmea';
 
 function initApp() {
-  const saved = localStorage.getItem('rcm_excel_data_v4');
+  const saved = localStorage.getItem('rcm_excel_data_v5');
   if (saved) {
     try { records = JSON.parse(saved); } catch(e) { console.error(e); }
   }
   
-  // โหลดค่าธีมที่ผู้ใช้เคยเลือกไว้
+  // โหลดค่าธีม Dark/Light ที่เคยเลือกไว้
   const savedTheme = localStorage.getItem('rcm_theme_mode');
   if (savedTheme === 'light') {
     document.body.classList.add('light-mode');
-    document.getElementById('modeToggleBtn').textContent = '☀️';
-  }
-  const savedColor = localStorage.getItem('rcm_theme_primary');
-  const savedDim = localStorage.getItem('rcm_theme_dim');
-  if (savedColor && savedDim) {
-    setThemeColor(savedColor, savedDim, false);
+    document.getElementById('modeToggleBtn').textContent = '☀️ โหมดสว่าง';
   }
 
   records.forEach(r => {
@@ -578,47 +553,26 @@ function initApp() {
 function toggleLightDarkMode() {
   document.body.classList.toggle('light-mode');
   const isLight = document.body.classList.contains('light-mode');
-  document.getElementById('modeToggleBtn').textContent = isLight ? '☀️' : '🌙';
+  document.getElementById('modeToggleBtn').textContent = isLight ? '☀️ โหมดสว่าง' : '🌙 โหมดมืด';
   localStorage.setItem('rcm_theme_mode', isLight ? 'light' : 'dark');
-}
-
-// ฟังก์ชันเปลี่ยนสีธีมหลัก
-function setThemeColor(primaryColor, dimColor, save = true) {
-  document.documentElement.style.setProperty('--primary', primaryColor);
-  document.documentElement.style.setProperty('--primary-dim', dimColor);
-  
-  // อัปเดตสถานะ Active ของปุ่มวงกลมสี
-  document.querySelectorAll('.color-dot').forEach(dot => {
-    dot.classList.remove('active');
-    if(dot.style.background.includes(primaryColor) || dot.getAttribute('onclick').includes(primaryColor)) {
-      dot.classList.add('active');
-    }
-  });
-
-  if (save) {
-    localStorage.setItem('rcm_theme_primary', primaryColor);
-    localStorage.setItem('rcm_theme_dim', dimColor);
-  }
 }
 
 function switchTab(tab) {
   currentTab = tab;
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
   
   if(tab === 'fmea') {
-    event.target.classList.add('active');
     document.getElementById('modeTitle').textContent = "FMEA & RPN Assessment";
     document.getElementById('tableInstruction').textContent = "คลิกช่องคะแนน (S, O, D) ระบบจะคำนวณค่า RPN ให้ทันที";
     document.getElementById('searchBoxWrap').style.display = 'block';
     document.getElementById('chips').style.display = 'flex';
   } else if(tab === 'cehi') {
-    event.target.classList.add('active');
     document.getElementById('modeTitle').textContent = "ตารางโครงสร้าง CEHI";
     document.getElementById('tableInstruction').textContent = "กรอก Test Category, Parameters และคะแนน Si, Smax, Wi เพื่อคำนวณดัชนีสุขภาพ";
     document.getElementById('searchBoxWrap').style.display = 'block';
     document.getElementById('chips').style.display = 'flex';
   } else if(tab === 'plan') {
-    event.target.classList.add('active');
     document.getElementById('modeTitle').textContent = "PM/CBM Action Plan Table";
     document.getElementById('tableInstruction').textContent = "แสดงรายการที่ผ่านการประเมินคะแนน (RPN > 0) เรียงลำดับความสำคัญอัตโนมัติ";
     document.getElementById('searchBoxWrap').style.display = 'none';
@@ -836,7 +790,7 @@ function updateField(id, field, val) {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v4', JSON.stringify(records));
+  localStorage.setItem('rcm_excel_data_v5', JSON.stringify(records));
   alert('✨ บันทึกข้อมูลคะแนนและแผนงานของคุณลงในเบราว์เซอร์เรียบร้อยแล้ว!');
 }
 
