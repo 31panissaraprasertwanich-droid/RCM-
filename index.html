@@ -21,6 +21,7 @@
     --teal: #4fb8a6;
     --teal-dim: #1c3a37;
     --danger: #d9694f;
+    --danger-dim: #4a2720;
   }
 
   body.light-mode {
@@ -117,17 +118,37 @@
   }
   .save-btn:hover{background:#264d47;}
 
-  .count-badge{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:0.8rem;
-    color:var(--teal);
-    background:var(--teal-dim);
-    border:1px solid var(--teal);
-    border-radius:4px;
-    padding:5px 10px;
-    white-space:nowrap;
+  /* แถบป้ายสถิติ Dashboard Summary Cards */
+  .dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
   }
-  .count-badge b{font-size:1rem;}
+  .stat-card {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .stat-title {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .stat-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .stat-total { color: var(--primary); }
+  .stat-normal { color: var(--teal); }
+  .stat-warning { color: var(--primary); }
+  .stat-critical { color: var(--danger); }
 
   .search-wrap{
     position:relative;
@@ -253,7 +274,6 @@
       </div>
       
       <div class="header-controls">
-        <!-- ปุ่มสลับโหมด สว่าง / มืด -->
         <button class="mode-toggle-btn" id="modeToggleBtn" onclick="toggleLightDarkMode()" title="สลับโหมด มืด/สว่าง">🌙 โหมดมืด</button>
 
         <div class="nav-tabs">
@@ -262,7 +282,26 @@
           <button class="tab-btn" onclick="switchTab('plan')" id="btnPlan">3. PM/CBM Action Plan</button>
         </div>
         <button class="save-btn" onclick="saveData()">💾 บันทึกข้อมูล</button>
-        <div class="count-badge">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</div>
+      </div>
+    </div>
+
+    <!-- แถบป้ายสถิติ Dashboard Summary Cards -->
+    <div class="dashboard-stats">
+      <div class="stat-card">
+        <div class="stat-title">📦 อุปกรณ์ทั้งหมด (Total)</div>
+        <div class="stat-value stat-total" id="statTotal">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">✅ สถานะปกติ (Normal)</div>
+        <div class="stat-value stat-normal" id="statNormal">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">⚠️ เฝ้าระวัง (Warning / RPN กลาง)</div>
+        <div class="stat-value stat-warning" id="statWarning">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">🚨 วิกฤต (Critical / RPN สูง)</div>
+        <div class="stat-value stat-critical" id="statCritical">0</div>
       </div>
     </div>
 
@@ -278,6 +317,7 @@
 <main>
   <div class="section-label">
     <span id="tableInstruction">คลิกช่องคะแนน (S, O, D) เพื่อประเมินค่า RPN อัตโนมัติ</span>
+    <span style="font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--teal);">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</span>
   </div>
   <table>
     <thead id="tableHead"></thead>
@@ -525,12 +565,11 @@ let query = "";
 let currentTab = 'fmea';
 
 function initApp() {
-  const saved = localStorage.getItem('rcm_excel_data_v5');
+  const saved = localStorage.getItem('rcm_excel_data_v6');
   if (saved) {
     try { records = JSON.parse(saved); } catch(e) { console.error(e); }
   }
   
-  // โหลดค่าธีม Dark/Light ที่เคยเลือกไว้
   const savedTheme = localStorage.getItem('rcm_theme_mode');
   if (savedTheme === 'light') {
     document.body.classList.add('light-mode');
@@ -544,12 +583,39 @@ function initApp() {
   });
 
   categories = [...new Set(records.map(r => r.cat))];
-  document.getElementById('totalCount').textContent = records.length;
+  updateDashboardStats();
   renderChips();
   renderTable();
 }
 
-// ฟังก์ชันสลับโหมด มืด / สว่าง
+// อัปเดตตัวเลขสถิติ Dashboard Cards อัตโนมัติ
+function updateDashboardStats() {
+  const total = records.length;
+  let normal = 0;
+  let warning = 0;
+  let critical = 0;
+
+  records.forEach(r => {
+    const s = Number(r.s) || 0;
+    const o = Number(r.o) || 0;
+    const d = Number(r.d) || 0;
+    const rpn = s * o * d;
+
+    if (rpn === 0) {
+      normal++; // ยังไม่ประเมินหรือปกติ
+    } else if (rpn >= 100) {
+      critical++; // วิกฤต
+    } else {
+      warning++; // เฝ้าระวัง
+    }
+  });
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statNormal').textContent = normal;
+  document.getElementById('statWarning').textContent = warning;
+  document.getElementById('statCritical').textContent = critical;
+}
+
 function toggleLightDarkMode() {
   document.body.classList.toggle('light-mode');
   const isLight = document.body.classList.contains('light-mode');
@@ -784,13 +850,14 @@ function updateField(id, field, val) {
   if (item) {
     item[field] = val;
     if (currentTab === 'fmea' && ['s', 'o', 'd'].includes(field)) {
+      updateDashboardStats();
       renderTable();
     }
   }
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v5', JSON.stringify(records));
+  localStorage.setItem('rcm_excel_data_v6', JSON.stringify(records));
   alert('✨ บันทึกข้อมูลคะแนนและแผนงานของคุณลงในเบราว์เซอร์เรียบร้อยแล้ว!');
 }
 
