@@ -73,12 +73,26 @@
     flex-wrap: wrap;
   }
 
+  /* ปรับสไตล์ปุ่มแท็บให้เป็นรูปแบบเดียวกันทั้งหมด */
   .nav-tabs{display:flex; gap:6px;}
   .tab-btn{
-    background:var(--panel-2); border:1px solid var(--border); color:var(--muted);
-    padding:6px 14px; border-radius:6px; cursor:pointer; font-family:inherit; font-size:0.8rem; transition:all .15s;
+    background:var(--panel-2); 
+    border:1px solid var(--border); 
+    color:var(--muted);
+    padding:6px 14px; 
+    border-radius:6px; 
+    cursor:pointer; 
+    font-family:inherit; 
+    font-size:0.8rem; 
+    transition:all .15s;
   }
-  .tab-btn.active{background:var(--amber-dim); border-color:var(--amber); color:var(--amber); font-weight:600;}
+  .tab-btn:hover{border-color:#3a4550; color:var(--text);}
+  .tab-btn.active{
+    background:var(--amber-dim); 
+    border-color:var(--amber); 
+    color:var(--amber); 
+    font-weight:600;
+  }
 
   .save-btn{
     background:var(--teal-dim); border:1px solid #2c5952; color:var(--teal);
@@ -300,7 +314,7 @@
         <div class="nav-tabs">
           <button class="tab-btn active" onclick="switchTab('fmea')">1. FMEA & RPN</button>
           <button class="tab-btn" onclick="switchTab('cehi')">2. โครงสร้าง CEHI</button>
-          <button class="tab-btn" onclick="switchTab('plan')" id="btnPlan" style="background:#1c3a37; color:var(--teal); border-color:#2c5952;">3. 📋 PM/CBM Action Plan</button>
+          <button class="tab-btn" onclick="switchTab('plan')" id="btnPlan">3. PM/CBM Action Plan</button>
         </div>
         <button class="save-btn" onclick="saveData()">💾 บันทึกข้อมูล</button>
         <div class="count-badge">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</div>
@@ -586,21 +600,19 @@ function initApp() {
 function switchTab(tab) {
   currentTab = tab;
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
   
   if(tab === 'fmea') {
-    event.target.classList.add('active');
     document.getElementById('modeTitle').textContent = "FMEA & RPN Assessment";
     document.getElementById('tableInstruction').textContent = "คลิกช่องคะแนน (S, O, D) ระบบจะคำนวณค่า RPN ให้ทันที";
     document.getElementById('searchBoxWrap').style.display = 'block';
     document.getElementById('chips').style.display = 'flex';
   } else if(tab === 'cehi') {
-    event.target.classList.add('active');
     document.getElementById('modeTitle').textContent = "ตารางโครงสร้าง CEHI";
     document.getElementById('tableInstruction').textContent = "กรอก Test Category, Parameters และคะแนน Si, Smax, Wi เพื่อคำนวณดัชนีสุขภาพ";
     document.getElementById('searchBoxWrap').style.display = 'block';
     document.getElementById('chips').style.display = 'flex';
   } else if(tab === 'plan') {
-    document.getElementById('btnPlan').classList.add('active');
     document.getElementById('modeTitle').textContent = "PM/CBM Action Plan Table";
     document.getElementById('tableInstruction').textContent = "แสดงรายการที่ผ่านการประเมินคะแนน (RPN > 0) เรียงลำดับความสำคัญอัตโนมัติ";
     document.getElementById('searchBoxWrap').style.display = 'none';
@@ -651,7 +663,6 @@ function renderTable(){
   let filtered = [];
 
   if (currentTab === 'plan') {
-    // กรองเฉพาะรายการที่มีการกรอกคะแนน S, O, D แล้ว (RPN > 0)
     filtered = records.filter(r => {
       const s = Number(r.s) || 0;
       const o = Number(r.o) || 0;
@@ -659,7 +670,6 @@ function renderTable(){
       return (s * o * d) > 0;
     });
     
-    // จัดลำดับความสำคัญอัตโนมัติจาก RPN มากไปน้อย
     filtered.sort((a, b) => {
       const rpnA = (Number(a.s)||0) * (Number(a.o)||0) * (Number(a.d)||0);
       const rpnB = (Number(b.s)||0) * (Number(b.o)||0) * (Number(b.d)||0);
@@ -756,7 +766,6 @@ function renderTable(){
     }).join('');
 
   } else {
-    // หน้า Plan Action Table
     thead.innerHTML = `
       <tr>
         <th style="width:50px; text-align:center;">ลำดับความสำคัญ</th>
