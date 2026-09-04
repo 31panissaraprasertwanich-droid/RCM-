@@ -81,20 +81,14 @@
   
   .header-controls {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
     flex-wrap: wrap;
   }
 
   .mode-toggle-btn {
-    background: var(--panel-2); 
-    border: 1px solid var(--border); 
-    cursor: pointer; 
-    color: var(--text);
-    font-size: 0.9rem; 
-    padding: 6px 10px; 
-    border-radius: 6px;
-    transition: all 0.15s;
+    background: var(--panel-2); border: 1px solid var(--border); cursor: pointer; color: var(--text);
+    font-size: 0.9rem; padding: 6px 10px; border-radius: 6px; transition: all 0.15s;
   }
   .mode-toggle-btn:hover { border-color: var(--primary); }
 
@@ -105,17 +99,14 @@
   }
   .tab-btn:hover{border-color:var(--primary); color:var(--text);}
   .tab-btn.active{
-    background: var(--primary-dim); 
-    border-color: var(--primary); 
-    color: var(--primary); 
-    font-weight:600;
+    background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight:600;
   }
 
-  .save-btn{
+  .action-btn{
     background:var(--teal-dim); border:1px solid var(--teal); color:var(--teal);
     padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; font-family:inherit;
   }
-  .save-btn:hover{background:#264d47;}
+  .action-btn:hover{background:#264d47;}
 
   .dashboard-stats {
     display: grid;
@@ -124,98 +115,60 @@
     margin-bottom: 14px;
   }
   .stat-card {
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 16px; display: flex; flex-direction: column; justify-content: space-between;
   }
-  .stat-title {
-    font-size: 0.75rem;
-    color: var(--muted);
-    font-weight: 500;
-    margin-bottom: 4px;
-  }
-  .stat-value {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 1.4rem;
-    font-weight: 700;
-  }
+  .stat-title { font-size: 0.75rem; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
+  .stat-value { font-family: 'IBM Plex Mono', monospace; font-size: 1.4rem; font-weight: 700; }
   .stat-total { color: var(--primary); }
   .stat-normal { color: var(--teal); }
   .stat-warning { color: var(--primary); }
   .stat-critical { color: var(--danger); }
 
-  .search-wrap{
-    position:relative;
-    margin-bottom:10px;
+  .toolbar-row {
+    display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap;
   }
+  .search-wrap{ position:relative; flex: 1; min-width: 250px; }
   #search{
-    width:100%;
-    background:var(--panel-2);
-    border:1px solid var(--border);
-    color:var(--text);
-    font-family:inherit;
-    font-size:0.9rem;
-    padding:10px 14px 10px 40px;
-    border-radius:6px;
-    outline:none;
-    transition:border-color .15s ease;
+    width:100%; background:var(--panel-2); border:1px solid var(--border); color:var(--text);
+    font-family:inherit; font-size:0.9rem; padding:9px 14px 9px 40px; border-radius:6px; outline:none;
   }
   #search:focus{ border-color: var(--primary); }
   .search-wrap svg{
-    position:absolute; left:13px; top:50%; transform:translateY(-50%);
-    width:16px; height:16px; stroke:var(--muted);
+    position:absolute; left:13px; top:50%; transform:translateY(-50%); width:16px; height:16px; stroke:var(--muted);
   }
 
-  .chips{
-    display:flex; flex-wrap:wrap; gap:6px; max-height:80px; overflow-y:auto; padding-bottom:2px;
+  /* ตัวกรองระดับความเสี่ยง Risk Filters */
+  .risk-filters { display: flex; gap: 6px; }
+  .filter-chip {
+    font-size: 0.75rem; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--panel-2); color: var(--muted); cursor: pointer; user-select: none;
   }
+  .filter-chip.active { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight: 600; }
+
+  .chips{ display:flex; flex-wrap:wrap; gap:6px; max-height:75px; overflow-y:auto; padding-bottom:2px; }
   .chip{
-    font-size:0.75rem; padding:4px 10px; border-radius:100px;
-    border:1px solid var(--border); background:var(--panel-2); color:var(--muted);
-    cursor:pointer; user-select:none; transition:all .12s ease; white-space:nowrap;
+    font-size:0.75rem; padding:4px 10px; border-radius:100px; border:1px solid var(--border);
+    background:var(--panel-2); color:var(--muted); cursor:pointer; user-select:none; transition:all .12s ease; white-space:nowrap;
   }
   .chip:hover{border-color:var(--primary); color:var(--text);}
-  .chip.active{
-    background: var(--primary-dim);
-    border-color: var(--primary);
-    color: var(--primary);
-  }
+  .chip.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); }
 
-  main{
-    max-width:1300px;
-    margin:0 auto;
-    padding:20px 28px 60px;
-  }
+  main{ max-width:1300px; margin:0 auto; padding:20px 28px 60px; }
 
-  .empty{
-    text-align:center; padding:60px 20px; color:var(--muted);
-  }
-  .empty .big{
-    font-family:'IBM Plex Mono', monospace; font-size:2rem; color:var(--border); margin-bottom:8px;
-  }
+  .empty{ text-align:center; padding:60px 20px; color:var(--muted); }
+  .empty .big{ font-family:'IBM Plex Mono', monospace; font-size:2rem; color:var(--border); margin-bottom:8px; }
 
-  table{
-    width:100%; border-collapse:collapse; font-size:0.85rem; background: var(--panel); border-radius: 8px; overflow: hidden; border: 1px solid var(--border);
-  }
+  table{ width:100%; border-collapse:collapse; font-size:0.85rem; background: var(--panel); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
   thead th{
     text-align:left; font-size:0.7rem; color:var(--muted); font-weight:600;
     padding:10px 12px; border-bottom:1px solid var(--border); background:var(--panel-2);
   }
   
-  tbody tr{
-    border-bottom:1px solid var(--border); transition:background .1s ease;
-  }
+  tbody tr{ border-bottom:1px solid var(--border); transition:background .1s ease; cursor: pointer; }
   tbody tr:hover{background:var(--panel-2);}
-  tbody td{
-    padding:10px 12px; vertical-align:middle;
-  }
-  td.num{
-    color:var(--muted); font-family:'IBM Plex Mono', monospace; font-size:0.75rem;
-  }
+  tbody td{ padding:10px 12px; vertical-align:middle; }
+  td.num{ color:var(--muted); font-family:'IBM Plex Mono', monospace; font-size:0.75rem; }
   .code-pill{
     display:inline-block; font-family:'IBM Plex Mono', monospace; font-weight:600;
     font-size:0.8rem; color: var(--primary); background: var(--primary-dim);
@@ -242,23 +195,31 @@
   .rpn-mid { background: #4a3a20; color: #e8a33d; }
   .rpn-high { background: #4a2720; color: var(--danger); }
 
-  mark{
-    background: var(--primary-dim); color:inherit; border-radius:2px; padding:0 1px;
+  /* Modal Drill-down รายละเอียดอุปกรณ์ */
+  .modal-overlay{
+    position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(10,14,18,0.8);
+    backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center;
+    z-index:100; padding:20px; opacity:0; pointer-events:none; transition:opacity .2s ease;
   }
+  .modal-overlay.open{ opacity:1; pointer-events:auto; }
+  .modal{
+    background:var(--panel); border:1px solid var(--border); border-radius:10px;
+    width:100%; max-width:600px; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.5);
+  }
+  .modal h3{ margin:0 0 16px 0; font-size:1.1rem; color:var(--primary); display:flex; justify-content:space-between; align-items:center; }
+  .modal-close{ background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer; }
+  .modal-grid{ display:grid; grid-template-columns:120px 1fr; gap:10px 16px; font-size:0.88rem; margin-bottom:16px; }
+  .modal-grid .label{ color:var(--muted); font-weight:500; }
+  .modal-grid .val{ color:var(--text); }
 
   .section-label{
     font-size:0.78rem; color:var(--muted); margin:0 0 10px 2px;
     display: flex; justify-content: space-between; align-items: center;
   }
 
-  footer{
-    max-width:1300px; margin:0 auto; padding:0 28px 40px; color:var(--muted); font-size:0.75rem;
-  }
+  footer{ max-width:1300px; margin:0 auto; padding:0 28px 40px; color:var(--muted); font-size:0.75rem; }
 
-  @media (max-width:768px){
-    header{padding:12px 16px;}
-    main{padding:16px;}
-  }
+  @media (max-width:768px){ header{padding:12px 16px;} main{padding:16px;} }
 </style>
 </head>
 <body>
@@ -279,10 +240,12 @@
           <button class="tab-btn" onclick="switchTab('cehi')">2. โครงสร้าง CEHI</button>
           <button class="tab-btn" onclick="switchTab('plan')" id="btnPlan">3. PM/CBM Action Plan</button>
         </div>
-        <button class="save-btn" onclick="saveData()">💾 บันทึกข้อมูล</button>
+        <button class="action-btn" onclick="exportToCSV()" title="ดาวน์โหลดรายงาน CSV">📥 ส่งออกรายงาน</button>
+        <button class="save-btn" onclick="saveData()">💾 บันทึก</button>
       </div>
     </div>
 
+    <!-- แดชบอร์ดสรุปภาพรวม KPI Cards -->
     <div class="dashboard-stats">
       <div class="stat-card">
         <div class="stat-title">📦 อุปกรณ์ทั้งหมด (Total)</div>
@@ -293,18 +256,26 @@
         <div class="stat-value stat-normal" id="statNormal">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-title">⚠️ เฝ้าระวัง (Warning / RPN กลาง)</div>
+        <div class="stat-title">⚠️ เฝ้าระวัง (Warning)</div>
         <div class="stat-value stat-warning" id="statWarning">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-title">🚨 วิกฤต (Critical / RPN สูง)</div>
+        <div class="stat-title">🚨 วิกฤต (Critical)</div>
         <div class="stat-value stat-critical" id="statCritical">0</div>
       </div>
     </div>
 
-    <div class="search-wrap" id="searchBoxWrap">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input id="search" type="text" placeholder="พิมพ์ค้นหารหัส เช่น T001, Component, หรือสาเหตุ..." autocomplete="off">
+    <!-- แถบค้นหา และตัวกรองความเสี่ยง -->
+    <div class="toolbar-row" id="toolbarRow">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input id="search" type="text" placeholder="พิมพ์ค้นหารหัส เช่น T001, Component, หรือสาเหตุ..." autocomplete="off">
+      </div>
+      <div class="risk-filters" id="riskFilters">
+        <div class="filter-chip active" onclick="setRiskFilter('ALL')">ทั้งหมด</div>
+        <div class="filter-chip" onclick="setRiskFilter('CRITICAL')">🚨 วิกฤต (RPN ≥ 100)</div>
+        <div class="filter-chip" onclick="setRiskFilter('WARNING')">⚠️ เฝ้าระวัง</div>
+      </div>
     </div>
 
     <div class="chips" id="chips"></div>
@@ -313,7 +284,7 @@
 
 <main>
   <div class="section-label">
-    <span id="tableInstruction">คลิกช่องคะแนน (S, O, D) เพื่อประเมินค่า RPN อัตโนมัติ</span>
+    <span id="tableInstruction">คลิกที่แถวเพื่อดูรายละเอียดรายอุปกรณ์ หรือคลิกช่องคะแนนเพื่อประเมิน RPN</span>
     <span style="font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--teal);">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</span>
   </div>
   <table>
@@ -326,6 +297,28 @@
     ไม่พบรายการที่ตรงกับคำค้นหา
   </div>
 </main>
+
+<!-- Modal แสดงรายละเอียดรายอุปกรณ์ (Drill-down) -->
+<div class="modal-overlay" id="drilldownModal">
+  <div class="modal">
+    <h3 id="modalTitle">รายละเอียดอุปกรณ์ <button class="modal-close" onclick="closeModal()">&times;</button></h3>
+    <div class="modal-grid">
+      <div class="label">Component:</div>
+      <div class="val" id="modalComp">-</div>
+      <div class="label">รหัสความเสียหาย:</div>
+      <div class="val" id="modalCode" style="color:var(--primary); font-family:monospace; font-weight:bold;">-</div>
+      <div class="label">อาการ (Failure Mode):</div>
+      <div class="val" id="modalDesc">-</div>
+      <div class="label">สาเหตุ (Cause):</div>
+      <div class="val" id="modalCause">-</div>
+      <div class="label">ค่าความเสี่ยง (RPN):</div>
+      <div class="val" id="modalRpn">-</div>
+    </div>
+    <div style="background:var(--panel-2); padding:12px; border-radius:6px; font-size:0.85rem; color:var(--muted);">
+      💡 <b>คำแนะนำเชิงวิศวกรรม RCM:</b> อุปกรณ์ชิ้นนี้ควรได้รับการตรวจสอบตามรอบแผนงานซ่อมบำรุงเชิงป้องกัน (PM) เพื่อลดโอกาสเกิดความเสียหายฉุกเฉิน
+    </div>
+  </div>
+</div>
 
 <footer>
   ฐานข้อมูล RCM จากไฟล์ RCM.xlsx (ข้อมูลจริง 223 รายการ) — ระบบบันทึกอัตโนมัติผ่าน LocalStorage
@@ -559,11 +552,12 @@ let records = [
 
 let categories = [];
 let activeCat = "ALL";
+let riskFilter = "ALL";
 let query = "";
 let currentTab = 'fmea';
 
 function initApp() {
-  const saved = localStorage.getItem('rcm_excel_data_v13');
+  const saved = localStorage.getItem('rcm_excel_data_v14');
   if (saved) {
     try { records = JSON.parse(saved); } catch(e) { console.error(e); }
   }
@@ -620,6 +614,13 @@ function toggleLightDarkMode() {
   localStorage.setItem('rcm_theme_mode', isLight ? 'light' : 'dark');
 }
 
+function setRiskFilter(filter) {
+  riskFilter = filter;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  renderTable();
+}
+
 function switchTab(tab) {
   currentTab = tab;
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -627,18 +628,18 @@ function switchTab(tab) {
   
   if(tab === 'fmea') {
     document.getElementById('modeTitle').textContent = "FMEA & RPN Assessment";
-    document.getElementById('tableInstruction').textContent = "คลิกช่องคะแนน (S, O, D) ระบบจะคำนวณค่า RPN ให้ทันที";
-    document.getElementById('searchBoxWrap').style.display = 'block';
+    document.getElementById('tableInstruction').textContent = "คลิกที่แถวเพื่อดูรายละเอียดรายอุปกรณ์ หรือคลิกช่องคะแนนเพื่อประเมิน RPN";
+    document.getElementById('toolbarRow').style.display = 'flex';
     document.getElementById('chips').style.display = 'flex';
   } else if(tab === 'cehi') {
     document.getElementById('modeTitle').textContent = "ตารางโครงสร้าง CEHI";
     document.getElementById('tableInstruction').textContent = "กรอก Test Category, Parameters และคะแนน Si, Smax, Wi เพื่อคำนวณดัชนีสุขภาพ";
-    document.getElementById('searchBoxWrap').style.display = 'block';
+    document.getElementById('toolbarRow').style.display = 'flex';
     document.getElementById('chips').style.display = 'flex';
   } else if(tab === 'plan') {
     document.getElementById('modeTitle').textContent = "PM/CBM Action Plan Table";
     document.getElementById('tableInstruction').textContent = "แสดงรายการที่ผ่านการประเมินคะแนน (RPN > 0) เรียงลำดับความสำคัญอัตโนมัติ";
-    document.getElementById('searchBoxWrap').style.display = 'none';
+    document.getElementById('toolbarRow').style.display = 'none';
     document.getElementById('chips').style.display = 'none';
   }
   renderTable();
@@ -702,6 +703,15 @@ function renderTable(){
   } else {
     filtered = records.filter(r => {
       if(activeCat !== 'ALL' && r.cat !== activeCat) return false;
+      
+      // กรองตาม Risk Filter
+      const s = Number(r.s) || 0;
+      const o = Number(r.o) || 0;
+      const d = Number(r.d) || 0;
+      const rpn = s * o * d;
+      if (riskFilter === 'CRITICAL' && rpn < 100) return false;
+      if (riskFilter === 'WARNING' && (rpn === 0 || rpn >= 100)) return false;
+
       if(!q) return true;
       return (
         (r.code && r.code.toLowerCase().includes(q)) ||
@@ -743,21 +753,20 @@ function renderTable(){
       else if (rpn >= 40) badgeClass = 'rpn-mid';
 
       return `
-        <tr>
+        <tr onclick="openDrilldown(${r.id})">
           <td class="num">${r.id}</td>
           <td><b>${escapeHtml(r.component)}</b></td>
           <td><span class="code-pill mono">${escapeHtml(r.code)}</span></td>
           <td>${highlight(r.desc, q)}</td>
           <td style="color:var(--muted);">${highlight(r.cause, q)}</td>
-          <td style="text-align:center;"><input type="number" min="1" max="10" class="score-input" value="${r.s !== undefined ? r.s : ''}" oninput="updateField(${r.id}, 's', this.value)"></td>
-          <td style="text-align:center;"><input type="number" min="1" max="10" class="score-input" value="${r.o !== undefined ? r.o : ''}" oninput="updateField(${r.id}, 'o', this.value)"></td>
-          <td style="text-align:center;"><input type="number" min="1" max="10" class="score-input" value="${r.d !== undefined ? r.d : ''}" oninput="updateField(${r.id}, 'd', this.value)"></td>
+          <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.s !== undefined ? r.s : ''}" oninput="updateField(${r.id}, 's', this.value)"></td>
+          <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.o !== undefined ? r.o : ''}" oninput="updateField(${r.id}, 'o', this.value)"></td>
+          <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.d !== undefined ? r.d : ''}" oninput="updateField(${r.id}, 'd', this.value)"></td>
           <td style="text-align:center;"><span class="rpn-badge ${rpn > 0 ? badgeClass : ''}">${rpn > 0 ? rpn : '-'}</span></td>
         </tr>
       `;
     }).join('');
 
-    // เพิ่มแถวสรุปผลรวม RPN ที่ท้ายตาราง FMEA
     tfoot.innerHTML = `
       <tr style="background:var(--panel-2); font-weight:bold; border-top:3px solid var(--primary);">
         <td colspan="8" style="text-align:right; padding:14px; font-size:1rem;">ผลรวมคะแนน RPN (Total RPN Sum):</td>
@@ -806,14 +815,14 @@ function renderTable(){
         if (smax > 0 && wi > 0) compSmaxWi += smax * wi;
 
         htmlRows += `
-          <tr>
+          <tr onclick="openDrilldown(${r.id})">
             <td class="num">${r.id}</td>
             <td><b>${escapeHtml(r.component)}</b></td>
-            <td><input type="text" class="text-input" value="${escapeHtml(r.testCategory || '')}" oninput="updateField(${r.id}, 'testCategory', this.value)"></td>
-            <td><input type="text" class="text-input" value="${escapeHtml(r.testItems || '')}" oninput="updateField(${r.id}, 'testItems', this.value)"></td>
-            <td style="text-align:center;"><input type="number" class="score-input" value="${r.si !== undefined ? r.si : ''}" oninput="updateField(${r.id}, 'si', this.value)"></td>
-            <td style="text-align:center;"><input type="number" class="score-input" value="${r.smax !== undefined ? r.smax : ''}" oninput="updateField(${r.id}, 'smax', this.value)"></td>
-            <td style="text-align:center;"><input type="number" class="score-input" value="${r.wi !== undefined ? r.wi : ''}" oninput="updateField(${r.id}, 'wi', this.value)"></td>
+            <td onclick="event.stopPropagation()"><input type="text" class="text-input" value="${escapeHtml(r.testCategory || '')}" oninput="updateField(${r.id}, 'testCategory', this.value)"></td>
+            <td onclick="event.stopPropagation()"><input type="text" class="text-input" value="${escapeHtml(r.testItems || '')}" oninput="updateField(${r.id}, 'testItems', this.value)"></td>
+            <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" class="score-input" value="${r.si !== undefined ? r.si : ''}" oninput="updateField(${r.id}, 'si', this.value)"></td>
+            <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" class="score-input" value="${r.smax !== undefined ? r.smax : ''}" oninput="updateField(${r.id}, 'smax', this.value)"></td>
+            <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" class="score-input" value="${r.wi !== undefined ? r.wi : ''}" oninput="updateField(${r.id}, 'wi', this.value)"></td>
             <td style="text-align:center;" class="mono">${siWi}</td>
             <td style="text-align:center;" class="mono">${smaxWi}</td>
           </tr>
@@ -821,7 +830,6 @@ function renderTable(){
       });
 
       const compCehi = compSmaxWi > 0 ? ((compSiWi / compSmaxWi) * 100).toFixed(2) : '0.00';
-
       globalTotalSiWi += compSiWi;
       globalTotalSmaxWi += compSmaxWi;
 
@@ -841,7 +849,6 @@ function renderTable(){
     tbody.innerHTML = htmlRows;
 
     const grandCehi = globalTotalSmaxWi > 0 ? ((globalTotalSiWi / globalTotalSmaxWi) * 100).toFixed(2) : '0.00';
-
     tfoot.innerHTML = `
       <tr style="background:var(--panel-2); font-weight:bold; border-top:4px solid var(--primary);">
         <td colspan="7" style="text-align:right; padding:14px; font-size:0.95rem;">รวมทั้งหมดทุกอุปกรณ์ (Grand Total):</td>
@@ -878,20 +885,20 @@ function renderTable(){
         else if (rpn >= 40) badgeClass = 'rpn-mid';
 
         return `
-          <tr>
+          <tr onclick="openDrilldown(${r.id})">
             <td style="text-align:center;"><span class="mono" style="font-weight:bold; color:var(--primary);">#${index + 1}</span></td>
             <td><b>${escapeHtml(r.component)}</b></td>
             <td><span class="code-pill mono">${escapeHtml(r.code)}</span></td>
             <td>${escapeHtml(r.desc)}</td>
             <td style="text-align:center;"><span class="rpn-badge ${badgeClass}">${rpn}</span></td>
-            <td style="text-align:center;">
+            <td style="text-align:center;" onclick="event.stopPropagation()">
               <select class="text-input" style="text-align:center;" onchange="updateField(${r.id}, 'actionType', this.value)">
                 <option value="PM" ${r.actionType === 'PM' ? 'selected' : ''}>PM (ตามรอบ)</option>
                 <option value="CBM" ${r.actionType === 'CBM' ? 'selected' : ''}>CBM (ตามสภาพ)</option>
               </select>
             </td>
-            <td><input type="text" class="text-input" value="${escapeHtml(r.actionPlan || '')}" placeholder="ระบุวิธีป้องกัน/ซ่อมบำรุง..." oninput="updateField(${r.id}, 'actionPlan', this.value)"></td>
-            <td style="text-align:center;">
+            <td onclick="event.stopPropagation()"><input type="text" class="text-input" value="${escapeHtml(r.actionPlan || '')}" placeholder="ระบุวิธีป้องกัน/ซ่อมบำรุง..." oninput="updateField(${r.id}, 'actionPlan', this.value)"></td>
+            <td style="text-align:center;" onclick="event.stopPropagation()">
               <select class="text-input" style="text-align:center;" onchange="updateField(${r.id}, 'status', this.value)">
                 <option value="รอแผนงาน" ${r.status === 'รอแผนงาน' ? 'selected' : ''}>⏳ รอแผนงาน</option>
                 <option value="กำลังดำเนินการ" ${r.status === 'กำลังดำเนินการ' ? 'selected' : ''}>🔄 กำลังทำ</option>
@@ -908,6 +915,49 @@ function renderTable(){
   emptyState.style.display = (filtered.length === 0 && currentTab !== 'plan') ? 'block' : 'none';
 }
 
+// ฟังก์ชัน Modal Drill-down (คลิกดูรายละเอียดรายอุปกรณ์)
+function openDrilldown(id) {
+  const r = records.find(item => item.id === id);
+  if (!r) return;
+  const s = Number(r.s) || 0;
+  const o = Number(r.o) || 0;
+  const d = Number(r.d) || 0;
+  const rpn = s > 0 && o > 0 && d > 0 ? s * o * d : 'ยังไม่ประเมิน';
+
+  document.getElementById('modalComp').textContent = r.component;
+  document.getElementById('modalCode').textContent = r.code;
+  document.getElementById('modalDesc').textContent = r.desc;
+  document.getElementById('modalCause').textContent = r.cause || '-';
+  document.getElementById('modalRpn').textContent = rpn;
+  
+  document.getElementById('drilldownModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('drilldownModal').classList.remove('open');
+}
+
+// ฟังก์ชันส่งออกรายงาน CSV (Export to CSV)
+function exportToCSV() {
+  let csvContent = "\uFEFFID,Component,Code,Failure Mode,Failure Cause,Severity,Occurrence,Detection,RPN,Action Type,Action Plan,Status\n";
+  records.forEach(r => {
+    const s = Number(r.s) || 0;
+    const o = Number(r.o) || 0;
+    const d = Number(r.d) || 0;
+    const rpn = s * o * d;
+    csvContent += `"${r.id}","${r.component}","${r.code}","${r.desc}","${r.cause || ''}","${r.s || ''}","${r.o || ''}","${r.d || ''}","${rpn}","${r.actionType || ''}","${r.actionPlan || ''}","${r.status || ''}"\n`;
+  });
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `RCM_Assessment_Report_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
 function updateField(id, field, val) {
   const item = records.find(r => r.id === id);
   if (item) {
@@ -922,7 +972,7 @@ function updateField(id, field, val) {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v13', JSON.stringify(records));
+  localStorage.setItem('rcm_excel_data_v14', JSON.stringify(records));
   alert('✨ บันทึกข้อมูลคะแนนและแผนงานของคุณลงในเบราว์เซอร์เรียบร้อยแล้ว!');
 }
 
