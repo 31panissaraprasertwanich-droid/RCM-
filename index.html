@@ -229,7 +229,7 @@
     outline: none;
     box-shadow: 0 0 0 2px rgba(232,163,61,0.15);
   }
-  input.text-input {
+  input.text-input, select.text-input {
     width: 100%;
     background: var(--bg);
     border: 1px solid var(--border);
@@ -239,7 +239,7 @@
     font-family: inherit;
     font-size: 0.82rem;
   }
-  input.text-input:focus {
+  input.text-input:focus, select.text-input:focus {
     border-color: var(--amber);
     outline: none;
   }
@@ -294,19 +294,20 @@
     <div class="title-row">
       <div>
         <h1>ระบบ RCM สถานีไฟฟ้า: <span class="accent" id="modeTitle">FMEA & RPN Assessment</span></h1>
-        <div class="subtitle">จัดการข้อมูลความเสียหายและช่องกรอกคะแนนประเมินตามไฟล์ RCM.xlsx จริง</div>
+        <div class="subtitle">จัดการข้อมูลความเสียหายและจัดลำดับแผนงานซ่อมบำรุงอัตโนมัติ</div>
       </div>
       <div class="header-controls">
         <div class="nav-tabs">
           <button class="tab-btn active" onclick="switchTab('fmea')">1. FMEA & RPN</button>
           <button class="tab-btn" onclick="switchTab('cehi')">2. โครงสร้าง CEHI</button>
+          <button class="tab-btn" onclick="switchTab('plan')" id="btnPlan" style="background:#1c3a37; color:var(--teal); border-color:#2c5952;">3. 📋 PM/CBM Action Plan</button>
         </div>
         <button class="save-btn" onclick="saveData()">💾 บันทึกข้อมูล</button>
         <div class="count-badge">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</div>
       </div>
     </div>
 
-    <div class="search-wrap">
+    <div class="search-wrap" id="searchBoxWrap">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
       <input id="search" type="text" placeholder="พิมพ์ค้นหารหัส เช่น T001, Component, หรือสาเหตุ..." autocomplete="off">
     </div>
@@ -334,230 +335,229 @@
 </footer>
 
 <script>
-// ข้อมูลจริงจากไฟล์ RCM.xlsx ทั้ง 223 รายการ ฝังไว้ในโค้ดเพื่อความเสถียรและใช้งานได้ทันที
 let records = [
-  {id:1, component:"TR_Counter L/A", code:"T001", desc:"Counter Lightning Arrester ชำรุด", cause:"โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:2, component:"TR_OLevelGauge", code:"T002", desc:"Oil level gauge ชำรุด", cause:"โครงแตก, กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:3, component:"TR_OtempGauge", code:"T003", desc:"Oil temp ชำรุด", cause:"โครงแตก, เสื่อมสภาพ, กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:4, component:"TR_Sgel/ABreather", code:"T004", desc:"Silicagel เปลี่ยนสี / Air Breather ชำรุด", cause:"Silicagel เสื่อมสภาพ, การอุดตัน / ฝุ่นละออง", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:5, component:"TR_WTempGauge", code:"T005", desc:"Winding temp ชำรุด", cause:"โครงแตก, เสื่อมสภาพ, กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:6, component:"TR_TOP", code:"T006", desc:"น้ำมันรั่วซึมด้านบนหม้อแปลง", cause:"ซีลเสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:7, component:"TR_Bushing", code:"T007", desc:"น้ำมันรั่วซึมที่ Bushing หม้อแปลง", cause:"ซีลเสื่อมสภาพ, แตกหัก, ติดตั้งไม่ถูกต้องตามมาตราฐาน, การเสียดสีหรือความเสียหายจากการเคลื่อนที่", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:8, component:"TR_CableBox", code:"T008", desc:"น้ำมันรั่วซึมที่ Cable box", cause:"ซีลเสื่อมสภาพ, ติดตั้งไม่ถูกต้องตามมาตราฐาน, ความร้อนสูงเกินไป", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:9, component:"TR_Radiator", code:"T009", desc:"น้ำมันรั่วซึมที่ Radiator", cause:"ซีลเสื่อมสภาพ, ติดตั้งไม่ถูกต้องตามมาตราฐาน, การเสียดสีหรือแรงดันภายในสูง, การเสื่อมสภาพจากการสะสมของสิ่งสกปรก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:10, component:"TR_MainTank", code:"T012", desc:"น้ำมันหม้อแปลงต่ำ", cause:"การทำงานผิดปกติของระบบระบายความร้อน, ซีลเสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:11, component:"TR_MainTank", code:"T015", desc:"หม้อแปลงชำรุด", cause:"การรั่วซึมของน้ำมัน, การเกิดไฟฟ้าลัดวงจร, การเสื่อมสภาพจากอายุการใช้งาน, ความร้อนสะสมเกินไป", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:12, component:"TR_Trip", code:"T016", desc:"หม้อแปลง Trip", cause:"การทำงานผิดพลาดของรีเลย์", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:13, component:"TR_FAN", code:"T018", desc:"เปลี่ยนพัดลมหม้อแปลง", cause:"สึกหรอจากการใช้งานนาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:14, component:"TR_FAN", code:"T019", desc:"พัดลมหม้อแปลงถอดไปซ่อม", cause:"สึกหรอจากการใช้งานนาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:15, component:"TR_FAN", code:"T020", desc:"พัดลมหม้อแปลงไม่ทำงาน", cause:"การเสียหายของมอเตอร์", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:16, component:"TR_Coil", code:"T023", desc:"ขดลวดหม้อแปลงชำรุด", cause:"การโอเวอร์โหลด, ความผิดปกติของแรงดัน, การผลิตที่ไม่ดี, การเกิดความชื้น", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:17, component:"TR_Core", code:"T024", desc:"แกนเหล็กหม้อแปลงชำรุด", cause:"การออกแบบที่ผิดพลาด, ความเครียดจากการเปลี่ยนแปลงกระแสไฟฟ้า", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:18, component:"TR_HVBushing", code:"T025", desc:"TR_HVBushing หม้อแปลงชำรุด", cause:"เสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:19, component:"TR_MVBushing", code:"T026", desc:"TR_MVBushing หม้อแปลงชำรุด", cause:"เสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:20, component:"TR_OFFLTAP", code:"T027", desc:"OFF LODE TAP หม้อแปลงชำรุด", cause:"เสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:21, component:"TR_BuchRelay", code:"T028", desc:"Buchholz relay ชำรุด", cause:"ลัดวงจรหรือความผิดพลาดภายใน, การติดตั้งไม่ถูกต้อง, เสื่อมสภาพจากอายุใช้งาน, อุณหภูมิสูงเกิน, กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:22, component:"TR_PresRelief", code:"T029", desc:"Pressure relief ชำรุด", cause:"การติดตั้งไม่ถูกต้อง, เสื่อมสภาพจากอายุใช้งาน, กลไกติดขัด, แรงดันเกินขีดจำกัดบ่อยเกิน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:23, component:"TR_Control_desk", code:"T101", desc:"Control desk tap อ่านไม่ตรง", cause:"เสื่อมสภาพจากอายุใช้งาน, ความชื้นหรือสิ่งสกปรก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:24, component:"TR_Control_Lampdesk", code:"T102", desc:"Control desk หลอดขาด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:25, component:"TR_FanControl", code:"T103", desc:"Control พัดลมชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:26, component:"TR_Relay", code:"T104", desc:"Differential relay ชำรุด", cause:"การทำงานผิดพลาดในระบบควบคุม, Current Transformer Malfunction, การตั้งค่าผิด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:27, component:"TR_DifRelay", code:"T105", desc:"Differential relay เปลี่ยน", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:28, component:"TR_Relay", code:"T106", desc:"Tripping relay ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:29, component:"TR_TrippingRelay", code:"T107", desc:"Tripping relay เปลี่ยน", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:30, component:"TR_CountTap", code:"T206", desc:"Counter Tap ไม่ทำงาน", cause:"กลไกติดขัด, ชุดเฟืองภายในชำรุด, Lubrication, เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:31, component:"TR_Microlimit", code:"T208", desc:"Micro sw. Lower & upper limit ค้าง", cause:"กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:32, component:"TR_OLTC Tap", code:"T209", desc:"OLTC เปลี่ยน Tap ทางไฟฟ้าไม่ได้", cause:"OLTC เปลี่ยน Tap ทางไฟฟ้า ไม่ทำงานจริง", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:33, component:"TR_OLTC Tap", code:"T210", desc:"น้ำมันรั่วซึมที่ฝาบ่อ OLTC", cause:"ซีลเสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:34, component:"TR_OLTC Tap", code:"T211", desc:"เปลี่ยน Tap แล้วมีเสียงดัง", cause:"เปลี่ยน Tap แล้วมีเสียงดังจากกลไก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:35, component:"TR_OLTC Tap", code:"T212", desc:"ระดับน้ำมันต่ำที่ OLTC", cause:"ระดับน้ำมันต่ำที่ OLTC ชีลเสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:36, component:"TR_OLTC_ProRelay", code:"T215", desc:"Tap protective relay ชำรุด", cause:"กลไกเสื่อมสภาพ, ความชื้น ฝุ่น การกัดกร่อน, มีการต่อสายผิด หรือมี short ที่ terminal", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:37, component:"TR_OLTC_MainContact", code:"T216", desc:"Main contact ชำรุด", cause:"การอาร์ก ระหว่างเปลี่ยน TAP ที่บ่อยครั้ง, อุณหภูมิสูงเกินจากกระแสเกิน, น้ำมัน OLTC เสื่อมสภาพ, กลไกบังคับ contact ทำงานผิดพลาด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:38, component:"TR_OLTC_TransitContact", code:"T217", desc:"Transition contact ชำรุด", cause:"การอาร์ก (Arc) ซ้ำซ้อนขณะสลับ Tap, น้ำมัน OLTC เสื่อมสภาพ, สปริง/กลไกกด contact เสียหาย, ความต้านทาน contact เพิ่มขึ้น", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:39, component:"TR_OLTC_Gear", code:"T218", desc:"Gear unit ชำรุด", cause:"สึกหรอ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:40, component:"TR_OLTC_Access", code:"T219", desc:"OLTC Accessories ชำรุด", cause:"ชำรุดจาก Accessories", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:41, component:"TR_OLTC_MotorControlBoard", code:"T220", desc:"Motor drive control board ชำรุด", cause:"แรงดันไฟฟ้าผิดปกติ, ความชื้นและฝุ่นละอองในกล่องควบคุม, เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:42, component:"TR_OilFilter", code:"T301", desc:"Counter oil filter ทำงานผิดปกติ", cause:"Sensor/Trigger เสียหาย, การรบกวนจากสัญญาณไฟฟ้า (Electrical Noise)", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:43, component:"TR_OilFilter", code:"T302", desc:"Motor oil filter หมุนกลับทาง", cause:"Motor oil filter หมุนกลับทาง จาก ต่อท่อผิดด้าน (Inlet/Outlet สลับ)", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:44, component:"TR_OilFilter", code:"T303", desc:"Oil filter unit มีน้ำมันรั่วซึม", cause:"ซีลเสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:45, component:"TR_OilFilter", code:"T304", desc:"Oil filter ไม่ทำงานหลังจากเปลี่ยน Tap", cause:"ระบบปั๊มน้ำมันของ OLTC หยุดทำงานหรือเดินผิดทาง", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:46, component:"TR_OilFilter", code:"T305", desc:"Pressure gauge oil filter เสีย", cause:"แรงดันน้ำมันเกินพิกัด (Overpressure), น้ำมันหรือสิ่งสกปรกเข้าไปในเกจ, เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:47, component:"HV_ClosingCoil", code:"H001", desc:"Closing coil ชำรุด, Mechanism CB ขัดข้อง", cause:"กลไกติดขัด, เสื่อมสภาพจากอายุใช้งาน, Misoperation", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:48, component:"HV_Mechnism_CB", code:"H002", desc:"Mechanism CB ขัดข้อง,", cause:"ขาดการบำรุงรักษา, Spring เสื่อมหรือหัก, Misalignment ของกลไก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:49, component:"HV_PumpMotor_CB", code:"H003", desc:"Pump motor ของ CB ไม่ทำงาน", cause:"ไฟไม่เข้าที่มอเตอร์, Pressure switch ชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:50, component:"HV_PumpMotor_CB", code:"H005", desc:"Pump motor ของ CB ทำงานบ่อย", cause:"ระบบรั่ว (Internal หรือ External Leak), Accumulator เสื่อมหรือแรงดันไม่พอ, Pressure switch ตั้งผิดหรือเสีย, เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:51, component:"HV_SF6LowGas", code:"H006", desc:"SF6 low gas", cause:"รั่ว (Gas Leakage), เสื่อมสภาพจากอายุใช้งาน, Gas Pressure Gauge / Sensor เสีย", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:52, component:"HV_SF6LowGas", code:"H007", desc:"SF6 over gas", cause:"อุณหภูมิสูงผิดปกติ, Internal Arc หรือ Fault ทำให้ความร้อนสูงขึ้น, เติมก๊าซตอนอุณหภูมิต่ำ แล้วเมื่ออากาศร้อนขึ้นทำให้แรงดันเกิน, เติมก๊าซเกินตอนบำรุงรักษา (Overfilling)", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:53, component:"HV_GIS_CB", code:"H010", desc:"GIS ชำรุด", cause:"การติดตั้งหรือประกอบผิดพลาด, Internal Arc / Flashover, เสื่อมสภาพจากอายุใช้งาน, Human Error จากการบำรงุรักษา", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:54, component:"HV_GIS_CB_SW", code:"H011", desc:"SW ปลด / สับ ไม่ได้", cause:"กลไกติดขัด, Charge Spring ไม่ทำงาน, Control Circuit Fault", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:55, component:"HV_GIS_CB_Hydraulic", code:"H012", desc:"Earthing SW ปลด / สับ ไม่ได้", cause:"กลไกติดขัด, Control Circuit Fault, Residual Voltage, Sensor หรือ Feedback Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:56, component:"HV_GIS_CB_Hydraulic", code:"H013", desc:"Earthing SW ชำรุด", cause:"กลไกติดขัด, Contact Point ชำรุด, Motorized ES ชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:57, component:"HV_GIS_CB_Hydraulic", code:"H014", desc:"น้ำมัน Hydraulic รั่วซึม", cause:"ซีลเสื่อมสภาพ, ความดันระบบสูงเกินมาตรฐาน, ท่อไฮดรอลิก (Hose/Tube) แตก, Bolt/Flange ของถังหรือชุด Actuator หลวม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:58, component:"HV_GIS_CB", code:"H015", desc:"น้ำมันรั่วซึมที่ Pole ของ CB", cause:"ซีลเสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:59, component:"HV_GIS_CB", code:"H018", desc:"CB Main Contact ชำรุด", cause:"Mechanical / Electrical Life Time, แรงกด Contact ไม่เพียงพอ, High Fault Current, ความชื้นหรือฝุ่นภายใน CB, กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:60, component:"HV_GIS_CB_ES/DS_MainContact", code:"H019", desc:"ES/DS Main Contact ชำรุด", cause:"Mechanical / Electrical Life Time, แรงกด Contact ไม่เพียงพอ, High Fault Current, ความชื้นหรือฝุ่นภายใน CB, กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:61, component:"HV_GIS_CB_ES/DS_Mechanism", code:"H020", desc:"DS/ES Mechanism ชำรุด", cause:"กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:62, component:"HV_GIS_CB", code:"H021", desc:"Trip coil ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน, ปัญหาจากการป้องกันไฟกระชาก, ความชื้นหรือสิ่งสกปรก, การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:63, component:"HV_GIS_CB", code:"H022", desc:"แก๊ส SF6 รั่ว", cause:"รั่ว (Gas Leakage)", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:64, component:"HV_GIS_CB", code:"H023", desc:"แก๊ส SF6 เสื่อมสภาพ", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:65, component:"HV_GIS_CB_SF6PressGage", code:"H024", desc:"SF6 Pressure gage ชำรุด", cause:"รั่ว (Gas Leakage), การปนเปื้อนหรือฝุ่นใน Pressure Gauge, การผิดพลาดจากกระบวนการติดตั้ง, อุณหภูมิหรือการเปลี่ยนแปลงของอุณหภูมิ, การสึกหรอจากการใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:66, component:"HV_HVSW_CTPT", code:"H101", desc:"SW ไม่สามารถ Control ทางไฟฟ้าได้", cause:"Control Circuit Fault", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:67, component:"HV_HVSW_CTPT", code:"H102", desc:"CT, PT ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:68, component:"HV_HVSW_CTPT", code:"H103", desc:"Flexible conductor ขาดบางส่วน", cause:"Flexible conductor ขาดบางส่วน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:69, component:"HV_HVSW_CTPT", code:"H104", desc:"Jumper, sleeve ร้อนแดง", cause:"Jumper, sleeve ร้อนเกินมาตรฐาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:70, component:"HV_HVSW_CTPT", code:"H105", desc:"Motor ของ SW ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:71, component:"HV_HVSW_CTPT", code:"H107", desc:"SW โก่ง ร้อนแดง", cause:"SW โก่ง ร้อนแดง จากการเสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:72, component:"HV_HVSW_CTPT", code:"H108", desc:"SW ปลด-สับ ยาก", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:73, component:"HV_HVSW_CTPT", code:"H109", desc:"SW สับไม่สนิท", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:74, component:"HV_HVSW_CTPT", code:"H110", desc:"จุดต่อ Busbar ต่างๆร้อนแดง", cause:"Hot Spot", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:75, component:"HV_HVSW_CTPT", code:"H111", desc:"มีวัสดุ/รังนกที่ SW", cause:"มีวัสดุ/รังนก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:76, component:"HV_HVSW_CTPT", code:"H112", desc:"ลูกถ้วยชำรุด", cause:"ความชื้น, ฝุ่น, และการกัดกร่อน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:77, component:"HV_HVSW_CTPT", code:"H113", desc:"ลูกถ้วยมีรอยชำรุด", cause:"ความชื้น, ฝุ่น, และการกัดกร่อน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:78, component:"HV_HVSW_CTPT", code:"H114", desc:"สวิตช์ใบมีด ground ปลด / สับ ไม่ได้", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:79, component:"HV_HVSW_CTPT", code:"H117", desc:"DS/ES Mechanism ชำรุด", cause:"กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:80, component:"HV_Cap", code:"H201", desc:"Capacitor bank ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:81, component:"HV_Cap", code:"H202", desc:"อุปกรณ์ชุดปลด-สับ Capacitor bank ไม่ทำงาน", cause:"อุปกรณ์ทำงานผิดพลาด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:82, component:"HV_ShowReset", code:"H301", desc:"Alarm show reset ไม่ได้", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:83, component:"HV_DisRelay", code:"H305", desc:"Distance relay ชำรุด", cause:"การทำงานผิดพลาดในระบบควบคุม, Current Transformer Malfunction, การตั้งค่าผิด, สัญญาณผิดปกติจากระบบภายนอก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:84, component:"HV_Relay", code:"H308", desc:"Overcurrent relay ชำรุด", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:85, component:"HV_OCRelay", code:"H309", desc:"Overcurrent relay เปลี่ยน", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:86, component:"MV_Relay", code:"M311", desc:"ซ่อม Relay เสีย", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:87, component:"MV_Alarm", code:"M312", desc:"สวิตช์ตก alarm ไม่ดัง", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:88, component:"HV_Distance", code:"H313", desc:"ถอด Distance relay ไว้", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:89, component:"HV_SW_LTO", code:"H314", desc:"สายส่ง SW ตก LTO ไม่ทำงาน", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:90, component:"HV_LampDC", code:"H315", desc:"หลอด DC supply show reset ไม่ได้", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:91, component:"MV_SWGR_CB", code:"M001", desc:"CB ปลดไม่ได้", cause:"กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:92, component:"MV_SWGR_CB_PT", code:"M002", desc:"PT ชำรุด", cause:"เสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:93, component:"MV_SWGR_CB", code:"M003", desc:"GCB low gas", cause:"การรั่วซึมของ gas", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:94, component:"MV_SWGR_CB_VacInter", code:"M004", desc:"Vacuum interrupter ชำรุด", cause:"กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:95, component:"MV_SWGR_CB_Heater", code:"M005", desc:"Heater ชำรุด", cause:"กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:96, component:"MV_SWGR_CB_Mechanism", code:"M006", desc:"Mechanism ของ CB ขัดข้อง", cause:"อุปกรณ์ทำงานผิดพลาด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:97, component:"MV_SWGR_CB_MotorChargSpring", code:"M007", desc:"Motor charge spring ไม่ทำงาน/ทำงานตลอด", cause:"อุปกรณ์ทำงานผิดพลาด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:98, component:"MV_SWGR_OCB", code:"M008", desc:"OCB มีน้ำมันไหลซึม", cause:"การรั่วซึมของน้ำมัน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:99, component:"MV_SWGR_TR_StationService", code:"M009", desc:"Station service / Pad mounted TR น้ำมันรั่วซึม", cause:"การรั่วซึมของน้ำมัน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:100, component:"MV_SWGR_CB", code:"M010", desc:"SWGR ระเบิด", cause:"การเกิดไฟฟ้าลัดวงจร (Short Circuit)", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:101, component:"MV_SWGR_CB", code:"M011", desc:"ขณะปลด lock เพื่อ isolate CB สับเข้าเอง", cause:"กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:102, component:"MV_SWGR_CB", code:"M012", desc:"ซ่อม Circuit breaker ชำรุด", cause:"กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:103, component:"MV_SWGR_CB", code:"M013", desc:"นำ CB ออกนอกตู้ไม่ได้", cause:"อุปกรณ์ทำงานผิดพลาด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:104, component:"MV_SWGR_CB", code:"M014", desc:"เปลี่ยน SWGR ชำรุด", cause:"อุปกรณ์ทำงานผิดพลาด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:105, component:"MV_SWGR_CB", code:"M015", desc:"แผง SWGR มีเสียงดังผิดปกติ", cause:"อุปกรณ์ทำงานผิดพลาด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:106, component:"MV_SWGR_CB", code:"M016", desc:"สวิตช์ตกไม่สับ ทั้ง RR on อยู่", cause:"กลไกชำรุด, เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:107, component:"MV_SWGR_CB", code:"M017", desc:"Earthing SW ปลดไม่ได้", cause:"กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:108, component:"MV_SWGR_CB", code:"M018", desc:"Earthing SWชำรุด", cause:"กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:109, component:"MV_SWGR_TR_StationService", code:"M021", desc:"Station service transformer ชำรุด", cause:"การเกิดไฟฟ้าลัดวงจร", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:110, component:"MV_GIS_CB", code:"M101", desc:"CB ขัดข้อง ปลด-สับ ไม่ได้", cause:"", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:111, component:"MV_GIS_CB", code:"M102", desc:"GIS ชำรุด", cause:"กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:112, component:"MV_GIS_CB", code:"M103", desc:"Low gas alarm show reset ไม่ได้", cause:"เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:113, component:"MV_GIS_CB", code:"M104", desc:"Motor ของ Bus isolate ชำรุด", cause:"กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:114, component:"MV_GIS_CB", code:"M105", desc:"Motor ของ Bus isolate ถอดไปซ่อมและนำเข้าใช้งาน", cause:"", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:115, component:"MV_GIS_CB", code:"M106", desc:"Bus isolate ชำรุด", cause:"", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:116, component:"MV_GIS_CB", code:"M107", desc:"SF6 over gas", cause:"SF6 over gas", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:117, component:"MV_GIS_CB", code:"M108", desc:"SF6 low gas", cause:"SF6 low gas", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:118, component:"MV_Cap_Bushing", code:"M201", desc:"Bushing capacitor มีน้ำมันรั่ว", cause:"การรั่วซึมของน้ำมัน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:119, component:"MV_Cap", code:"M202", desc:"Capacitor bank ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:120, component:"MV_Cap_UVRelay", code:"M203", desc:"Capacitor bank ปลดออกอัตโนมัติเนื่องจาก", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:121, component:"MV_Cap", code:"M204", desc:"เปลี่ยน Capacitor ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:122, component:"MV_Cap", code:"M205", desc:"Fuse capacitor bank ขาด", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:123, component:"MV_Cap_VacuumSw", code:"M206", desc:"Vacuum Sw ปลด-สับไม่ได้", cause:"กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:124, component:"MV_Cap", code:"M207", desc:"เปลี่ยน Capacitor bank แทนชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:125, component:"MV_BTO", code:"M302", desc:"BTO ไม่ทำงาน", cause:"เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:126, component:"MV_BusDifRelay", code:"M303", desc:"Bus differential relay ชำรุด", cause:"การทำงานผิดพลาดในระบบควบคุม, Current Transformer Malfunction, การตั้งค่าผิด, สัญญาณผิดปกติจากระบบภายนอก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:127, component:"MV_LBP/CBF", code:"M304", desc:"LBP/CBF ทำงาน", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:128, component:"MV_Relay", code:"M306", desc:"Overcurrent relay ชำรุด", cause:"Current Transformer Malfunction, การตั้งค่าผิด, สัญญาณผิดปกติจากระบบภายนอก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:129, component:"MV_Relay", code:"M307", desc:"Overcurrent relay เปลี่ยน", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:130, component:"MV_Relay", code:"M308", desc:"Relay เสีย", "cause":"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:131, component:"MV_Control", code:"M310", desc:"ชุด Control relay OC,EF on แล้ว trip", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:132, component:"LV_BatCharger_Trip", code:"L001", desc:"Breaker trip ของ AC Source", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:133, component:"LV_BatCharger_Trip", code:"L002", desc:"Breaker trip ของ DC Rectifier/Load", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:134, component:"LV_BatCharger", code:"L003", desc:"Charger ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:135, component:"LV_Battery", code:"L004", desc:"DC Volt ต่ำ/สูงกว่ามาตรฐาน", cause:"แรงดันไม่ได้มาตรฐาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:136, component:"LV_Battery", code:"L005", desc:"ถ.พ.ต่ำ/สูง บาง cell", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:137, component:"LV_Battery", code:"L006", desc:"เปลี่ยน Battery รั่วบาง cell", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:138, component:"LV_Battery", code:"L007", desc:"Case ของ Battery แตกลายงา/เปลี่ยนสี", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:139, component:"LV_Battery", code:"L008", desc:"ระดับน้ำกลั่น ต่ำ / สูง กว่ามาตรฐาน", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:140, component:"LV_BatCharger", code:"L011", desc:"DC ลงกราวน์", cause:"DC ลงกราวน์", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:141, component:"LV_BatCharger", code:"L012", desc:"Amp. Meter battery charger ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:142, component:"LV_BatCharger", code:"L013", desc:"Volt. Meter battery charger ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:143, component:"LV_Battery", code:"L014", desc:"Battery low capacity", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:144, component:"LV_AC/DCBoard", code:"L101", desc:"AC board Breaker ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:145, component:"LV_AC/DCBoard", code:"L102", desc:"DC board Breaker ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:146, component:"LV_AC/DCBoard", code:"L103", desc:"Breaker ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:147, component:"LV_AC/DCBoard", code:"L104", desc:"Breaker สวิทซ์ตกบ่อย", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:148, component:"LV_AC/DCBoard", code:"L107", desc:"วงจร ATF ชำรุดที่ AC Panel", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:149, component:"LV_Fprotection", code:"L201", desc:"Air compressor มีน้ำมันซึม", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:150, component:"LV_Fprotection", code:"L202", desc:"Alarm ที่ตู้ CWS show reset ไม่ได้", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:151, component:"LV_Fprotection", code:"L203", desc:"Alarm ที่ตู้ Fire Control reset ไม่ได้", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:152, component:"LV_Fprotection", code:"L204", desc:"Nitrogen รั่ว", cause:"Nitrogen รั่วซึม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:153, component:"LV_Fprotection", code:"L205", desc:"Air pressure ของชุด Detector ต่ำกว่ามาตรฐาน", cause:"การทำงานผิดพลาดของอุปกรณ์", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:154, component:"LV_Fprotection", code:"L206", desc:"Battery ชุดตู้ Fire control เสื่อมสภาพ", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:155, component:"LV_Fprotection", code:"L207", desc:"Battery ชุดเครื่องยนต์ดับเพลิงเสื่อมสภาพ", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:156, component:"LV_Fprotection", code:"L208", desc:"Priming tank มีสนิมภายในมาก", "cause":"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:157, component:"LV_Fprotection", code:"L209", desc:"เครื่องยนต์ดับเพลิง start ไม่ติด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:158, component:"LV_Fprotection", code:"L210", desc:"น้ำไม่เข้าถัง Priming tank", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:159, component:"LV_Fprotection", code:"L211", desc:"น้ำที่ Pilot line / น้ำยา Soft drops รั่ว", cause:"รั่ว", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:160, component:"SCADA_MMI", code:"S001", desc:"Measurement ที่หน้าจอ MMI ไม่เปลี่ยน", cause:"เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:161, component:"SCADA_ShowFail", code:"S002", desc:"Show Communication fail", cause:"เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:162, component:"SCADA_UPS", code:"S004", desc:"UPS / Converter / Inverter ขัดข้อง", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:163, component:"SCADA_Measure", code:"S005", desc:"ค่า measurement อ่านค่าไม่ตรง", cause:"เสื่อมสภาพจากอายุใช้งาน, อุณหภูมิหรือการเปลี่ยนแปลงของอุณหภูมิ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:164, component:"SCADA_MMI", code:"S006", desc:"ตำแหน่งอุปกรณ์ที่หน้าแผงและ MMI/SCADA ไม่ตรงกัน", cause:"เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:165, component:"SCADA_CB-EF-RR", code:"S007", desc:"เรียก menu control CB, EF, RR ไม่ได้", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:166, component:"SCADA_FireAlarm", code:"S101", desc:"Fire Alarm Zone Show Reset ไม่ได้", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:167, component:"SCADA_Control", code:"S102", desc:"ตู้ Control ที่ alarm ดังตลอด", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:168, component:"Pole/Route บ่อพัก/Cable", code:"UM01", desc:"ข้อต่อสายหลวม", cause:"การติดตั้งไม่ถูก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:169, component:"Pole/Route บ่อพัก/Cable", code:"UM02", desc:"เทอร์มิเนเตอร์ซิลิโคนคอมปาวด์รั่ว", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:170, component:"Pole/Route บ่อพัก/Cable", code:"UM03", desc:"ครีบเทอร์มิเนเตอร์แตก", "cause":"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:171, component:"Pole/Route บ่อพัก/Cable", code:"UM04", desc:"เทอร์มิเนเตอร์ระเบิดชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:172, component:"Pole/Route บ่อพัก/Cable", code:"UM05", desc:"สายกราวด์หาย", cause:"Non Technical Loss", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:173, component:"Pole/Route บ่อพัก/Cable", code:"UM06", desc:"เปลือกสายเคเบิลแตก", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:174, component:"Pole/Route บ่อพัก/Cable", code:"UM07", desc:"แคมป์ยึดสายเคเบิลแตกชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:175, component:"Pole/Route บ่อพัก/Cable", code:"UM08", desc:"บ่อพักท่อร้อยสายชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:176, component:"Pole/Route บ่อพัก/Cable", code:"UM09", desc:"กระแสกราวด์สูงเกินปกติ", cause:"ไม่ทราบสาเหตุ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:177, component:"Pole/Route บ่อพัก/Cable", code:"UM10", desc:"หัวต่อสายฯชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:178, component:"Pole/Route บ่อพัก/Cable", code:"UM11", desc:"เทอร์มิเนเตอร์และหัวต่อสายฯมีอุณหภูมิสูง", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:179, component:"Pole/Route บ่อพัก/Cable", code:"UM12", desc:"เคเบิล 230เควี น้ำมันรั่วซึม", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:180, component:"Pole/Route บ่อพัก/Cable", code:"UM13", desc:"ระบบพัดลมระบายอากาศชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:181, component:"Pole/Route บ่อพัก/Cable", code:"UM14", desc:"PLC ระบบอุโมงค์ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:182, component:"Pole/Route บ่อพัก/Cable", code:"UM15", desc:"ปั๊มน้ำในอุโมงค์ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:183, component:"Pole/Route บ่อพัก/Cable", code:"UM16", desc:"ระบบตรวจวัดอากาศในอุโมงค์ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:184, component:"Pole/Route บ่อพัก/Cable", code:"UM17", desc:"ระบบน้ำเย็นอุโมงค์ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:185, component:"Pole/Route บ่อพัก/Cable", code:"UM18", desc:"ระบบไฟแรงต่ำอุโมงค์ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:186, component:"Pole/Route บ่อพัก/Cable", code:"UM19", desc:"เคเบิลการ์ดชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:187, component:"Pole/Route บ่อพัก/Cable", code:"UM20", desc:"อุปกรณ์ป้องกันเพลิงไหม้ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:188, component:"Pole/Route บ่อพัก/Cable", code:"UM21", desc:"สายไฟฟ้าใต้ดินชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:189, component:"Pole/Route บ่อพัก/Cable", code:"UM22", desc:"ปลวกกัดแทะสาย", cause:"การกัดของสัตว์หรือแมลง", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:190, component:"เสา/สาย", code:"SM01", desc:"Crane / Back-Hoe", cause:"รถและเครื่องจักร", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:191, component:"เสา/สาย", code:"SM02", desc:"ผู้รับเหมาโดนสายส่ง", cause:"ไฟช็อคจากคนหรือสัตว์", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:192, component:"เสา/สาย", code:"SM03", desc:"บุคคลโดนสายส่ง", cause:"ไฟช็อคจากคนหรือสัตว์", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:193, component:"เสา/สาย", code:"SM05", desc:"งู/นก/สัตว์", cause:"ไฟช็อคจากคนหรือสัตว์", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:194, component:"เสา/สาย", code:"SM06", desc:"ป้ายโฆษณา/สังกะสี", cause:"จากภัยธรรมชาติ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:195, component:"เสา/สาย", code:"SM07", desc:"ว่าว/ลูกโป่ง/เศษผ้า", cause:"จากภัยธรรมชาติ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:196, component:"เสา/สาย", code:"SM08", desc:"Bond wire/ OHGW", cause:"จากภัยธรรมชาติ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:197, component:"เสา/สาย", code:"SM09", desc:"ต้นไม้/เสา TV", cause:"จากภัยธรรมชาติ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:198, component:"เสา/สาย", code:"SM10", desc:"เศษวัสดุ", cause:"จากภัยธรรมชาติ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:199, component:"เสา/สาย", code:"SM11", desc:"Flash Over/Leak", cause:"Flash Over/Leak", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:200, component:"เสา/สาย", code:"SM12", desc:"ลูกถ้วยหลุด/แตก", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:201, component:"เสา/สาย", code:"SM13", desc:"ฝนตกฟ้าผ่า", cause:"จากภัยธรรมชาติ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:202, component:"เสา/สาย", code:"SM14", desc:"คอนพับ/Bolt Brace", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:203, component:"เสา/สาย", code:"SM15", desc:"สายป้อน/สายสื่อสาร", cause:"จากวัสดุเสาไฟ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:204, component:"เสา/สาย", code:"SM16", desc:"ไฟฟ้าเขตทำงาน", cause:"Technical Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:205, component:"เสา/สาย", code:"SM17", desc:"สายป้อนสวิตซ์ตก", "cause":"Technical Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:206, component:"เสา/สาย", code:"SM18", desc:"เกิดไฟไหม้ใต้แนวสายส่ง", cause:"จากภัยธรรมชาติ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:207, component:"เสา/สาย", code:"SM19", desc:"ไม่ทราบสาเหตุ", cause:"ไม่ทราบสาเหตุ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:208, component:"เสา/สาย", code:"SM20", desc:"อื่นๆ", cause:"อื่นๆ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:209, component:"เสา/สาย", code:"SM21", desc:"รถชนเสา", cause:"จากอุบัติเหตุ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:210, component:"เสา/สาย", code:"SM22", desc:"Cable ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:211, component:"เสา/สาย", code:"SM23", desc:"Terminator ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:212, component:"เสา/สาย", code:"SM24", desc:"Lightning ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:213, component:"เสา/สาย", code:"SM25", desc:"switch ปลดทาง Remote", cause:"Technical Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:214, component:"เสา/สาย", code:"SM26", desc:"ชุด Interrupter ไม่ทำงาน", cause:"Technical Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:215, component:"เสา/สาย", code:"SM27", desc:"switching ปลดสวิตซ์ในสายส่ง", cause:"Technical Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:216, component:"เสา/สาย", code:"SM28", desc:"ปลดสวิตซ์ผิดตัว", cause:"Technical Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:217, component:"เสา/สาย", code:"SM29", desc:"อุปกรณ์ชำรุดภายในสถานี กฟน.", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:218, component:"เสา/สาย", code:"SM30", desc:"ต้นไม้ (โดนอุปกรณ์สถานี กฟน.)", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:219, component:"เสา/สาย", code:"SM31", desc:"อุปกรณ์ชำรุดภายในสถานี กฟผ./กฟภ.", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:220, component:"เสา/สาย", code:"SM32", desc:"อุปกรณ์ชำรุดภายในสถานี ลูกค้า", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:221, component:"เสา/สาย", code:"SM33", desc:"สายส่งไม่มีไฟ", cause:"อื่นๆ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""},
-  {id:222, component:"เสา/สาย", code:"SM34", desc:"Charge Line", cause:"อื่นๆ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:""}
+  {id:1, component:"TR_Counter L/A", code:"T001", desc:"Counter Lightning Arrester ชำรุด", cause:"โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:2, component:"TR_OLevelGauge", code:"T002", desc:"Oil level gauge ชำรุด", cause:"โครงแตก, กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:3, component:"TR_OtempGauge", code:"T003", desc:"Oil temp ชำรุด", cause:"โครงแตก, เสื่อมสภาพ, กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:4, component:"TR_Sgel/ABreather", code:"T004", desc:"Silicagel เปลี่ยนสี / Air Breather ชำรุด", cause:"Silicagel เสื่อมสภาพ, การอุดตัน / ฝุ่นละออง", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:5, component:"TR_WTempGauge", code:"T005", desc:"Winding temp ชำรุด", cause:"โครงแตก, เสื่อมสภาพ, กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:6, component:"TR_TOP", code:"T006", desc:"น้ำมันรั่วซึมด้านบนหม้อแปลง", cause:"ซีลเสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:7, component:"TR_Bushing", code:"T007", desc:"น้ำมันรั่วซึมที่ Bushing หม้อแปลง", cause:"ซีลเสื่อมสภาพ, แตกหัก, ติดตั้งไม่ถูกต้องตามมาตราฐาน, การเสียดสีหรือความเสียหายจากการเคลื่อนที่", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:8, component:"TR_CableBox", code:"T008", desc:"น้ำมันรั่วซึมที่ Cable box", cause:"ซีลเสื่อมสภาพ, ติดตั้งไม่ถูกต้องตามมาตราฐาน, ความร้อนสูงเกินไป", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:9, component:"TR_Radiator", code:"T009", desc:"น้ำมันรั่วซึมที่ Radiator", cause:"ซีลเสื่อมสภาพ, ติดตั้งไม่ถูกต้องตามมาตราฐาน, การเสียดสีหรือแรงดันภายในสูง, การเสื่อมสภาพจากการสะสมของสิ่งสกปรก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:10, component:"TR_MainTank", code:"T012", desc:"น้ำมันหม้อแปลงต่ำ", cause:"การทำงานผิดปกติของระบบระบายความร้อน, ซีลเสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:11, component:"TR_MainTank", code:"T015", desc:"หม้อแปลงชำรุด", cause:"การรั่วซึมของน้ำมัน, การเกิดไฟฟ้าลัดวงจร, การเสื่อมสภาพจากอายุการใช้งาน, ความร้อนสะสมเกินไป", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:12, component:"TR_Trip", code:"T016", desc:"หม้อแปลง Trip", cause:"การทำงานผิดพลาดของรีเลย์", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:13, component:"TR_FAN", code:"T018", desc:"เปลี่ยนพัดลมหม้อแปลง", cause:"สึกหรอจากการใช้งานนาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:14, component:"TR_FAN", code:"T019", desc:"พัดลมหม้อแปลงถอดไปซ่อม", cause:"สึกหรอจากการใช้งานนาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:15, component:"TR_FAN", code:"T020", desc:"พัดลมหม้อแปลงไม่ทำงาน", cause:"การเสียหายของมอเตอร์", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:16, component:"TR_Coil", code:"T023", desc:"ขดลวดหม้อแปลงชำรุด", cause:"การโอเวอร์โหลด, ความผิดปกติของแรงดัน, การผลิตที่ไม่ดี, การเกิดความชื้น", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:17, component:"TR_Core", code:"T024", desc:"แกนเหล็กหม้อแปลงชำรุด", cause:"การออกแบบที่ผิดพลาด, ความเครียดจากการเปลี่ยนแปลงกระแสไฟฟ้า", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:18, component:"TR_HVBushing", code:"T025", desc:"TR_HVBushing หม้อแปลงชำรุด", cause:"เสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:19, component:"TR_MVBushing", code:"T026", desc:"TR_MVBushing หม้อแปลงชำรุด", cause:"เสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:20, component:"TR_OFFLTAP", code:"T027", desc:"OFF LODE TAP หม้อแปลงชำรุด", cause:"เสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:21, component:"TR_BuchRelay", code:"T028", desc:"Buchholz relay ชำรุด", cause:"ลัดวงจรหรือความผิดพลาดภายใน, การติดตั้งไม่ถูกต้อง, เสื่อมสภาพจากอายุใช้งาน, อุณหภูมิสูงเกิน, กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:22, component:"TR_PresRelief", code:"T029", desc:"Pressure relief ชำรุด", cause:"การติดตั้งไม่ถูกต้อง, เสื่อมสภาพจากอายุใช้งาน, กลไกติดขัด, แรงดันเกินขีดจำกัดบ่อยเกิน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:23, component:"TR_Control_desk", code:"T101", desc:"Control desk tap อ่านไม่ตรง", cause:"เสื่อมสภาพจากอายุใช้งาน, ความชื้นหรือสิ่งสกปรก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:24, component:"TR_Control_Lampdesk", code:"T102", desc:"Control desk หลอดขาด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:25, component:"TR_FanControl", code:"T103", desc:"Control พัดลมชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:26, component:"TR_Relay", code:"T104", desc:"Differential relay ชำรุด", cause:"การทำงานผิดพลาดในระบบควบคุม, Current Transformer Malfunction, การตั้งค่าผิด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:27, component:"TR_DifRelay", code:"T105", desc:"Differential relay เปลี่ยน", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:28, component:"TR_Relay", code:"T106", desc:"Tripping relay ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:29, component:"TR_TrippingRelay", code:"T107", desc:"Tripping relay เปลี่ยน", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:30, component:"TR_CountTap", code:"T206", desc:"Counter Tap ไม่ทำงาน", cause:"กลไกติดขัด, ชุดเฟืองภายในชำรุด, Lubrication, เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:31, component:"TR_Microlimit", code:"T208", desc:"Micro sw. Lower & upper limit ค้าง", cause:"กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:32, component:"TR_OLTC Tap", code:"T209", desc:"OLTC เปลี่ยน Tap ทางไฟฟ้าไม่ได้", cause:"OLTC เปลี่ยน Tap ทางไฟฟ้า ไม่ทำงานจริง", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:33, component:"TR_OLTC Tap", code:"T210", desc:"น้ำมันรั่วซึมที่ฝาบ่อ OLTC", cause:"ซีลเสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:34, component:"TR_OLTC Tap", code:"T211", desc:"เปลี่ยน Tap แล้วมีเสียงดัง", cause:"เปลี่ยน Tap แล้วมีเสียงดังจากกลไก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:35, component:"TR_OLTC Tap", code:"T212", desc:"ระดับน้ำมันต่ำที่ OLTC", cause:"ระดับน้ำมันต่ำที่ OLTC ชีลเสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:36, component:"TR_OLTC_ProRelay", code:"T215", desc:"Tap protective relay ชำรุด", cause:"กลไกเสื่อมสภาพ, ความชื้น ฝุ่น การกัดกร่อน, มีการต่อสายผิด หรือมี short ที่ terminal", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:37, component:"TR_OLTC_MainContact", code:"T216", desc:"Main contact ชำรุด", cause:"การอาร์ก ระหว่างเปลี่ยน TAP ที่บ่อยครั้ง, อุณหภูมิสูงเกินจากกระแสเกิน, น้ำมัน OLTC เสื่อมสภาพ, กลไกบังคับ contact ทำงานผิดพลาด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:38, component:"TR_OLTC_TransitContact", code:"T217", desc:"Transition contact ชำรุด", cause:"การอาร์ก (Arc) ซ้ำซ้อนขณะสลับ Tap, น้ำมัน OLTC เสื่อมสภาพ, สปริง/กลไกกด contact เสียหาย, ความต้านทาน contact เพิ่มขึ้น", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:39, component:"TR_OLTC_Gear", code:"T218", desc:"Gear unit ชำรุด", cause:"สึกหรอ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:40, component:"TR_OLTC_Access", code:"T219", desc:"OLTC Accessories ชำรุด", cause:"ชำรุดจาก Accessories", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:41, component:"TR_OLTC_MotorControlBoard", code:"T220", desc:"Motor drive control board ชำรุด", cause:"แรงดันไฟฟ้าผิดปกติ, ความชื้นและฝุ่นละอองในกล่องควบคุม, เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:42, component:"TR_OilFilter", code:"T301", desc:"Counter oil filter ทำงานผิดปกติ", cause:"Sensor/Trigger เสียหาย, การรบกวนจากสัญญาณไฟฟ้า (Electrical Noise)", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:43, component:"TR_OilFilter", code:"T302", desc:"Motor oil filter หมุนกลับทาง", cause:"Motor oil filter หมุนกลับทาง จาก ต่อท่อผิดด้าน (Inlet/Outlet สลับ)", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:44, component:"TR_OilFilter", code:"T303", desc:"Oil filter unit มีน้ำมันรั่วซึม", cause:"ซีลเสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:45, component:"TR_OilFilter", code:"T304", desc:"Oil filter ไม่ทำงานหลังจากเปลี่ยน Tap", cause:"ระบบปั๊มน้ำมันของ OLTC หยุดทำงานหรือเดินผิดทาง", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:46, component:"TR_OilFilter", code:"T305", desc:"Pressure gauge oil filter เสีย", cause:"แรงดันน้ำมันเกินพิกัด (Overpressure), น้ำมันหรือสิ่งสกปรกเข้าไปในเกจ, เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:47, component:"HV_ClosingCoil", code:"H001", desc:"Closing coil ชำรุด, Mechanism CB ขัดข้อง", cause:"กลไกติดขัด, เสื่อมสภาพจากอายุใช้งาน, Misoperation", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:48, component:"HV_Mechnism_CB", code:"H002", desc:"Mechanism CB ขัดข้อง,", cause:"ขาดการบำรุงรักษา, Spring เสื่อมหรือหัก, Misalignment ของกลไก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:49, component:"HV_PumpMotor_CB", code:"H003", desc:"Pump motor ของ CB ไม่ทำงาน", cause:"ไฟไม่เข้าที่มอเตอร์, Pressure switch ชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:50, component:"HV_PumpMotor_CB", code:"H005", desc:"Pump motor ของ CB ทำงานบ่อย", cause:"ระบบรั่ว (Internal หรือ External Leak), Accumulator เสื่อมหรือแรงดันไม่พอ, Pressure switch ตั้งผิดหรือเสีย, เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:51, component:"HV_SF6LowGas", code:"H006", desc:"SF6 low gas", cause:"รั่ว (Gas Leakage), เสื่อมสภาพจากอายุใช้งาน, Gas Pressure Gauge / Sensor เสีย", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:52, component:"HV_SF6LowGas", code:"H007", desc:"SF6 over gas", cause:"อุณหภูมิสูงผิดปกติ, Internal Arc หรือ Fault ทำให้ความร้อนสูงขึ้น, เติมก๊าซตอนอุณหภูมิต่ำ แล้วเมื่ออากาศร้อนขึ้นทำให้แรงดันเกิน, เติมก๊าซเกินตอนบำรุงรักษา (Overfilling)", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:53, component:"HV_GIS_CB", code:"H010", desc:"GIS ชำรุด", cause:"การติดตั้งหรือประกอบผิดพลาด, Internal Arc / Flashover, เสื่อมสภาพจากอายุใช้งาน, Human Error จากการบำรงุรักษา", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:54, component:"HV_GIS_CB_SW", code:"H011", desc:"SW ปลด / สับ ไม่ได้", cause:"กลไกติดขัด, Charge Spring ไม่ทำงาน, Control Circuit Fault", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:55, component:"HV_GIS_CB_Hydraulic", code:"H012", desc:"Earthing SW ปลด / สับ ไม่ได้", cause:"กลไกติดขัด, Control Circuit Fault, Residual Voltage, Sensor หรือ Feedback Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:56, component:"HV_GIS_CB_Hydraulic", code:"H013", desc:"Earthing SW ชำรุด", cause:"กลไกติดขัด, Contact Point ชำรุด, Motorized ES ชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:57, component:"HV_GIS_CB_Hydraulic", code:"H014", desc:"น้ำมัน Hydraulic รั่วซึม", cause:"ซีลเสื่อมสภาพ, ความดันระบบสูงเกินมาตรฐาน, ท่อไฮดรอลิก (Hose/Tube) แตก, Bolt/Flange ของถังหรือชุด Actuator หลวม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:58, component:"HV_GIS_CB", code:"H015", desc:"น้ำมันรั่วซึมที่ Pole ของ CB", cause:"ซีลเสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:59, component:"HV_GIS_CB", code:"H018", desc:"CB Main Contact ชำรุด", cause:"Mechanical / Electrical Life Time, แรงกด Contact ไม่เพียงพอ, High Fault Current, ความชื้นหรือฝุ่นภายใน CB, กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:60, component:"HV_GIS_CB_ES/DS_MainContact", code:"H019", desc:"ES/DS Main Contact ชำรุด", cause:"Mechanical / Electrical Life Time, แรงกด Contact ไม่เพียงพอ, High Fault Current, ความชื้นหรือฝุ่นภายใน CB, กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:61, component:"HV_GIS_CB_ES/DS_Mechanism", code:"H020", desc:"DS/ES Mechanism ชำรุด", cause:"กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:62, component:"HV_GIS_CB", code:"H021", desc:"Trip coil ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน, ปัญหาจากการป้องกันไฟกระชาก, ความชื้นหรือสิ่งสกปรก, การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:63, component:"HV_GIS_CB", code:"H022", desc:"แก๊ส SF6 รั่ว", cause:"รั่ว (Gas Leakage)", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:64, component:"HV_GIS_CB", code:"H023", desc:"แก๊ส SF6 เสื่อมสภาพ", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:65, component:"HV_GIS_CB_SF6PressGage", code:"H024", desc:"SF6 Pressure gage ชำรุด", cause:"รั่ว (Gas Leakage), การปนเปื้อนหรือฝุ่นใน Pressure Gauge, การผิดพลาดจากกระบวนการติดตั้ง, อุณหภูมิหรือการเปลี่ยนแปลงของอุณหภูมิ, การสึกหรอจากการใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:66, component:"HV_HVSW_CTPT", code:"H101", desc:"SW ไม่สามารถ Control ทางไฟฟ้าได้", cause:"Control Circuit Fault", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:67, component:"HV_HVSW_CTPT", code:"H102", desc:"CT, PT ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:68, component:"HV_HVSW_CTPT", code:"H103", desc:"Flexible conductor ขาดบางส่วน", cause:"Flexible conductor ขาดบางส่วน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:69, component:"HV_HVSW_CTPT", code:"H104", desc:"Jumper, sleeve ร้อนแดง", cause:"Jumper, sleeve ร้อนเกินมาตรฐาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:70, component:"HV_HVSW_CTPT", code:"H105", desc:"Motor ของ SW ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:71, component:"HV_HVSW_CTPT", code:"H107", desc:"SW โก่ง ร้อนแดง", cause:"SW โก่ง ร้อนแดง จากการเสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:72, component:"HV_HVSW_CTPT", code:"H108", desc:"SW ปลด-สับ ยาก", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:73, component:"HV_HVSW_CTPT", code:"H109", desc:"SW สับไม่สนิท", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:74, component:"HV_HVSW_CTPT", code:"H110", desc:"จุดต่อ Busbar ต่างๆร้อนแดง", cause:"Hot Spot", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:75, component:"HV_HVSW_CTPT", code:"H111", desc:"มีวัสดุ/รังนกที่ SW", cause:"มีวัสดุ/รังนก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:76, component:"HV_HVSW_CTPT", code:"H112", desc:"ลูกถ้วยชำรุด", cause:"ความชื้น, ฝุ่น, และการกัดกร่อน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:77, component:"HV_HVSW_CTPT", code:"H113", desc:"ลูกถ้วยมีรอยชำรุด", cause:"ความชื้น, ฝุ่น, และการกัดกร่อน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:78, component:"HV_HVSW_CTPT", code:"H114", desc:"สวิตช์ใบมีด ground ปลด / สับ ไม่ได้", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:79, component:"HV_HVSW_CTPT", code:"H117", desc:"DS/ES Mechanism ชำรุด", cause:"กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:80, component:"HV_Cap", code:"H201", desc:"Capacitor bank ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:81, component:"HV_Cap", code:"H202", desc:"อุปกรณ์ชุดปลด-สับ Capacitor bank ไม่ทำงาน", cause:"อุปกรณ์ทำงานผิดพลาด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:82, component:"HV_ShowReset", code:"H301", desc:"Alarm show reset ไม่ได้", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:83, component:"HV_DisRelay", code:"H305", desc:"Distance relay ชำรุด", cause:"การทำงานผิดพลาดในระบบควบคุม, Current Transformer Malfunction, การตั้งค่าผิด, สัญญาณผิดปกติจากระบบภายนอก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:84, component:"HV_Relay", code:"H308", desc:"Overcurrent relay ชำรุด", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:85, component:"HV_OCRelay", code:"H309", desc:"Overcurrent relay เปลี่ยน", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:86, component:"MV_Relay", code:"M311", desc:"ซ่อม Relay เสีย", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:87, component:"MV_Alarm", code:"M312", desc:"สวิตช์ตก alarm ไม่ดัง", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:88, component:"HV_Distance", code:"H313", desc:"ถอด Distance relay ไว้", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:89, component:"HV_SW_LTO", code:"H314", desc:"สายส่ง SW ตก LTO ไม่ทำงาน", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:90, component:"HV_LampDC", code:"H315", desc:"หลอด DC supply show reset ไม่ได้", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:91, component:"MV_SWGR_CB", code:"M001", desc:"CB ปลดไม่ได้", cause:"กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:92, component:"MV_SWGR_CB_PT", code:"M002", desc:"PT ชำรุด", cause:"เสื่อมสภาพ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:93, component:"MV_SWGR_CB", code:"M003", desc:"GCB low gas", cause:"การรั่วซึมของ gas", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:94, component:"MV_SWGR_CB_VacInter", code:"M004", desc:"Vacuum interrupter ชำรุด", cause:"กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:95, component:"MV_SWGR_CB_Heater", code:"M005", desc:"Heater ชำรุด", cause:"กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:96, component:"MV_SWGR_CB_Mechanism", code:"M006", desc:"Mechanism ของ CB ขัดข้อง", cause:"อุปกรณ์ทำงานผิดพลาด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:97, component:"MV_SWGR_CB_MotorChargSpring", code:"M007", desc:"Motor charge spring ไม่ทำงาน/ทำงานตลอด", cause:"อุปกรณ์ทำงานผิดพลาด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:98, component:"MV_SWGR_OCB", code:"M008", desc:"OCB มีน้ำมันไหลซึม", cause:"การรั่วซึมของน้ำมัน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:99, component:"MV_SWGR_TR_StationService", code:"M009", desc:"Station service / Pad mounted TR น้ำมันรั่วซึม", cause:"การรั่วซึมของน้ำมัน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:100, component:"MV_SWGR_CB", code:"M010", desc:"SWGR ระเบิด", cause:"การเกิดไฟฟ้าลัดวงจร (Short Circuit)", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:101, component:"MV_SWGR_CB", code:"M011", desc:"ขณะปลด lock เพื่อ isolate CB สับเข้าเอง", cause:"กลไกติดขัด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:102, component:"MV_SWGR_CB", code:"M012", desc:"ซ่อม Circuit breaker ชำรุด", cause:"กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:103, component:"MV_SWGR_CB", code:"M013", desc:"นำ CB ออกนอกตู้ไม่ได้", cause:"อุปกรณ์ทำงานผิดพลาด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:104, component:"MV_SWGR_CB", code:"M014", desc:"เปลี่ยน SWGR ชำรุด", cause:"อุปกรณ์ทำงานผิดพลาด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:105, component:"MV_SWGR_CB", code:"M015", desc:"แผง SWGR มีเสียงดังผิดปกติ", cause:"อุปกรณ์ทำงานผิดพลาด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:106, component:"MV_SWGR_CB", code:"M016", desc:"สวิตช์ตกไม่สับ ทั้ง RR on อยู่", cause:"กลไกชำรุด, เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:107, component:"MV_SWGR_CB", code:"M017", desc:"Earthing SW ปลดไม่ได้", cause:"กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:108, component:"MV_SWGR_CB", code:"M018", desc:"Earthing SWชำรุด", cause:"กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:109, component:"MV_SWGR_TR_StationService", code:"M021", desc:"Station service transformer ชำรุด", cause:"การเกิดไฟฟ้าลัดวงจร", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:110, component:"MV_GIS_CB", code:"M101", desc:"CB ขัดข้อง ปลด-สับ ไม่ได้", cause:"", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:111, component:"MV_GIS_CB", code:"M102", desc:"GIS ชำรุด", cause:"กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:112, component:"MV_GIS_CB", code:"M103", desc:"Low gas alarm show reset ไม่ได้", cause:"เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:113, component:"MV_GIS_CB", code:"M104", desc:"Motor ของ Bus isolate ชำรุด", cause:"กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:114, component:"MV_GIS_CB", code:"M105", desc:"Motor ของ Bus isolate ถอดไปซ่อมและนำเข้าใช้งาน", cause:"", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:115, component:"MV_GIS_CB", code:"M106", desc:"Bus isolate ชำรุด", cause:"", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:116, component:"MV_GIS_CB", code:"M107", desc:"SF6 over gas", cause:"SF6 over gas", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:117, component:"MV_GIS_CB", code:"M108", desc:"SF6 low gas", cause:"SF6 low gas", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:118, component:"MV_Cap_Bushing", code:"M201", desc:"Bushing capacitor มีน้ำมันรั่ว", cause:"การรั่วซึมของน้ำมัน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:119, component:"MV_Cap", code:"M202", desc:"Capacitor bank ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:120, component:"MV_Cap_UVRelay", code:"M203", desc:"Capacitor bank ปลดออกอัตโนมัติเนื่องจาก", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:121, component:"MV_Cap", code:"M204", desc:"เปลี่ยน Capacitor ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:122, component:"MV_Cap", code:"M205", desc:"Fuse capacitor bank ขาด", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:123, component:"MV_Cap_VacuumSw", code:"M206", desc:"Vacuum Sw ปลด-สับไม่ได้", cause:"กลไกชำรุด", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:124, component:"MV_Cap", code:"M207", desc:"เปลี่ยน Capacitor bank แทนชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:125, component:"MV_BTO", code:"M302", desc:"BTO ไม่ทำงาน", cause:"เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:126, component:"MV_BusDifRelay", code:"M303", desc:"Bus differential relay ชำรุด", cause:"การทำงานผิดพลาดในระบบควบคุม, Current Transformer Malfunction, การตั้งค่าผิด, สัญญาณผิดปกติจากระบบภายนอก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:127, component:"MV_LBP/CBF", code:"M304", desc:"LBP/CBF ทำงาน", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:128, component:"MV_Relay", code:"M306", desc:"Overcurrent relay ชำรุด", cause:"Current Transformer Malfunction, การตั้งค่าผิด, สัญญาณผิดปกติจากระบบภายนอก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:129, component:"MV_Relay", code:"M307", desc:"Overcurrent relay เปลี่ยน", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:130, component:"MV_Relay", code:"M308", desc:"Relay เสีย", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:131, component:"MV_Control", code:"M310", desc:"ชุด Control relay OC,EF on แล้ว trip", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:132, component:"LV_BatCharger_Trip", code:"L001", desc:"Breaker trip ของ AC Source", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:133, component:"LV_BatCharger_Trip", code:"L002", desc:"Breaker trip ของ DC Rectifier/Load", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:134, component:"LV_BatCharger", code:"L003", desc:"Charger ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:135, component:"LV_Battery", code:"L004", desc:"DC Volt ต่ำ/สูงกว่ามาตรฐาน", cause:"แรงดันไม่ได้มาตรฐาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:136, component:"LV_Battery", code:"L005", desc:"ถ.พ.ต่ำ/สูง บาง cell", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:137, component:"LV_Battery", code:"L006", desc:"เปลี่ยน Battery รั่วบาง cell", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:138, component:"LV_Battery", code:"L007", desc:"Case ของ Battery แตกลายงา/เปลี่ยนสี", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:139, component:"LV_Battery", code:"L008", desc:"ระดับน้ำกลั่น ต่ำ / สูง กว่ามาตรฐาน", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:140, component:"LV_BatCharger", code:"L011", desc:"DC ลงกราวน์", cause:"DC ลงกราวน์", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:141, component:"LV_BatCharger", code:"L012", desc:"Amp. Meter battery charger ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:142, component:"LV_BatCharger", code:"L013", desc:"Volt. Meter battery charger ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:143, component:"LV_Battery", code:"L014", desc:"Battery low capacity", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:144, component:"LV_AC/DCBoard", code:"L101", desc:"AC board Breaker ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:145, component:"LV_AC/DCBoard", code:"L102", desc:"DC board Breaker ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:146, component:"LV_AC/DCBoard", code:"L103", desc:"Breaker ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:147, component:"LV_AC/DCBoard", code:"L104", desc:"Breaker สวิทซ์ตกบ่อย", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:148, component:"LV_AC/DCBoard", code:"L107", desc:"วงจร ATF ชำรุดที่ AC Panel", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:149, component:"LV_Fprotection", code:"L201", desc:"Air compressor มีน้ำมันซึม", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:150, component:"LV_Fprotection", code:"L202", desc:"Alarm ที่ตู้ CWS show reset ไม่ได้", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:151, component:"LV_Fprotection", code:"L203", desc:"Alarm ที่ตู้ Fire Control reset ไม่ได้", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:152, component:"LV_Fprotection", code:"L204", desc:"Nitrogen รั่ว", cause:"Nitrogen รั่วซึม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:153, component:"LV_Fprotection", code:"L205", desc:"Air pressure ของชุด Detector ต่ำกว่ามาตรฐาน", cause:"การทำงานผิดพลาดของอุปกรณ์", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:154, component:"LV_Fprotection", code:"L206", desc:"Battery ชุดตู้ Fire control เสื่อมสภาพ", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:155, component:"LV_Fprotection", code:"L207", desc:"Battery ชุดเครื่องยนต์ดับเพลิงเสื่อมสภาพ", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:156, component:"LV_Fprotection", code:"L208", desc:"Priming tank มีสนิมภายในมาก", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:157, component:"LV_Fprotection", code:"L209", desc:"เครื่องยนต์ดับเพลิง start ไม่ติด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:158, component:"LV_Fprotection", code:"L210", desc:"น้ำไม่เข้าถัง Priming tank", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:159, component:"LV_Fprotection", code:"L211", desc:"น้ำที่ Pilot line / น้ำยา Soft drops รั่ว", cause:"รั่ว", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:160, component:"SCADA_MMI", code:"S001", desc:"Measurement ที่หน้าจอ MMI ไม่เปลี่ยน", cause:"เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:161, component:"SCADA_ShowFail", code:"S002", desc:"Show Communication fail", cause:"เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:162, component:"SCADA_UPS", code:"S004", desc:"UPS / Converter / Inverter ขัดข้อง", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:163, component:"SCADA_Measure", code:"S005", desc:"ค่า measurement อ่านค่าไม่ตรง", cause:"เสื่อมสภาพจากอายุใช้งาน, อุณหภูมิหรือการเปลี่ยนแปลงของอุณหภูมิ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:164, component:"SCADA_MMI", code:"S006", desc:"ตำแหน่งอุปกรณ์ที่หน้าแผงและ MMI/SCADA ไม่ตรงกัน", cause:"เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:165, component:"SCADA_CB-EF-RR", code:"S007", desc:"เรียก menu control CB, EF, RR ไม่ได้", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:166, component:"SCADA_FireAlarm", code:"S101", desc:"Fire Alarm Zone Show Reset ไม่ได้", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:167, component:"SCADA_Control", code:"S102", desc:"ตู้ Control ที่ alarm ดังตลอด", cause:"การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:168, component:"Pole/Route บ่อพัก/Cable", code:"UM01", desc:"ข้อต่อสายหลวม", cause:"การติดตั้งไม่ถูก", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:169, component:"Pole/Route บ่อพัก/Cable", code:"UM02", desc:"เทอร์มิเนเตอร์ซิลิโคนคอมปาวด์รั่ว", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:170, component:"Pole/Route บ่อพัก/Cable", code:"UM03", desc:"ครีบเทอร์มิเนเตอร์แตก", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:171, component:"Pole/Route บ่อพัก/Cable", code:"UM04", desc:"เทอร์มิเนเตอร์ระเบิดชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:172, component:"Pole/Route บ่อพัก/Cable", code:"UM05", desc:"สายกราวด์หาย", cause:"Non Technical Loss", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:173, component:"Pole/Route บ่อพัก/Cable", code:"UM06", desc:"เปลือกสายเคเบิลแตก", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:174, component:"Pole/Route บ่อพัก/Cable", code:"UM07", desc:"แคมป์ยึดสายเคเบิลแตกชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:175, component:"Pole/Route บ่อพัก/Cable", code:"UM08", desc:"บ่อพักท่อร้อยสายชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:176, component:"Pole/Route บ่อพัก/Cable", code:"UM09", desc:"กระแสกราวด์สูงเกินปกติ", cause:"ไม่ทราบสาเหตุ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:177, component:"Pole/Route บ่อพัก/Cable", code:"UM10", desc:"หัวต่อสายฯชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:178, component:"Pole/Route บ่อพัก/Cable", code:"UM11", desc:"เทอร์มิเนเตอร์และหัวต่อสายฯมีอุณหภูมิสูง", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:179, component:"Pole/Route บ่อพัก/Cable", code:"UM12", desc:"เคเบิล 230เควี น้ำมันรั่วซึม", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:180, component:"Pole/Route บ่อพัก/Cable", code:"UM13", desc:"ระบบพัดลมระบายอากาศชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:181, component:"Pole/Route บ่อพัก/Cable", code:"UM14", desc:"PLC ระบบอุโมงค์ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:182, component:"Pole/Route บ่อพัก/Cable", code:"UM15", desc:"ปั๊มน้ำในอุโมงค์ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:183, component:"Pole/Route บ่อพัก/Cable", code:"UM16", desc:"ระบบตรวจวัดอากาศในอุโมงค์ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:184, component:"Pole/Route บ่อพัก/Cable", code:"UM17", desc:"ระบบน้ำเย็นอุโมงค์ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:185, component:"Pole/Route บ่อพัก/Cable", code:"UM18", desc:"ระบบไฟแรงต่ำอุโมงค์ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:186, component:"Pole/Route บ่อพัก/Cable", code:"UM19", desc:"เคเบิลการ์ดชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:187, component:"Pole/Route บ่อพัก/Cable", code:"UM20", desc:"อุปกรณ์ป้องกันเพลิงไหม้ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:188, component:"Pole/Route บ่อพัก/Cable", code:"UM21", desc:"สายไฟฟ้าใต้ดินชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:189, component:"Pole/Route บ่อพัก/Cable", code:"UM22", desc:"ปลวกกัดแทะสาย", cause:"การกัดของสัตว์หรือแมลง", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:190, component:"เสา/สาย", code:"SM01", desc:"Crane / Back-Hoe", cause:"รถและเครื่องจักร", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:191, component:"เสา/สาย", code:"SM02", desc:"ผู้รับเหมาโดนสายส่ง", cause:"ไฟช็อคจากคนหรือสัตว์", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:192, component:"เสา/สาย", code:"SM03", desc:"บุคคลโดนสายส่ง", cause:"ไฟช็อคจากคนหรือสัตว์", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:193, component:"เสา/สาย", code:"SM05", desc:"งู/นก/สัตว์", cause:"ไฟช็อคจากคนหรือสัตว์", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:194, component:"เสา/สาย", code:"SM06", desc:"ป้ายโฆษณา/สังกะสี", cause:"จากภัยธรรมชาติ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:195, component:"เสา/สาย", code:"SM07", desc:"ว่าว/ลูกโป่ง/เศษผ้า", cause:"จากภัยธรรมชาติ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:196, component:"เสา/สาย", code:"SM08", desc:"Bond wire/ OHGW", cause:"จากภัยธรรมชาติ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:197, component:"เสา/สาย", code:"SM09", desc:"ต้นไม้/เสา TV", cause:"จากภัยธรรมชาติ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:198, component:"เสา/สาย", code:"SM10", desc:"เศษวัสดุ", cause:"จากภัยธรรมชาติ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:199, component:"เสา/สาย", code:"SM11", desc:"Flash Over/Leak", cause:"Flash Over/Leak", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:200, component:"เสา/สาย", code:"SM12", desc:"ลูกถ้วยหลุด/แตก", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:201, component:"เสา/สาย", code:"SM13", desc:"ฝนตกฟ้าผ่า", cause:"จากภัยธรรมชาติ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:202, component:"เสา/สาย", code:"SM14", desc:"คอนพับ/Bolt Brace", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:203, component:"เสา/สาย", code:"SM15", desc:"สายป้อน/สายสื่อสาร", cause:"จากวัสดุเสาไฟ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:204, component:"เสา/สาย", code:"SM16", desc:"ไฟฟ้าเขตทำงาน", cause:"Technical Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:205, component:"เสา/สาย", code:"SM17", desc:"สายป้อนสวิตซ์ตก", cause:"Technical Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:206, component:"เสา/สาย", code:"SM18", desc:"เกิดไฟไหม้ใต้แนวสายส่ง", cause:"จากภัยธรรมชาติ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:207, component:"เสา/สาย", code:"SM19", desc:"ไม่ทราบสาเหตุ", cause:"ไม่ทราบสาเหตุ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:208, component:"เสา/สาย", code:"SM20", desc:"อื่นๆ", cause:"อื่นๆ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:209, component:"เสา/สาย", code:"SM21", desc:"รถชนเสา", cause:"จากอุบัติเหตุ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:210, component:"เสา/สาย", code:"SM22", desc:"Cable ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:211, component:"เสา/สาย", code:"SM23", desc:"Terminator ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:212, component:"เสา/สาย", code:"SM24", desc:"Lightning ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:213, component:"เสา/สาย", code:"SM25", desc:"switch ปลดทาง Remote", cause:"Technical Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:214, component:"เสา/สาย", code:"SM26", desc:"ชุด Interrupter ไม่ทำงาน", cause:"Technical Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:215, component:"เสา/สาย", code:"SM27", desc:"switching ปลดสวิตซ์ในสายส่ง", cause:"Technical Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:216, component:"เสา/สาย", code:"SM28", desc:"ปลดสวิตซ์ผิดตัว", cause:"Technical Error", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:217, component:"เสา/สาย", code:"SM29", desc:"อุปกรณ์ชำรุดภายในสถานี กฟน.", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:218, component:"เสา/สาย", code:"SM30", desc:"ต้นไม้ (โดนอุปกรณ์สถานี กฟน.)", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:219, component:"เสา/สาย", code:"SM31", desc:"อุปกรณ์ชำรุดภายในสถานี กฟผ./กฟภ.", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:220, component:"เสา/สาย", code:"SM32", desc:"อุปกรณ์ชำรุดภายในสถานี ลูกค้า", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:221, component:"เสา/สาย", code:"SM33", desc:"สายส่งไม่มีไฟ", cause:"อื่นๆ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:222, component:"เสา/สาย", code:"SM34", desc:"Charge Line", cause:"อื่นๆ", s:"", o:"", d:"", testCategory:"", testItems:"", si:"", smax:"", wi:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"}
 ];
 
 let categories = [];
@@ -566,12 +566,9 @@ let query = "";
 let currentTab = 'fmea';
 
 function initApp() {
-  // โหลดข้อมูลที่เคยบันทึกไว้ใน LocalStorage (ถ้ามี)
-  const saved = localStorage.getItem('rcm_excel_data_v2');
+  const saved = localStorage.getItem('rcm_excel_data_v3');
   if (saved) {
-    try {
-      records = JSON.parse(saved);
-    } catch(e) { console.error(e); }
+    try { records = JSON.parse(saved); } catch(e) { console.error(e); }
   }
   
   records.forEach(r => {
@@ -589,14 +586,25 @@ function initApp() {
 function switchTab(tab) {
   currentTab = tab;
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
   
   if(tab === 'fmea') {
+    event.target.classList.add('active');
     document.getElementById('modeTitle').textContent = "FMEA & RPN Assessment";
     document.getElementById('tableInstruction').textContent = "คลิกช่องคะแนน (S, O, D) ระบบจะคำนวณค่า RPN ให้ทันที";
-  } else {
+    document.getElementById('searchBoxWrap').style.display = 'block';
+    document.getElementById('chips').style.display = 'flex';
+  } else if(tab === 'cehi') {
+    event.target.classList.add('active');
     document.getElementById('modeTitle').textContent = "ตารางโครงสร้าง CEHI";
     document.getElementById('tableInstruction').textContent = "กรอก Test Category, Parameters และคะแนน Si, Smax, Wi เพื่อคำนวณดัชนีสุขภาพ";
+    document.getElementById('searchBoxWrap').style.display = 'block';
+    document.getElementById('chips').style.display = 'flex';
+  } else if(tab === 'plan') {
+    document.getElementById('btnPlan').classList.add('active');
+    document.getElementById('modeTitle').textContent = "PM/CBM Action Plan Table";
+    document.getElementById('tableInstruction').textContent = "แสดงรายการที่ผ่านการประเมินคะแนน (RPN > 0) เรียงลำดับความสำคัญอัตโนมัติ";
+    document.getElementById('searchBoxWrap').style.display = 'none';
+    document.getElementById('chips').style.display = 'none';
   }
   renderTable();
 }
@@ -640,16 +648,35 @@ function renderTable(){
   const q = query.trim().toLowerCase();
   const thead = document.getElementById('tableHead');
   
-  const filtered = records.filter(r => {
-    if(activeCat !== 'ALL' && r.cat !== activeCat) return false;
-    if(!q) return true;
-    return (
-      (r.code && r.code.toLowerCase().includes(q)) ||
-      (r.desc && r.desc.toLowerCase().includes(q)) ||
-      (r.cause && r.cause.toLowerCase().includes(q)) ||
-      (r.component && r.component.toLowerCase().includes(q))
-    );
-  });
+  let filtered = [];
+
+  if (currentTab === 'plan') {
+    // กรองเฉพาะรายการที่มีการกรอกคะแนน S, O, D แล้ว (RPN > 0)
+    filtered = records.filter(r => {
+      const s = Number(r.s) || 0;
+      const o = Number(r.o) || 0;
+      const d = Number(r.d) || 0;
+      return (s * o * d) > 0;
+    });
+    
+    // จัดลำดับความสำคัญอัตโนมัติจาก RPN มากไปน้อย
+    filtered.sort((a, b) => {
+      const rpnA = (Number(a.s)||0) * (Number(a.o)||0) * (Number(a.d)||0);
+      const rpnB = (Number(b.s)||0) * (Number(b.o)||0) * (Number(b.d)||0);
+      return rpnB - rpnA;
+    });
+  } else {
+    filtered = records.filter(r => {
+      if(activeCat !== 'ALL' && r.cat !== activeCat) return false;
+      if(!q) return true;
+      return (
+        (r.code && r.code.toLowerCase().includes(q)) ||
+        (r.desc && r.desc.toLowerCase().includes(q)) ||
+        (r.cause && r.cause.toLowerCase().includes(q)) ||
+        (r.component && r.component.toLowerCase().includes(q))
+      );
+    });
+  }
 
   if (currentTab === 'fmea') {
     thead.innerHTML = `
@@ -690,7 +717,8 @@ function renderTable(){
         </tr>
       `;
     }).join('');
-  } else {
+
+  } else if (currentTab === 'cehi') {
     thead.innerHTML = `
       <tr>
         <th style="width:40px;">#</th>
@@ -726,10 +754,60 @@ function renderTable(){
         </tr>
       `;
     }).join('');
+
+  } else {
+    // หน้า Plan Action Table
+    thead.innerHTML = `
+      <tr>
+        <th style="width:50px; text-align:center;">ลำดับความสำคัญ</th>
+        <th style="width:130px;">Component</th>
+        <th style="width:80px;">รหัส</th>
+        <th>Failure Mode / อาการความเสียหาย</th>
+        <th style="width:70px; text-align:center;">RPN</th>
+        <th style="width:110px; text-align:center;">ประเภทแผน (PM/CBM)</th>
+        <th style="width:250px;">รายละเอียดแผนการซ่อมบำรุง (Action Plan)</th>
+        <th style="width:110px; text-align:center;">สถานะ</th>
+      </tr>
+    `;
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:50px; color:var(--muted);">⚠️ ยังไม่มีข้อมูลแผนงาน เนื่องจากคุณยังไม่ได้ประเมินคะแนน (S, O, D) ในหน้า FMEA & RPN</td></tr>`;
+    } else {
+      tbody.innerHTML = filtered.map((r, index) => {
+        const rpn = (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0);
+        let badgeClass = 'rpn-low';
+        if (rpn >= 100) badgeClass = 'rpn-high';
+        else if (rpn >= 40) badgeClass = 'rpn-mid';
+
+        return `
+          <tr>
+            <td style="text-align:center;"><span class="mono" style="font-weight:bold; color:var(--amber);">#${index + 1}</span></td>
+            <td><b>${escapeHtml(r.component)}</b></td>
+            <td><span class="code-pill mono">${escapeHtml(r.code)}</span></td>
+            <td>${escapeHtml(r.desc)}</td>
+            <td style="text-align:center;"><span class="rpn-badge ${badgeClass}">${rpn}</span></td>
+            <td style="text-align:center;">
+              <select class="text-input" style="text-align:center;" onchange="updateField(${r.id}, 'actionType', this.value)">
+                <option value="PM" ${r.actionType === 'PM' ? 'selected' : ''}>PM (ตามรอบ)</option>
+                <option value="CBM" ${r.actionType === 'CBM' ? 'selected' : ''}>CBM (ตามสภาพ)</option>
+              </select>
+            </td>
+            <td><input type="text" class="text-input" value="${escapeHtml(r.actionPlan || '')}" placeholder="ระบุวิธีป้องกัน/ซ่อมบำรุง..." oninput="updateField(${r.id}, 'actionPlan', this.value)"></td>
+            <td style="text-align:center;">
+              <select class="text-input" style="text-align:center;" onchange="updateField(${r.id}, 'status', this.value)">
+                <option value="รอแผนงาน" ${r.status === 'รอแผนงาน' ? 'selected' : ''}>⏳ รอแผนงาน</option>
+                <option value="กำลังดำเนินการ" ${r.status === 'กำลังดำเนินการ' ? 'selected' : ''}>🔄 กำลังทำ</option>
+                <option value="เสร็จสิ้น" ${r.status === 'เสร็จสิ้น' ? 'selected' : ''}>✅ เสร็จสิ้น</option>
+              </select>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
   }
 
   visibleCountEl.textContent = filtered.length;
-  emptyState.style.display = filtered.length === 0 ? 'block' : 'none';
+  emptyState.style.display = (filtered.length === 0 && currentTab !== 'plan') ? 'block' : 'none';
 }
 
 function updateField(id, field, val) {
@@ -743,8 +821,8 @@ function updateField(id, field, val) {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v2', JSON.stringify(records));
-  alert('✨ บันทึกข้อมูลคะแนนของคุณลงในหน่วยความจำเบราว์เซอร์ (LocalStorage) เรียบร้อยแล้ว!');
+  localStorage.setItem('rcm_excel_data_v3', JSON.stringify(records));
+  alert('✨ บันทึกข้อมูลแผนงานและคะแนนของคุณลงในเบราว์เซอร์เรียบร้อยแล้ว!');
 }
 
 document.getElementById('search').addEventListener('input', (e) => {
