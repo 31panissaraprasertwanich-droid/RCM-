@@ -42,7 +42,7 @@
     padding:20px 28px 16px;
   }
   .header-inner{
-    max-width:1200px;
+    max-width:1300px;
     margin:0 auto;
   }
   .title-row{
@@ -65,6 +65,27 @@
     font-size:0.82rem;
     margin-top:4px;
   }
+  
+  .header-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .nav-tabs{display:flex; gap:6px;}
+  .tab-btn{
+    background:var(--panel-2); border:1px solid var(--border); color:var(--muted);
+    padding:6px 14px; border-radius:6px; cursor:pointer; font-family:inherit; font-size:0.8rem; transition:all .15s;
+  }
+  .tab-btn.active{background:var(--amber-dim); border-color:var(--amber); color:var(--amber); font-weight:600;}
+
+  .save-btn{
+    background:var(--teal-dim); border:1px solid #2c5952; color:var(--teal);
+    padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; font-family:inherit;
+  }
+  .save-btn:hover{background:#264d47;}
+
   .count-badge{
     font-family:'IBM Plex Mono', monospace;
     font-size:0.8rem;
@@ -134,7 +155,7 @@
   }
 
   main{
-    max-width:1200px;
+    max-width:1300px;
     margin:0 auto;
     padding:24px 28px 60px;
   }
@@ -154,29 +175,26 @@
   table{
     width:100%;
     border-collapse:collapse;
-    font-size:0.86rem;
+    font-size:0.85rem;
   }
   thead th{
     text-align:left;
     font-size:0.7rem;
     color:var(--muted);
     font-weight:600;
-    padding:0 12px 10px;
+    padding:10px 12px;
     border-bottom:1px solid var(--border);
+    background:var(--panel-2);
   }
-  thead th.num{width:40px;}
-  thead th.code{width:100px;}
-  thead th.cat{width:180px;}
-
+  
   tbody tr{
     border-bottom:1px solid var(--border);
-    cursor:pointer;
     transition:background .1s ease;
   }
   tbody tr:hover{background:var(--panel-2);}
   tbody td{
     padding:10px 12px;
-    vertical-align:top;
+    vertical-align:middle;
   }
   td.num{
     color:var(--muted);
@@ -194,19 +212,52 @@
     padding:2px 7px;
     border-radius:3px;
   }
-  .code-pill.h-code{ color:#4fb8a6; background:#1c3a37; border-left-color:#4fb8a6; }
-  .code-pill.m-code{ color:#6cb4ee; background:#1a2f4c; border-left-color:#6cb4ee; }
-  .code-pill.l-code{ color:#d98cd9; background:#3a1d3a; border-left-color:#d98cd9; }
-  .code-pill.s-code{ color:#e85d75; background:#4a1f29; border-left-color:#e85d75; }
-  .code-pill.um-code{ color:#e8d75d; background:#4a451f; border-left-color:#e8d75d; }
-  .code-pill.sm-code{ color:#5de87d; background:#1f4a27; border-left-color:#5de87d; }
-
-  td.desc{color:var(--text);}
-  td.cause{color:var(--muted);}
-  td.catcell{
-    color:var(--muted);
-    font-size:0.75rem;
+  
+  /* Input สำหรับกรอกคะแนน FMEA และ CEHI */
+  input.score-input {
+    width: 60px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px;
+    text-align: center;
+    border-radius: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
   }
+  input.score-input:focus {
+    border-color: var(--amber);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(232,163,61,0.15);
+  }
+  input.text-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.82rem;
+  }
+  input.text-input:focus {
+    border-color: var(--amber);
+    outline: none;
+  }
+
+  .rpn-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    text-align: center;
+    min-width: 45px;
+  }
+  .rpn-low { background: #1c3a37; color: var(--teal); }
+  .rpn-mid { background: #4a3a20; color: var(--amber); }
+  .rpn-high { background: #4a2720; color: var(--danger); }
+
   mark{
     background:rgba(232,163,61,0.32);
     color:inherit;
@@ -218,84 +269,13 @@
     font-size:0.78rem;
     color:var(--muted);
     margin:0 0 12px 2px;
-  }
-
-  /* Modal */
-  .modal-overlay{
-    position:fixed;
-    top:0; left:0; right:0; bottom:0;
-    background:rgba(10,14,18,0.8);
-    backdrop-filter:blur(4px);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:100;
-    padding:20px;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .2s ease;
-  }
-  .modal-overlay.open{
-    opacity:1;
-    pointer-events:auto;
-  }
-  .modal{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:10px;
-    width:100%;
-    max-width:600px;
-    padding:24px;
-    box-shadow:0 20px 40px rgba(0,0,0,0.5);
-  }
-  .modal h3{
-    margin:0 0 16px 0;
-    font-size:1.1rem;
-    color:var(--amber);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-  }
-  .modal-close{
-    background:none;
-    border:none;
-    color:var(--muted);
-    font-size:1.2rem;
-    cursor:pointer;
-    padding:4px 8px;
-  }
-  .modal-close:hover{color:var(--text);}
-  .modal-grid{
-    display:grid;
-    grid-template-columns:110px 1fr;
-    gap:10px 16px;
-    font-size:0.88rem;
-    margin-bottom:16px;
-  }
-  .modal-grid .label{color:var(--muted); font-weight:500;}
-  .modal-grid .val{color:var(--text);}
-  
-  .rcm-box{
-    background:var(--panel-2);
-    border-left:4px solid var(--teal);
-    padding:14px;
-    border-radius:0 6px 6px 0;
-  }
-  .rcm-box h4{
-    margin:0 0 6px 0;
-    font-size:0.82rem;
-    color:var(--teal);
-    text-transform:uppercase;
-  }
-  .rcm-box p{
-    margin:0;
-    font-size:0.86rem;
-    color:var(--text);
-    line-height:1.5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   footer{
-    max-width:1200px;
+    max-width:1300px;
     margin:0 auto;
     padding:0 28px 40px;
     color:var(--muted);
@@ -305,7 +285,6 @@
   @media (max-width:640px){
     header{padding:14px 16px;}
     main{padding:16px;}
-    thead th.cat, td.catcell, thead th.num, td.num{display:none;}
   }
 </style>
 </head>
@@ -315,15 +294,22 @@
   <div class="header-inner">
     <div class="title-row">
       <div>
-        <h1>ระบบ RCM ฐานข้อมูลรหัสความเสียหายสถานีไฟฟ้า<span class="accent"> (FMEA Master)</span></h1>
-        <div class="subtitle">คลิกที่แถวรายการเพื่อดูรายละเอียดเชิงลึกและแนวทางการบำรุงรักษาเชิงป้องกัน (PM)</div>
+        <h1>ระบบ RCM สถานีไฟฟ้า: <span class="accent" id="modeTitle">FMEA & RPN Assessment</span></h1>
+        <div class="subtitle">จัดการข้อมูลความเสียหายและช่องกรอกคะแนนประเมินตามไฟล์ RCM.xlsx จริง</div>
       </div>
-      <div class="count-badge">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</div>
+      <div class="header-controls">
+        <div class="nav-tabs">
+          <button class="tab-btn active" onclick="switchTab('fmea')">1. FMEA & RPN</button>
+          <button class="tab-btn" onclick="switchTab('cehi')">2. โครงสร้าง CEHI</button>
+        </div>
+        <button class="save-btn" onclick="saveData()">💾 บันทึกข้อมูล</button>
+        <div class="count-badge">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</div>
+      </div>
     </div>
 
     <div class="search-wrap">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input id="search" type="text" placeholder="พิมพ์ค้นหารหัส เช่น T001, H001, M001, ซีลเสื่อมสภาพ, GIS, แบตเตอรี่..." autocomplete="off">
+      <input id="search" type="text" placeholder="พิมพ์ค้นหารหัส เช่น T001, Component, หรือสาเหตุ..." autocomplete="off">
     </div>
 
     <div class="chips" id="chips"></div>
@@ -331,17 +317,11 @@
 </header>
 
 <main>
-  <div class="section-label">รายการรหัสความเสียหายทั้งหมดในระบบ</div>
+  <div class="section-label">
+    <span id="tableInstruction">คลิกช่องคะแนน (S, O, D) เพื่อประเมินค่า RPN อัตโนมัติ</span>
+  </div>
   <table>
-    <thead>
-      <tr>
-        <th class="num">#</th>
-        <th class="code">รหัส</th>
-        <th class="cat">หมวดหมู่อุปกรณ์</th>
-        <th class="desc">อาการ / Failure Mode</th>
-        <th class="cause">สาเหตุการเกิด / Failure Cause</th>
-      </tr>
-    </thead>
+    <thead id="tableHead"></thead>
     <tbody id="tbody"></tbody>
   </table>
   <div class="empty" id="emptyState" style="display:none;">
@@ -350,274 +330,64 @@
   </div>
 </main>
 
-<div class="modal-overlay" id="rcmModal">
-  <div class="modal">
-    <h3 id="modalCodeTitle">รหัส: - <button class="modal-close" id="closeModal">&times;</button></h3>
-    <div class="modal-grid">
-      <div class="label">หมวดหมู่:</div>
-      <div class="val" id="modalCat">-</div>
-      <div class="label">อาการ (Mode):</div>
-      <div class="val" id="modalDesc">-</div>
-      <div class="label">สาเหตุ (Cause):</div>
-      <div class="val" id="modalCause">-</div>
-    </div>
-    
-    <div class="rcm-box">
-      <h4>🛠️ RCM Preventive Maintenance Strategy</h4>
-      <p id="modalPmAction">กำลังประเมินแผนงานบำรุงรักษา...</p>
-    </div>
-  </div>
-</div>
-
 <footer>
-  ฐานข้อมูล RCM FMEA สำหรับวิเคราะห์และจัดทำแผนบำรุงรักษาอุปกรณ์สถานีไฟฟ้า
+  ฐานข้อมูล RCM จากไฟล์ RCM.xlsx (ข้อมูลจริง 223 รายการ) — ระบบบันทึกอัตโนมัติผ่าน LocalStorage
 </footer>
 
 <script>
-// ฐานข้อมูล FMEA ที่รวบรวมข้อมูลทั้งหมดที่คุณส่งมา
-const records = [
-  // หมวดหม้อแปลง (Transformer - T)
-  {no:1, code:"T001", cat:"หม้อแปลง (Transformer)", desc:"Counter Lightning Arrester ชำรุด", cause:"โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", pmAction:"ตรวจสอบสภาพตัวนับสถิติฟ้าผ่าและลูกถ้วย Arrester ทุก 1 ปี"},
-  {no:2, code:"T002", cat:"หม้อแปลง (Transformer)", desc:"Oil level gauge ชำรุด", cause:"โครงแตก, กลไกชำรุด", pmAction:"ตรวจสอบกระจกมองระดับน้ำมันและเช็คสวิตช์เตือนระดับน้ำมัน ทุก 1 ปี"},
-  {no:3, code:"T003", cat:"หม้อแปลง (Transformer)", desc:"Oil temp ชำรุด", cause:"โครงแตก, เสื่อมสภาพ, กลไกชำรุด", pmAction:"สอบเทียบเกจวัดอุณหภูมิน้ำมัน (OTI) ทุก 2 ปี"},
-  {no:4, code:"T004", cat:"หม้อแปลง (Transformer)", desc:"Silicagel เปลี่ยนสี / Air Breather ชำรุด", cause:"Silicagel เสื่อมสภาพ, การอุดตัน / ฝุ่นละออง", pmAction:"เปลี่ยนเม็ดซิลิกาเจลและทำความสะอาดกระปุกดักฝุ่น ทุก 6 เดือน"},
-  {no:5, code:"T005", cat:"หม้อแปลง (Transformer)", desc:"Winding temp ชำรุด", cause:"โครงแตก, เสื่อมสภาพ, กลไกชำรุด", pmAction:"สอบเทียบเกจวัดอุณหภูมิขดลวด (WTI) ทุก 2 ปี"},
-  {no:6, code:"T006", cat:"หม้อแปลง (Transformer)", desc:"น้ำมันรั่วซึมด้านบนหม้อแปลง", cause:"ซีลเสื่อมสภาพ", pmAction:"ตรวจสอบรอยซึมด้วยสายตา ขันน็อตหน้าแปลน และเปลี่ยนชุดซีลยาง ทุก 2 ปี"},
-  {no:7, code:"T007", cat:"หม้อแปลง (Transformer)", desc:"น้ำมันรั่วซึมที่ Bushing หม้อแปลง", cause:"ซีลเสื่อมสภาพ, แตกหัก, ติดตั้งไม่ถูกต้องตามมาตรฐาน, ความเสียหายจากการเคลื่อนที่", pmAction:"ตรวจสอบค่า Tan Delta และตรวจสภาพซีลยาง Bushing ทุก 1 ปี"},
-  {no:8, code:"T008", cat:"หม้อแปลง (Transformer)", desc:"น้ำมันรั่วซึมที่ Cable box", cause:"ซีลเสื่อมสภาพ, ติดตั้งไม่ถูกต้องตามมาตรฐาน, ความร้อนสูงเกินไป", pmAction:"ตรวจสอบด้วยกล้อง Thermoscan จุดต่อสายเคเบิล ทุก 6 เดือน"},
-  {no:9, code:"T009", cat:"หม้อแปลง (Transformer)", desc:"น้ำมันรั่วซึมที่ Radiator", cause:"ซีลเสื่อมสภาพ, ติดตั้งไม่ถูกต้อง, แรงดันภายในสูง, สะสมสิ่งสกปรก", pmAction:"ล้างทำความสะอาดครีบระบายความร้อนและตรวจวาล์วระบายแรงดัน ทุก 1 ปี"},
-  {no:10, code:"T012", cat:"หม้อแปลง (Transformer)", desc:"น้ำมันหม้อแปลงต่ำ", cause:"การทำงานผิดปกติของระบบระบายความร้อน, ซีลเสื่อมสภาพ", pmAction:"ตรวจสอบระดับน้ำมันที่ Oil Level Gauge ทุก 3 เดือน"},
-  {no:11, code:"T015", cat:"หม้อแปลง (Transformer)", desc:"เปลี่ยนหม้อแปลงชำรุด", cause:"การรั่วซึมน้ำมัน, ลัดวงจร, เสื่อมสภาพตามอายุ, ความร้อนสะสม", pmAction:"วิเคราะห์ก๊าซละลายในน้ำมัน (DGA) และทดสอบฉนวน ทุก 1 ปี"},
-  {no:12, code:"T016", cat:"หม้อแปลง (Transformer)", desc:"หม้อแปลง Trip", cause:"การทำงานผิดพลาดของรีเลย์", pmAction:"ทดสอบวงจรทริปและระบบป้องกันร่วมทั้งหมด ทุก 1 ปี"},
-  {no:13, code:"T018", cat:"หม้อแปลง (Transformer)", desc:"เปลี่ยนพัดลมหม้อแปลง", cause:"สึกหรอจากการใช้งานนาน", pmAction:"อัดจารบีลูกปืนมอเตอร์พัดลมและเช็คการสั่นสะเทือน ทุก 1 ปี"},
-  {no:14, code:"T019", cat:"หม้อแปลง (Transformer)", desc:"พัดลมหม้อแปลงถอดไปซ่อม", cause:"สึกหรอจากการใช้งานนาน", pmAction:"จัดเตรียมพัดลมสำรองในคลัง (Spare Unit) สำหรับสับเปลี่ยน"},
-  {no:15, code:"T020", cat:"หม้อแปลง (Transformer)", desc:"พัดลมหม้อแปลงไม่ทำงาน", cause:"การเสียหายของมอเตอร์", pmAction:"ตรวจสอบเบรกเกอร์ ขดลวดมอเตอร์ และแมกเนติกคอนแทคเตอร์ ทุก 6 เดือน"},
-  {no:16, code:"T023", cat:"หม้อแปลง (Transformer)", desc:"ขดลวดหม้อแปลงชำรุด", "cause":"โอเวอร์โหลด, แรงดันผิดปกติ, การผลิตไม่ดี, ความชื้น", pmAction:"ตรวจวัดค่าความต้านทานฉนวน (Megger) และคุมพิกัดกระแส ทุก 1 ปี"},
-  {no:17, code:"T024", cat:"หม้อแปลง (Transformer)", desc:"แกนเหล็กหม้อแปลงชำรุด", "cause":"การออกแบบผิดพลาด, ความเครียดจากการเปลี่ยนกระแสไฟฟ้า", pmAction:"วิเคราะห์กระแสฮาร์มอนิกและตรวจวัดเสียงผิดปกติ ทุก 1 ปี"},
-  {no:18, code:"T025", cat:"หม้อแปลง (Transformer)", desc:"HV Bushing หม้อแปลงชำรุด", "cause":"เสื่อมสภาพ", pmAction:"ทดสอบ Tan Delta และ Capacitance สำหรับ HV Bushing ทุก 2 ปี"},
-  {no:19, code:"T026", cat:"หม้อแปลง (Transformer)", desc:"MV Bushing หม้อแปลงชำรุด", "cause":"เสื่อมสภาพ", pmAction:"ทำความสะอาดผิวลูกถ้วยและตรวจรอยร้าว ทุก 1 ปี"},
-  {no:20, code:"T027", cat:"หม้อแปลง (Transformer)", desc:"OFF LOAD TAP หม้อแปลงชำรุด", "cause":"เสื่อมสภาพ", pmAction:"ตรวจสอบหน้าสัมผัส Off-Load Tap ขณะปลดจ่ายไฟ ทุก 3 ปี"},
-  {no:21, code:"T028", cat:"หม้อแปลง (Transformer)", desc:"Buchholz relay ชำรุด", "cause":"ลัดวงจรภายใน, ติดตั้งไม่ถูกต้อง, เสื่อมสภาพ, อุณหภูมิสูง, กลไกติดขัด", pmAction:"ทดสอบการทำงานรีเลย์ Buchholz ด้วยการจำลองสัญญาณ ทุก 1 ปี"},
-  {no:22, code:"T029", cat:"หม้อแปลง (Transformer)", desc:"Pressure relief ชำรุด", "cause":"ติดตั้งไม่ถูกต้อง, เสื่อมสภาพ, กลไกติดขัด, แรงดันเกินบ่อย", pmAction:"ตรวจสอบสลักยึดและไดอะแฟรมวาล์วระบายแรงดัน ทุก 1 ปี"},
-  {no:23, code:"T101", cat:"ตู้ควบคุม/รีเลย์ (Control)", desc:"Control desk tap อ่านไม่ตรง", "cause":"เสื่อมสภาพจากอายุ, ความชื้นหรือสิ่งสกปรก", pmAction:"สอบเทียบตัวบ่งชี้ตำแหน่ง Tap และทำความสะอาดตู้ ทุก 2 ปี"},
-  {no:24, code:"T102", cat:"ตู้ควบคุม/รีเลย์ (Control)", desc:"Control desk หลอดขาด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"เปลี่ยนหลอดไฟแสดงสถานะเป็นชนิด LED ทุก 3 ปี"},
-  {no:25, code:"T103", cat:"ตู้ควบคุม/รีเลย์ (Control)", desc:"Control พัดลมชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบตู้ควบคุมพัดลมและเทสระบบออโต้ ทุก 6 เดือน"},
-  {no:26, code:"T104", cat:"ตู้ควบคุม/รีเลย์ (Control)", desc:"Differential relay ชำรุด", "cause":"ผิดพลาดในระบบควบคุม, CT Malfunction, ตั้งค่าผิด", pmAction:"ทดสอบ Secondary Injection และสอบทานค่า Setting ทุก 2 ปี"},
-  {no:27, code:"T105", cat:"ตู้ควบคุม/รีเลย์ (Control)", desc:"Differential relay เปลี่ยน", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบและเปลี่ยนรีเลย์ตามรอบอายุขัย ทุก 5-10 ปี"},
-  {no:28, code:"T106", cat:"ตู้ควบคุม/รีเลย์ (Control)", desc:"Tripping relay ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบแรงดันแบตเตอรี่สถานีและทดสอบการสั่งปลด ทุก 6 เดือน"},
-  {no:29, code:"T107", cat:"ตู้ควบคุม/รีเลย์ (Control)", desc:"Tripping relay เปลี่ยน", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบวงจรทริปและทดสอบการทำงานของรีเลย์ ทุก 2 ปี"},
-  {no:30, code:"T206", cat:"OLTC", desc:"Counter Tap ไม่ทำงาน", "cause":"กลไกติดขัด, เฟืองชำรุด, ขาดสารหล่อลื่น, เสื่อมสภาพ", pmAction:"หยอดสารหล่อลื่นเฟืองขับตัวนับครั้ง ทุก 1 ปี"},
-  {no:31, code:"T208", cat:"OLTC", desc:"Micro sw. Lower & upper limit ค้าง", "cause":"กลไกติดขัด", pmAction:"ปรับตั้งระยะลิมิตสวิตช์และทำความสะอาดหน้าสัมผัส ทุก 1 ปี"},
-  {no:32, code:"T209", cat:"OLTC", desc:"OLTC เปลี่ยน Tap ทางไฟฟ้าไม่ได้", "cause":"OLTC เปลี่ยน Tap ทางไฟฟ้า ไม่ทำงานจริง", pmAction:"ตรวจสอบแหล่งจ่ายไฟมอเตอร์และคอนแทคเตอร์ ทุก 6 เดือน"},
-  {no:33, code:"T210", cat:"OLTC", desc:"น้ำมันรั่วซึมที่ฝาบ่อ OLTC", "cause":"ซีลเสื่อมสภาพ", pmAction:"เปลี่ยนปะเก็นฝาครอบ OLTC และตรวจสภาพน้ำมัน ทุก 2 ปี"},
-  {no:34, code:"T211", cat:"OLTC", desc:"เปลี่ยน Tap แล้วมีเสียงดัง", "cause":"เสียงดังผิดปกติจากกลไกสปริงขับเคลื่อน", pmAction:"ตรวจสอบกลไกสปริงและวิเคราะห์สภาพน้ำมันภายในห้อง OLTC ทันที"},
-  {no:35, code:"T212", cat:"OLTC", desc:"ระดับน้ำมันต่ำที่ OLTC", "cause":"ระดับน้ำมันต่ำที่ OLTC ซีลเสื่อมสภาพ", pmAction:"ตรวจสอบระดับน้ำมันในถัง compartment ของ OLTC ทุก 6 เดือน"},
-  {no:36, code:"T215", cat:"OLTC", desc:"Tap protective relay ชำรุด", "cause":"กลไกเสื่อมสภาพ, ความชื้นฝุ่น, ต่อสายผิดหรือ Short", pmAction:"ทดสอบรีเลย์ป้องกัน Sudden Pressure Relay ทุก 1 ปี"},
-  {no:37, code:"T216", cat:"OLTC", desc:"Main contact ชำรุด", "cause":"อาร์กบ่อย, กระแสเกินทำให้อุณหภูมิสูง, น้ำมันเสื่อม", pmAction:"วัดค่าความต้านทานหน้าสัมผัสหลัก (Contact Resistance) ทุก 1 ปี"},
-  {no:38, code:"T217", cat:"OLTC", desc:"Transition contact ชำรุด", "cause":"อาร์กซ้ำซ้อน, น้ำมันเสื่อม, สปริง/กลไกกดเสีย, ความต้านทานเพิ่ม", pmAction:"ตรวจสอบตัวต้านทานเปลี่ยนผ่านและหน้าสัมผัส ทุก 3 ปี"},
-  {no:39, code:"T218", cat:"OLTC", desc:"Gear unit ชำรุด", "cause":"สึกหรอ", pmAction:"เติมจารบีชุดเกียร์และตรวจการสึกหรอฟันเฟือง ทุก 1 ปี"},
-  {no:40, code:"T219", cat:"OLTC", desc:"OLTC Accessories ชำรุด", "cause":"ชำรุดจาก Accessories", pmAction:"ตรวจสอบอุปกรณ์ประกอบ เช่น มอเตอร์ขับและฮีตเตอร์ ทุก 1 ปี"},
-  {no:41, code:"T220", cat:"OLTC", desc:"Motor drive control board ชำรุด", "cause":"แรงดันผิดปกติ, ความชื้นฝุ่นในตู้, เสื่อมสภาพ", pmAction:"ตรวจสอบแรงดันไฟเลี้ยงและเช็คบอร์ดควบคุม ทุก 1 ปี"},
-  {no:42, code:"T301", cat:"ชุดกรองน้ำมัน (Oil Filter)", desc:"Counter oil filter ทำงานผิดปกติ", "cause":"Sensor/Trigger เสียหาย, สัญญาณรบกวนทางไฟฟ้า", pmAction:"เดินสายสัญญาณใหม่ด้วย Shielded cable ทุก 2 ปี"},
-  {no:43, code:"T302", cat:"ชุดกรองน้ำมัน (Oil Filter)", desc:"Motor oil filter หมุนกลับทาง", "cause":"ต่อท่อผิดด้าน (Inlet/Outlet สลับ)", pmAction:"ตรวจสอบทิศทางการหมุนของมอเตอร์ปั๊มน้ำมันหลังซ่อมบำรุง"},
-  {no:44, code:"T303", cat:"ชุดกรองน้ำมัน (Oil Filter)", desc:"Oil filter unit มีน้ำมันรั่วซึม", "cause":"ซีลเสื่อมสภาพ", pmAction:"ตรวจสอบจุดต่อท่อและเปลี่ยนโอริงชุดกรองน้ำมัน ทุก 1 ปี"},
-  {no:45, code:"T304", cat:"ชุดกรองน้ำมัน (Oil Filter)", desc:"Oil filter ไม่ทำงานหลังจากเปลี่ยน Tap", "cause":"ระบบปั๊มน้ำมัน OLTC หยุดทำงานหรือเดินผิดทาง", pmAction:"ตรวจสอบ Timer Relay และมอเตอร์ปั๊มกรองน้ำมัน ทุก 1 ปี"},
-  {no:46, code:"T305", cat:"ชุดกรองน้ำมัน (Oil Filter)", desc:"Pressure gauge oil filter เสีย", "cause":"แรงดันเกิน, สิ่งสกปรกในเกจ, เสื่อมสภาพ", pmAction:"สอบเทียบเกจวัดแรงดันชุดกรองน้ำมัน ทุก 2 ปี"},
-
-  // หมวด High Voltage / GIS (H)
-  {no:47, code:"H001", cat:"แรงสูง / GIS (HV)", desc:"Closing coil ชำรุด, Mechanism CB ขัดข้อง", cause:"กลไกติดขัด, เสื่อมสภาพ, Misoperation", pmAction:"ตรวจสอบและทำความสะอาดกลไก Circuit Breaker ทุก 1 ปี"},
-  {no:48, code:"H002", cat:"แรงสูง / GIS (HV)", desc:"Mechanism CB ขัดข้อง", "cause":"ขาดการบำรุงรักษา, Spring เสื่อม/หัก, Misalignment", pmAction:"ตรวจสอบแรงสปริงและหล่อลื่นกลไก CB ทุก 2 ปี"},
-  {no:49, code:"H003", cat:"แรงสูง / GIS (HV)", desc:"Pump motor ของ CB ไม่ทำงาน", "cause":"ไฟไม่เข้ามอเตอร์, Pressure switch ชำรุด", pmAction:"ตรวจสอบแรงดันไฮดรอลิกและสวิตช์แรงดัน ทุก 6 เดือน"},
-  {no:50, code:"H005", cat:"แรงสูง / GIS (HV)", desc:"Pump motor ของ CB ทำงานบ่อย", "cause":"ระบบรั่ว, Accumulator เสื่อม, Pressure switch เสีย", pmAction:"ตรวจสอบรอยรั่วซึมในระบบไฮดรอลิก ทุก 6 เดือน"},
-  {no:51, code:"H006", cat:"แรงสูง / GIS (HV)", desc:"SF6 low gas", "cause":"รั่วซึมแก๊ส, เสื่อมสภาพ, Pressure Gauge/Sensor เสีย", pmAction:"ตรวจสอบความดันก๊าซ SF6 และเช็คสัญญาณเตือน ทุก 6 เดือน"},
-  {no:52, code:"H007", cat:"แรงสูง / GIS (HV)", desc:"SF6 over gas", "cause":"อุณหภูมิสูง, Internal Arc, เติมก๊าซตอนเย็นแล้วร้อนขึ้น, เติมเกิน", pmAction:"ตรวจสอบอุณหภูมิแวดล้อมและสอบเทียบเกจวัดแรงดัน ทุก 1 ปี"},
-  {no:53, code:"H010", cat:"แรงสูง / GIS (HV)", desc:"GIS ชำรุด", "cause":"ติดตั้งผิดพลาด, Internal Arc/Flashover, เสื่อมสภาพ, Human Error", pmAction:"ตรวจวัดค่า Partial Discharge (PD) ในระบบ GIS ทุก 2 ปี"},
-  {no:54, code:"H011", cat:"แรงสูง / GIS (HV)", desc:"SW ปลด / สับ ไม่ได้", "cause":"กลไกติดขัด, Charge Spring ไม่ทำงาน, Control Circuit Fault", pmAction:"ตรวจสอบวงจรควบคุมและทดสอบการปลดสับสวิตช์ ทุก 1 ปี"},
-  {no:55, code:"H012", cat:"แรงสูง / GIS (HV)", desc:"Earthing SW ปลด / สับ ไม่ได้", "cause":"กลไกติดขัด, Control Circuit Fault, Residual Voltage, Sensor Error", pmAction:"ตรวจสอบระบบ Interlock และทดสอบกลไก Earthing Switch ทุก 1 ปี"},
-  {no:56, code:"H013", cat:"แรงสูง / GIS (HV)", desc:"Earthing SW ชำรุด", "cause":"กลไกติดขัด, Contact Point ชำรุด, Motorized ES ชำรุด", pmAction:"ตรวจสอบหน้าสัมผัสทางไฟฟ้าของ ES ทุก 2 ปี"},
-  {no:57, code:"H014", cat:"แรงสูง / GIS (HV)", desc:"น้ำมัน Hydraulic รั่วซึม", "cause":"ซีลเสื่อม, ความดันสูงเกิน, ท่อแตก, Bolt/Flange หลวม", pmAction:"ตรวจสอบท่อไฮดรอลิกและขันน็อตหน้าแปลน ทุก 6 เดือน"},
-  {no:58, code:"H015", cat:"แรงสูง / GIS (HV)", desc:"น้ำมันรั่วซึมที่ Pole ของ CB", "cause":"ซีลเสื่อมสภาพ", pmAction:"เปลี่ยนซีลโอริงและปะเก็นจุดต่อ Pole CB ตามรอบ PM ใหญ่"},
-  {no:59, code:"H018", cat:"แรงสูง / GIS (HV)", desc:"CB Main Contact ชำรุด", "cause":"Mechanical/Electrical Life, แรงกดไม่พอ, High Fault Current, ฝุ่น", pmAction:"ตรวจวัดค่าความต้านทานหน้าสัมผัส (Loop Resistance) ทุก 2 ปี"},
-  {no:60, code:"H019", cat:"แรงสูง / GIS (HV)", desc:"ES/DS Main Contact ชำรุด", "cause":"Mechanical/Electrical Life, แรงกดไม่พอ, High Fault Current", pmAction:"ตรวจสอบหน้าสัมผัส Disconnecting/Earthing Switch ทุก 2 ปี"},
-  {no:61, code:"H020", cat:"แรงสูง / GIS (HV)", desc:"DS/ES Mechanism ชำรุด", "cause":"กลไกติดขัด", pmAction:"ตรวจสอบและหยอดสารหล่อลื่นชุดกลไก DS/ES ทุก 1 ปี"},
-  {no:62, code:"H021", cat:"แรงสูง / GIS (HV)", desc:"Trip coil ชำรุด", "cause":"เสื่อมสภาพ, ปัญหาไฟกระชาก, ความชื้น, ระบบควบคุมผิดพลาด", pmAction:"ทดสอบวงจรทริปและวัดค่าความต้านทาน Trip Coil ทุก 2 ปี"},
-  {no:63, code:"H022", cat:"แรงสูง / GIS (HV)", desc:"แก๊ส SF6 รั่ว", "cause":"รั่วซึม (Gas Leakage)", pmAction:"ตรวจหารอยรั่วด้วย Leak Detector และซ่อมแซมทันที"},
-  {no:64, code:"H023", cat:"แรงสูง / GIS (HV)", desc:"แก๊ส SF6 เสื่อมสภาพ", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบความบริสุทธิ์และปริมาณความชื้นในก๊าซ SF6 ทุก 2 ปี"},
-  {no:65, code:"H024", cat:"แรงสูง / GIS (HV)", desc:"SF6 Pressure gage ชำรุด", "cause":"รั่วซึม, ปนเปื้อนฝุ่น, ติดตั้งผิดพลาด, อุณหภูมิเปลี่ยน", pmAction:"สอบเทียบหรือเปลี่ยน Pressure Gauge ทุก 3 ปี"},
-  {no:66, code:"H101", cat:"แรงสูง / GIS (HV)", desc:"SW ไม่สามารถ Control ทางไฟฟ้าได้", "cause":"Control Circuit Fault", pmAction:"ตรวจสอบฟิวส์และสายไฟวงจรควบคุม ทุก 1 ปี"},
-  {no:67, code:"H102", cat:"แรงสูง / GIS (HV)", desc:"CT, PT ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ทดสอบ Ratio, Polarity และ Insulation Resistance ของ CT/PT ทุก 2 ปี"},
-  {no:68, code:"H103", cat:"แรงสูง / GIS (HV)", desc:"Flexible conductor ขาดบางส่วน", "cause":"Flexible conductor ขาดบางส่วน", pmAction:"ตรวจสอบด้วยสายตาและกล้อง Thermoscan ทุก 6 เดือน"},
-  {no:69, code:"H104", cat:"แรงสูง / GIS (HV)", desc:"Jumper, sleeve ร้อนแดง", "cause":"Jumper, sleeve ร้อนเกินมาตรฐาน", pmAction:"ตรวจสอบจุดต่อด้วย Thermoscan และขันน็อตให้แน่น ทุก 6 เดือน"},
-  {no:70, code:"H105", cat:"แรงสูง / GIS (HV)", desc:"Motor ของ SW ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบกระแสและสภาพมอเตอร์ขับสวิตช์ ทุก 1 ปี"},
-  {no:71, code:"H107", cat:"แรงสูง / GIS (HV)", desc:"SW โก่ง ร้อนแดง", "cause":"SW โก่ง ร้อนแดง จากการเสื่อมสภาพ", pmAction:"ตรวจสอบความตึงทางกลและจุดต่อกระแสไฟฟ้า ทุก 6 เดือน"},
-  {no:72, code:"H108", cat:"แรงสูง / GIS (HV)", desc:"SW ปลด-สับ ยาก", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ทำความสะอาดและหล่อลื่นกลไกสวิตช์ใบมีด ทุก 1 ปี"},
-  {no:73, code:"H109", cat:"แรงสูง / GIS (HV)", desc:"SW สับไม่สนิท", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ปรับตั้งระยะทางกลของสวิตช์ใบมีด ทุก 1 ปี"},
-  {no:74, code:"H110", cat:"แรงสูง / GIS (HV)", desc:"จุดต่อ Busbar ต่างๆร้อนแดง", "cause":"Hot Spot", pmAction:"ใช้กล้องอินฟราเรดตรวจจับจุดร้อน (Thermoscan) ทุก 6 เดือน"},
-  {no:75, code:"H111", cat:"แรงสูง / GIS (HV)", desc:"มีวัสดุ/รังนกที่ SW", "cause":"มีวัสดุ/รังนก", pmAction:"ตรวจสอบและทำความสะอาดพื้นที่ลานไพรี/สวิตช์ยาร์ด ทุก 3 เดือน"},
-  {no:76, code:"H112", cat:"แรงสูง / GIS (HV)", desc:"ลูกถ้วยชำรุด", "cause":"ความชื้น, ฝุ่น, และการกัดกร่อน", pmAction:"ทำความสะอาดผิวลูกถ้วย (Insulator Washing) ทุก 1 ปี"},
-  {no:77, code:"H113", cat:"แรงสูง / GIS (HV)", desc:"ลูกถ้วยมีรอยชำรุด", "cause":"ความชื้น, ฝุ่น, และการกัดกร่อน", pmAction:"ตรวจสอบรอยร้าวและเปลี่ยนลูกถ้วยที่ชำรุดทันที"},
-  {no:78, code:"H114", cat:"แรงสูง / GIS (HV)", desc:"สวิตช์ใบมีด ground ปลด / สับ ไม่ได้", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบกลไกการขับเคลื่อนและหน้าสัมผัส ทุก 1 ปี"},
-  {no:79, code:"H117", cat:"แรงสูง / GIS (HV)", desc:"DS/ES Mechanism ชำรุด", "cause":"กลไกติดขัด", pmAction:"ตรวจสอบชุดกลไกขับเคลื่อน DS/ES ทุก 1 ปี"},
-  {no:80, code:"H201", cat:"Capacitor Bank (HV)", desc:"Capacitor bank ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"วัดค่าความจุไฟฟ้า (Capacitance) และความต้านทาน ทุก 1 ปี"},
-  {no:81, code:"H202", cat:"Capacitor Bank (HV)", desc:"อุปกรณ์ชุดปลด-สับ Capacitor bank ไม่ทำงาน", "cause":"อุปกรณ์ทำงานผิดพลาด", pmAction:"ตรวจสอบคอนแทคเตอร์และวงจรควบคุมคาปาซิเตอร์ ทุก 1 ปี"},
-  {no:82, code:"H301", cat:"รีเลย์และระบบป้องกัน (HV)", desc:"Alarm show reset ไม่ได้", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบตู้สัญญาณเตือนและบอร์ด Annunciator ทุก 1 ปี"},
-  {no:83, code:"H305", cat:"รีเลย์และระบบป้องกัน (HV)", desc:"Distance relay ชำรุด", "cause":"ผิดพลาดในระบบควบคุม, CT Malfunction, ตั้งค่าผิด, สัญญาณรบกวน", pmAction:"ทดสอบ Distance Relay ด้วย Secondary Injection ทุก 2 ปี"},
-  {no:84, code:"H308", cat:"รีเลย์และระบบป้องกัน (HV)", desc:"Overcurrent relay ชำรุด", "cause":"การทำงานผิดพลาดในระบบควบคุม", pmAction:"สอบเทียบ Overcurrent Relay ทุก 2 ปี"},
-  {no:85, code:"H309", cat:"รีเลย์และระบบป้องกัน (HV)", desc:"Overcurrent relay เปลี่ยน", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"เปลี่ยนรีเลย์กระแสเกินตามรอบอายุการใช้งาน"},
-  {no:86, code:"H313", cat:"รีเลย์และระบบป้องกัน (HV)", desc:"ถอด Distance relay ไว้", "cause":"การทำงานผิดพลาดในระบบควบคุม", pmAction:"ตรวจสอบสถานะการติดตั้งอุปกรณ์ป้องกันก่อนจ่ายไฟ"},
-  {no:87, code:"H314", cat:"รีเลย์และระบบป้องกัน (HV)", desc:"สายส่ง SW ตก LTO ไม่ทำงาน", "cause":"การทำงานผิดพลาดในระบบควบคุม", pmAction:"ทดสอบวงจร Load Transfer Scheme ทุก 1 ปี"},
-  {no:88, code:"H315", cat:"รีเลย์และระบบป้องกัน (HV)", desc:"หลอด DC supply show reset ไม่ได้", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบหลอดไฟและวงจรแจ้งเตือน DC Supply ทุก 1 ปี"},
-
-  // หมวด Medium Voltage / Switchgear (M)
-  {no:89, code:"M001", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"CB ปลดไม่ได้", "cause":"กลไกติดขัด", pmAction:"ตรวจสอบและหล่อลื่นกลไก MV Circuit Breaker ทุก 1 ปี"},
-  {no:90, code:"M002", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"PT ชำรุด", "cause":"เสื่อมสภาพ", pmAction:"ทดสอบค่าฉนวนและอัตราส่วน Potential Transformer ทุก 2 ปี"},
-  {no:91, code:"M003", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"GCB low gas", "cause":"การรั่วซึมของ gas", pmAction:"ตรวจสอบความดันก๊าซในตู้ Gas Circuit Breaker ทุก 6 เดือน"},
-  {no:92, code:"M004", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"Vacuum interrupter ชำรุด", "cause":"กลไกติดขัด", pmAction:"ทดสอบค่าความต้านทานสูญญากาศ (Vacuum Integrity) ทุก 2 ปี"},
-  {no:93, code:"M005", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"Heater ชำรุด", "cause":"กลไกติดขัด", pmAction:"ตรวจสอบฮีตเตอร์กันชื้นในตู้สวิตช์เกียร์ ทุก 6 เดือนก่อนฤดูฝน"},
-  {no:94, code:"M006", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"Mechanism ของ CB ขัดข้อง", "cause":"อุปกรณ์ทำงานผิดพลาด", pmAction:"ตรวจสอบชุดกลไกสปริงและมอเตอร์ชาร์จ ทุก 1 ปี"},
-  {no:95, code:"M007", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"Motor charge spring ไม่ทำงาน/ทำงานตลอด", "cause":"อุปกรณ์ทำงานผิดพลาด", pmAction:"ตรวจสอบสวิตช์จำกัดระยะ (Limit Switch) มอเตอร์สปริง ทุก 1 ปี"},
-  {no:96, code:"M008", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"OCB มีน้ำมันไหลซึม", "cause":"การรั่วซึมของน้ำมัน", pmAction:"ตรวจสอบซีลปะเก็นตู้ Oil Circuit Breaker ทุก 1 ปี"},
-  {no:97, code:"M009", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"Station service / Pad mounted TR น้ำมันรั่วซึม", "cause":"การรั่วซึมของน้ำมัน", pmAction:"ตรวจสอบหม้อแปลงบริการสถานี (SS TR) และซีลยาง ทุก 1 ปี"},
-  {no:98, code:"M010", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"SWGR ระเบิด", "cause":"การเกิดไฟฟ้าลัดวงจร (Short Circuit)", pmAction:"ตรวจสอบค่าความเป็นฉนวนและการป้องกันระบบ (Coordination Study) ทุก 3 ปี"},
-  {no:99, code:"M011", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"ขณะปลด lock เพื่อ isolate CB สับเข้าเอง", "cause":"กลไกติดขัด", pmAction:"ตรวจสอบระบบ Mechanical Interlock ของตู้สวิตช์เกียร์ ทุก 1 ปี"},
-  {no:100, code:"M012", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"ซ่อม Circuit breaker ชำรุด", "cause":"กลไกชำรุด", pmAction:"ทำ Overhaul ตามรอบชั่วโมงการใช้งานหรือทุก 5 ปี"},
-  {no:101, code:"M013", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"นำ CB ออกนอกตู้ไม่ได้", "cause":"อุปกรณ์ทำงานผิดพลาด", pmAction:"ตรวจสอบล้อเลื่อนและระบบล็อกแร็คตู้สวิตช์เกียร์ ทุก 1 ปี"},
-  {no:102, code:"M014", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"เปลี่ยน SWGR ชำรุด", "cause":"อุปกรณ์ทำงานผิดพลาด", pmAction:"ประเมินอายุและวางแผนทดแทนสวิตช์เกียร์ตามสภาพ (Condition-based)"},
-  {no:103, code:"M015", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"แผง SWGR มีเสียงดังผิดปกติ", "cause":"อุปกรณ์ทำงานผิดพลาด", pmAction:"ตรวจสอบเสียง Partial Discharge หรือความหลวมของบัสบาร์ ทุก 6 เดือน"},
-  {no:104, code:"M016", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"สวิตช์ตกไม่สับ ทั้ง RR on อยู่", "cause":"กลไกชำรุด, เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบวงจร Auto-transfer และรีเลย์สั่งการ ทุก 1 ปี"},
-  {no:105, code:"M017", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"Earthing SW ปลดไม่ได้", "cause":"กลไกชำรุด", pmAction:"ตรวจสอบกลไกสวิตช์ลงดินในตู้สวิตช์เกียร์ ทุก 1 ปี"},
-  {no:106, code:"M018", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"Earthing SWชำรุด", "cause":"กลไกชำรุด", pmAction:"ตรวจสอบหน้าสัมผัสและกลไกสวิตช์ลงดิน ทุก 1 ปี"},
-  {no:107, code:"M021", cat:"สวิตช์เกียร์แรงกลาง (MV)", desc:"Station service transformer ชำรุด", "cause":"การเกิดไฟฟ้าลัดวงจร", pmAction:"ทดสอบความเป็นฉนวนหม้อแปลงบริการสถานี ทุก 2 ปี"},
-  {no:108, code:"M101", cat:"GIS แรงกลาง (MV)", desc:"CB ขัดข้อง ปลด-สับ ไม่ได้", "cause":"อุปกรณ์ทำงานผิดพลาด", pmAction:"ตรวจสอบชุดขับเคลื่อน GIS แรงกลาง ทุก 1 ปี"},
-  {no:109, code:"M102", cat:"GIS แรงกลาง (MV)", desc:"GIS ชำรุด", "cause":"กลไกชำรุด", pmAction:"ตรวจสอบระบบภายในและทดสอบทางไฟฟ้า ทุก 2 ปี"},
-  {no:110, code:"M103", cat:"GIS แรงกลาง (MV)", desc:"Low gas alarm show reset ไม่ได้", "cause":"เสื่อมสภาพ, ระบบควบคุมผิดพลาด", pmAction:"ตรวจสอบเซนเซอร์วัดแรงดันก๊าซและระบบตู้ควบคุม ทุก 1 ปี"},
-  {no:111, code:"M104", cat:"GIS แรงกลาง (MV)", desc:"Motor ของ Bus isolate ชำรุด", "cause":"กลไกชำรุด", pmAction:"ตรวจสอบมอเตอร์ขับ Bus Isolator ทุก 1 ปี"},
-  {no:112, code:"M105", cat:"GIS แรงกลาง (MV)", desc:"Motor ของ Bus isolate ถอดไปซ่อมและนำเข้าใช้งาน", "cause":"ดำเนินการซ่อมบำรุง", pmAction:"ทดสอบการทำงานของมอเตอร์หลังติดตั้งกลับเข้าที่"},
-  {no:113, code:"M106", cat:"GIS แรงกลาง (MV)", desc:"Bus isolate ชำรุด", "cause":"กลไกชำรุด", pmAction:"ตรวจสอบหน้าสัมผัส Bus Isolator ทุก 2 ปี"},
-  {no:114, code:"M107", cat:"GIS แรงกลาง (MV)", desc:"SF6 over gas", "cause":"SF6 over gas", pmAction:"ตรวจสอบอุณหภูมิและความดันแก๊สในระบบ GIS MV ทุก 1 ปี"},
-  {no:115, code:"M108", cat:"GIS แรงกลาง (MV)", desc:"SF6 low gas", "cause":"SF6 low gas", pmAction:"ตรวจหารอยรั่วซึมและเติมแก๊สให้ได้ตามเกณฑ์มาตรฐาน"},
-  {no:116, code:"M201", cat:"Capacitor Bank (MV)", desc:"Bushing capacitor มีน้ำมันรั่ว", "cause":"การรั่วซึมของน้ำมัน", pmAction:"ตรวจสอบรอยรั่วซึมที่บุชชิ่งคาปาซิเตอร์แรงกลาง ทุก 1 ปี"},
-  {no:117, code:"M202", cat:"Capacitor Bank (MV)", desc:"Capacitor bank ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"วัดค่าความจุไฟฟ้าและกระแส Leakage Current ทุก 1 ปี"},
-  {no:118, code:"M203", cat:"Capacitor Bank (MV)", desc:"Capacitor bank ปลดออกอัตโนมัติเนื่องจาก", "cause":"การทำงานผิดพลาดในระบบควบคุม", pmAction:"ตรวจสอบรีเลย์ป้องกันและค่า Setting ของ Capacitor Bank ทุก 1 ปี"},
-  {no:119, code:"M204", cat:"Capacitor Bank (MV)", desc:"เปลี่ยน Capacitor ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"เปลี่ยนชุดคาปาซิเตอร์ยูนิตตามรอบอายุการใช้งาน"},
-  {no:120, code:"M205", cat:"Capacitor Bank (MV)", desc:"Fuse capacitor bank ขาด", "cause":"การทำงานผิดพลาดในระบบควบคุม", pmAction:"ตรวจสอบฟิวส์ป้องกันและหน่วยยูนิตคาปาซิเตอร์ ทุก 6 เดือน"},
-  {no:121, code:"M206", cat:"Capacitor Bank (MV)", desc:"Vacuum Sw ปลด-สับไม่ได้", "cause":"กลไกชำรุด", pmAction:"ตรวจสอบ Vacuum Switch และวงจรควบคุม ทุก 1 ปี"},
-  {no:122, code:"M207", cat:"Capacitor Bank (MV)", desc:"เปลี่ยน Capacitor bank แทนชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ทดสอบคาปาซิเตอร์ใหม่ก่อนนำเข้าใช้งานจริง"},
-  {no:123, code:"M302", cat:"รีเลย์และระบบป้องกัน (MV)", desc:"BTO ไม่ทำงาน", "cause":"เสื่อมสภาพ, ระบบควบคุมผิดพลาด", pmAction:"ตรวจสอบวงจร Bus Trip Scheme ทุก 1 ปี"},
-  {no:124, code:"M303", cat:"รีเลย์และระบบป้องกัน (MV)", desc:"Bus differential relay ชำรุด", "cause":"ผิดพลาดในระบบควบคุม, CT Malfunction, ตั้งค่าผิด", pmAction:"สอบเทียบ Bus Differential Relay ทุก 2 ปี"},
-  {no:125, code:"M304", cat:"รีเลย์และระบบป้องกัน (MV)", desc:"LBP/CBF ทำงาน", "cause":"การทำงานผิดพลาดในระบบควบคุม", pmAction:"ตรวจสอบวงจร Lockout Bus Protection / Breaker Failure ทุก 1 ปี"},
-  {no:126, code:"M306", cat:"รีเลย์และระบบป้องกัน (MV)", desc:"Overcurrent relay ชำรุด", "cause":"CT Malfunction, ตั้งค่าผิด, สัญญาณภายนอกผิดปกติ", pmAction:"สอบเทียบ Overcurrent & Earth Fault Relay ทุก 2 ปี"},
-  {no:127, code:"M307", cat:"รีเลย์และระบบป้องกัน (MV)", desc:"Overcurrent relay เปลี่ยน", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"เปลี่ยนรีเลย์ตามรอบอายุขัย"},
-  {no:128, code:"M308", cat:"รีเลย์และระบบป้องกัน (MV)", desc:"Relay เสีย", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบและทดสอบการทำงานของรีเลย์ป้องกัน ทุก 2 ปี"},
-  {no:129, code:"M310", cat:"รีเลย์และระบบป้องกัน (MV)", desc:"ชุด Control relay OC,EF on แล้ว trip", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบค่า Setting และทดสอบระบบป้องกันกระแสเกิน ทุก 1 ปี"},
-  {no:130, code:"M311", cat:"รีเลย์และระบบป้องกัน (MV)", desc:"ซ่อม Relay เสีย", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ส่งซ่อมบำรุงหรือสอบเทียบรีเลย์กับห้องปฏิบัติการ"},
-  {no:131, code:"M312", cat:"รีเลย์และระบบป้องกัน (MV)", desc:"สวิตช์ตก alarm ไม่ดัง", "cause":"การทำงานผิดพลาดในระบบควบคุม", pmAction:"ทดสอบสัญญาณเสียงและไฟแจ้งเตือนตู้ Alarm ทุก 6 เดือน"},
-
-  // หมวด Low Voltage & Station Service / Fire (L)
-  {no:132, code:"L001", cat:"ระบบไฟแรงต่ำและแบตเตอรี่ (LV)", desc:"Breaker trip ของ AC Source", "cause":"การทำงานผิดพลาดในระบบควบคุม", pmAction:"ตรวจสอบโหลดทาง AC และค่ากระแสเซอร์ကิตเบรกเกอร์ ทุก 1 ปี"},
-  {no:133, code:"L002", cat:"ระบบไฟแรงต่ำและแบตเตอรี่ (LV)", desc:"Breaker trip ของ DC Rectifier/Load", "cause":"การทำงานผิดพลาดในระบบควบคุม", pmAction:"ตรวจสอบโหลดระบบ DC และเบรกเกอร์เรคติฟายเออร์ ทุก 1 ปี"},
-  {no:134, code:"L003", cat:"ระบบไฟแรงต่ำและแบตเตอรี่ (LV)", desc:"Charger ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบแรงดันและกระแสไฟชาร์จของ Battery Charger ทุก 6 เดือน"},
-  {no:135, code:"L004", cat:"ระบบไฟแรงต่ำและแบตเตอรี่ (LV)", desc:"DC Volt ต่ำ/สูงกว่ามาตรฐาน", "cause":"แรงดันไม่ได้มาตรฐาน", pmAction:"สอบเทียบชุดควบคุมแรงดัน DC Rectifier ทุก 6 เดือน"},
-  {no:136, code:"L005", cat:"ระบบไฟแรงต่ำและแบตเตอรี่ (LV)", desc:"ถ.พ.ต่ำ/สูง บาง cell", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"วัดความถ่วงจำเพาะ (Specific Gravity) และแรงดันแต่ละเซลล์ ทุก 3 เดือน"},
-  {no:137, code:"L006", cat:"ระบบไฟแรงต่ำและแบตเตอรี่ (LV)", desc:"เปลี่ยน Battery รั่วบาง cell", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบและเปลี่ยนเซลล์แบตเตอรี่ที่เสื่อมสภาพทันที"},
-  {no:138, code:"L007", cat:"ระบบไฟแรงต่ำและแบตเตอรี่ (LV)", desc:"Case ของ Battery แตกลายงา/เปลี่ยนสี", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบสภาพภายนอกกล่องแบตเตอรี่ ทุก 6 เดือน"},
-  {no:139, code:"L008", cat:"ระบบไฟแรงต่ำและแบตเตอรี่ (LV)", desc:"ระดับน้ำกลั่น ต่ำ / สูง กว่ามาตรฐาน", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบและเติมน้ำกลั่นแบตเตอรี่ให้ได้ระดับมาตรฐาน ทุก 1 เดือน"},
-  {no:140, code:"L011", cat:"ระบบไฟแรงต่ำและแบตเตอรี่ (LV)", desc:"DC ลงกราวน์", "cause":"DC ลงกราวน์", pmAction:"ตรวจสอบหาจุดลงกราวน์ในระบบไฟ DC (DC Ground Fault Locator) ทุก 3 เดือน"},
-  {no:141, code:"L012", cat:"ระบบไฟแรงต่ำและแบตเตอรี่ (LV)", desc:"Amp. Meter battery charger ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"สอบเทียบแอมมิเตอร์หน้าตู้ชาร์จแบตเตอรี่ ทุก 2 ปี"},
-  {no:142, code:"L013", cat:"ระบบไฟแรงต่ำและแบตเตอรี่ (LV)", desc:"Volt. Meter battery charger ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"สอบเทียบโวลต์มิเตอร์หน้าตู้ชาร์จแบตเตอรี่ ทุก 2 ปี"},
-  {no:143, code:"L014", cat:"ระบบไฟแรงต่ำและแบตเตอรี่ (LV)", desc:"Battery low capacity", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ทดสอบความจุแบตเตอรี่ (Battery Discharge Test) ทุก 1 ปี"},
-  {no:144, code:"L101", cat:"ตู้ควบคุม AC/DC Board", desc:"AC board Breaker ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบเซอร์กิตเบรกเกอร์ AC Board ทุก 1 ปี"},
-  {no:145, code:"L102", cat:"ตู้ควบคุม AC/DC Board", desc:"DC board Breaker ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบเซอร์กิตเบรกเกอร์ DC Board ทุก 1 ปี"},
-  {no:146, code:"L103", cat:"ตู้ควบคุม AC/DC Board", desc:"Breaker ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบความสมบูรณ์ของเบรกเกอร์แรงต่ำ ทุก 1 ปี"},
-  {no:147, code:"L104", cat:"ตู้ควบคุม AC/DC Board", desc:"Breaker สวิทซ์ตกบ่อย", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบพิกัดกระแสโหลดและเปลี่ยนเบรกเกอร์ที่ชำรุด"},
-  {no:148, code:"L107", cat:"ตู้ควบคุม AC/DC Board", desc:"วงจร ATF ชำรุดที่ AC Panel", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ทดสอบระบบสลับแหล่งจ่ายอัตโนมัติ (ATS/ATF) ทุก 6 เดือน"},
-  {no:149, code:"L201", cat:"ระบบป้องกันเพลิงไหม้ (Fire Prot.)", desc:"Air compressor มีน้ำมันซึม", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบเครื่องอัดอากาศระบบดับเพลิงและซีล ทุก 6 เดือน"},
-  {no:150, code:"L202", cat:"ระบบป้องกันเพลิงไหม้ (Fire Prot.)", desc:"Alarm ที่ตู้ CWS show reset ไม่ได้", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบตู้ควบคุมระบบน้ำดับเพลิง ทุก 1 ปี"},
-  {no:151, code:"L203", cat:"ระบบป้องกันเพลิงไหม้ (Fire Prot.)", desc:"Alarm ที่ตู้ Fire Control reset ไม่ได้", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบตู้ควบคุมสัญญาณแจ้งเพลิงไหม้ ทุก 1 ปี"},
-  {no:152, code:"L204", cat:"ระบบป้องกันเพลิงไหม้ (Fire Prot.)", desc:"Nitrogen รั่ว", "cause":"Nitrogen รั่วซึม", pmAction:"ตรวจสอบแรงดันถังไนโตรเจนระบบป้องกันหม้อแปลง ทุก 6 เดือน"},
-  {no:153, code:"L205", cat:"ระบบป้องกันเพลิงไหม้ (Fire Prot.)", desc:"Air pressure ของชุด Detector ต่ำกว่ามาตรฐาน", "cause":"การทำงานผิดพลาดของอุปกรณ์", pmAction:"ตรวจสอบแรงดันลมในท่อตรวจจับเพลิงไหม้ ทุก 6 เดือน"},
-  {no:154, code:"L206", cat:"ระบบป้องกันเพลิงไหม้ (Fire Prot.)", desc:"Battery ชุดตู้ Fire control เสื่อมสภาพ", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ทดสอบและเปลี่ยนแบตเตอรี่ตู้ Fire Control ทุก 2 ปี"},
-  {no:155, code:"L207", cat:"ระบบป้องกันเพลิงไหม้ (Fire Prot.)", desc:"Battery ชุดเครื่องยนต์ดับเพลิงเสื่อมสภาพ", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบแบตเตอรี่เครื่องยนต์ดีเซลสูบน้ำดับเพลิง ทุก 6 เดือน"},
-  {no:156, code:"L208", cat:"ระบบป้องกันเพลิงไหม้ (Fire Prot.)", desc:"Priming tank มีสนิมภายในมาก", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ทำความสะอาดและเคลือบกันสนิมถัง Priming Tank ทุก 2 ปี"},
-  {no:157, code:"L209", cat:"ระบบป้องกันเพลิงไหม้ (Fire Prot.)", desc:"เครื่องยนต์ดับเพลิง start ไม่ติด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ทดสอบสตาร์ทเครื่องยนต์ดีเซลดับเพลิง (Run Test) ทุก 1 สัปดาห์"},
-  {no:158, code:"L210", cat:"ระบบป้องกันเพลิงไหม้ (Fire Prot.)", desc:"น้ำไม่เข้าถัง Priming tank", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบวาล์วและระบบเติมน้ำเข้าถัง Priming Tank ทุก 1 เดือน"},
-  {no:159, code:"L211", cat:"ระบบป้องกันเพลิงไหม้ (Fire Prot.)", desc:"น้ำที่ Pilot line / น้ำยา Soft drops รั่ว", "cause":"รั่วซึม", pmAction:"ตรวจสอบท่อ Pilot Line และข้อต่อระบบดับเพลิง ทุก 6 เดือน"},
-
-  // หมวด SCADA และระบบคอมพิวเตอร์ (S)
-  {no:160, code:"S001", cat:"ระบบ SCADA และ MMI", desc:"Measurement ที่หน้าจอ MMI ไม่เปลี่ยน", "cause":"เสื่อมสภาพ, ระบบควบคุมผิดพลาด", pmAction:"ตรวจสอบ Data Concentrator และการสื่อสาร RTU ทุก 1 ปี"},
-  {no:161, code:"S002", cat:"ระบบ SCADA และ MMI", desc:"Show Communication fail", "cause":"เสื่อมสภาพ, ระบบควบคุมผิดพลาด", pmAction:"ตรวจสอบระบบเครือข่ายและสายสื่อสาร Fiber Optic ทุก 6 เดือน"},
-  {no:162, code:"S004", cat:"ระบบ SCADA และ MMI", desc:"UPS / Converter / Inverter ขัดข้อง", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ทดสอบระบบสำรองไฟ UPS และเปลี่ยนแบตเตอรี่ ทุก 2 ปี"},
-  {no:163, code:"S005", cat:"ระบบ SCADA และ MMI", desc:"ค่า measurement อ่านค่าไม่ตรง", "cause":"เสื่อมสภาพ, การเปลี่ยนแปลงอุณหภูมิ", pmAction:"สอบเทียบ Transducer และระบบวัดค่าทางไฟฟ้า ทุก 2 ปี"},
-  {no:164, code:"S006", cat:"ระบบ SCADA และ MMI", desc:"ตำแหน่งอุปกรณ์ที่หน้าแผงและ MMI/SCADA ไม่ตรงกัน", "cause":"เสื่อมสภาพ, ระบบควบคุมผิดพลาด", pmAction:"ตรวจสอบ Database Point Mapping หน้าจอ SCADA ทุก 1 ปี"},
-  {no:165, code:"S007", cat:"ระบบ SCADA และ MMI", desc:"เรียก menu control CB, EF, RR ไม่ได้", "cause":"การทำงานผิดพลาดในระบบควบคุม", pmAction:"ตรวจสอบสิทธิ์ผู้ใช้งานและระบบซอฟต์แวร์ SCADA ทุก 1 ปี"},
-  {no:166, code:"S101", cat:"ระบบ SCADA และ MMI", desc:"Fire Alarm Zone Show Reset ไม่ได้", "cause":"การทำงานผิดพลาดในระบบควบคุม", pmAction:"ตรวจสอบการเชื่อมต่อสัญญาณ Fire Alarm เข้าตู้ SCADA ทุก 1 ปี"},
-  {no:167, code:"S102", cat:"ระบบ SCADA และ MMI", desc:"ตู้ Control ที่ alarm ดังตลอด", "cause":"การทำงานผิดพลาดในระบบควบคุม", pmAction:"ตรวจสอบสัญญาณรีเซ็ตตู้คอนโทรล ทุก 6 เดือน"},
-
-  // หมวดอุโมงค์และสายเคเบิลใต้ดิน (UM)
-  {no:168, code:"UM01", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"ข้อต่อสายหลวม", "cause":"การติดตั้งไม่ถูกต้อง", pmAction:"ตรวจสอบจุดต่อสายเคเบิลใต้ดินด้วย Thermoscan ทุก 1 ปี"},
-  {no:169, code:"UM02", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"เทอร์มิเนเตอร์ซิลิโคนคอมปาวด์รั่ว", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบสภาพซิลิโคนเทอร์มิเนเตอร์ ทุก 1 ปี"},
-  {no:170, code:"UM03", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"ครีบเทอร์มิเนเตอร์แตก", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบรอยร้าวที่ครีบเทอร์มิเนเตอร์ ทุก 1 ปี"},
-  {no:171, code:"UM04", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"เทอร์มิเนเตอร์ระเบิดชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ทดสอบค่าฉนวนไฟฟ้าเคเบิลและเทอร์มิเนเตอร์ ทุก 2 ปี"},
-  {no:172, code:"UM05", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"สายกราวด์หาย", "cause":"Non Technical Loss", pmAction:"ตรวจสอบการเชื่อมต่อสายกราวด์ชีลด์เคเบิล ทุก 6 เดือน"},
-  {no:173, code:"UM06", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"เปลือกสายเคเบิลแตก", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบสภาพเปลือกนอกสายเคเบิล (Jacket) ทุก 1 ปี"},
-  {no:174, code:"UM07", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"แคมป์ยึดสายเคเบิลแตกชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบความมั่นคงของแคมป์ยึดสายในอุโมงค์ ทุก 1 ปี"},
-  {no:175, code:"UM08", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"บ่อพักท่อร้อยสายชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบฝาบ่อพักและโครงสร้าง Manhole ทุก 1 ปี"},
-  {no:176, code:"UM09", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"กระแสกราวด์สูงเกินปกติ", "cause":"ไม่ทราบสาเหตุ", pmAction:"ตรวจวัดกระแสไหลวนในระบบกราวด์ชีลด์ ทุก 6 เดือน"},
-  {no:177, code:"UM10", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"หัวต่อสายฯชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ทดสอบ Partial Discharge หัวต่อสายเคเบิล ทุก 2 ปี"},
-  {no:178, code:"UM11", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"เทอร์มิเนเตอร์และหัวต่อสายฯมีอุณหภูมิสูง", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบอุณหภูมิด้วยกล้อง Thermoscan ในอุโมงค์ ทุก 6 เดือน"},
-  {no:179, code:"UM12", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"เคเบิล 230เควี น้ำมันรั่วซึม", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบแรงดันระบบน้ำมันหล่อเลี้ยงสายเคเบิล 230 kV ทุก 1 เดือน"},
-  {no:180, code:"UM13", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"ระบบพัดลมระบายอากาศชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ทดสอบการทำงานพัดลมระบายอากาศในอุโมงค์ ทุก 3 เดือน"},
-  {no:181, code:"UM14", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"PLC ระบบอุโมงค์ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบระบบควบคุม PLC ในอุโมงค์สายใต้ดิน ทุก 1 ปี"},
-  {no:182, code:"UM15", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"ปั๊มน้ำในอุโมงค์ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ทดสอบเครื่องสูบน้ำ (Sump Pump) ในอุโมงค์ ทุก 1 เดือน"},
-  {no:183, code:"UM16", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"ระบบตรวจวัดอากาศในอุโมงค์ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"สอบเทียบเซนเซอร์ตรวจวัดก๊าซและอากาศ ทุก 6 เดือน"},
-  {no:184, code:"UM17", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"ระบบน้ำเย็นอุโมงค์ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบระบบทำความเย็นในอุโมงค์ ทุก 6 เดือน"},
-  {no:185, code:"UM18", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"ระบบไฟแรงต่ำอุโมงค์ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบระบบไฟฟ้าแสงสว่างในอุโมงค์ ทุก 6 เดือน"},
-  {no:186, code:"UM19", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"เคเบิลการ์ดชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบแผ่นป้องกันสายเคเบิล ทุก 1 ปี"},
-  {no:187, code:"UM20", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"อุปกรณ์ป้องกันเพลิงไหม้ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบระบบดับเพลิงในอุโมงค์ ทุก 6 เดือน"},
-  {no:188, code:"UM21", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"สายไฟฟ้าใต้ดินชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ทดสอบสภาพฉนวนสายเคเบิลใต้ดินตามรอบแผนงาน"},
-  {no:189, code:"UM22", cat:"อุโมงค์และสายใต้ดิน (Underground)", desc:"ปลวกกัดแทะสาย", "cause":"การกัดของสัตว์หรือแมลง", pmAction:"ตรวจสอบร่องรอยสัตว์แทะและวางระบบป้องกันปลวก ทุก 1 ปี"},
-
-  // หมวดเสาและสายส่ง (SM)
-  {no:190, code:"SM01", cat:"เสาและสายส่ง (Pole/Route)", desc:"Crane / Back-Hoe", "cause":"รถและเครื่องจักร", pmAction:"ประชาสัมพันธ์และตรวจสอบแนวเขตเดินสายใกล้เขตก่อสร้าง"},
-  {no:191, code:"SM02", cat:"เสาและสายส่ง (Pole/Route)", desc:"ผู้รับเหมาโดนสายส่ง", "cause":"ไฟช็อคจากคนหรือสัตว์", pmAction:"ควบคุมและให้คำแนะนำผู้รับเหมาที่ปฏิบัติงานใกล้แนวสาย"},
-  {no:192, code:"SM03", cat:"เสาและสายส่ง (Pole/Route)", desc:"บุคคลโดนสายส่ง", "cause":"ไฟช็อคจากคนหรือสัตว์", pmAction:"ติดตั้งป้ายเตือนอันตรายและตรวจสอบแนวสายเปลือย"},
-  {no:193, code:"SM05", cat:"เสาและสายส่ง (Pole/Route)", desc:"งู/นก/สัตว์", "cause":"ไฟช็อคจากคนหรือสัตว์", pmAction:"ติดตั้งอุปกรณ์ป้องกันสัตว์ขึ้นเสาไฟฟ้า (Animal Guard) ทุก 1 ปี"},
-  {no:194, code:"SM06", cat:"เสาและสายส่ง (Pole/Route)", desc:"ป้ายโฆษณา/สังกะสี", "cause":"จากภัยธรรมชาติ", pmAction:"รื้อถอนป้ายโฆษณาที่ติดตั้งรุกล้ำแนวสายส่ง ทุก 3 เดือน"},
-  {no:195, code:"SM07", cat:"เสาและสายส่ง (Pole/Route)", desc:"ว่าว/ลูกโป่ง/เศษผ้า", "cause":"จากภัยธรรมชาติ", pmAction:"จัดชุดปฏิบัติการเร่งเก็บสิ่งแปลกปลอมออกจากสายส่ง"},
-  {no:196, code:"SM08", cat:"เสาและสายส่ง (Pole/Route)", desc:"Bond wire/ OHGW", "cause":"จากภัยธรรมชาติ", pmAction:"ตรวจสอบความมั่นคงของสายดินใต้ดินและสาย Overhead Ground Wire ทุก 2 ปี"},
-  {no:197, code:"SM09", cat:"เสาและสายส่ง (Pole/Route)", desc:"ต้นไม้/เสา TV", "cause":"จากภัยธรรมชาติ", pmAction:"จัดทำแผนตัดแต่งต้นไม้รอนแนวสายส่ง (Tree Trimming) ประจำปี"},
-  {no:198, code:"SM10", cat:"เสาและสายส่ง (Pole/Route)", desc:"เศษวัสดุ", "cause":"จากภัยธรรมชาติ", pmAction:"ตรวจสอบความสะอาดเรียบร้อยตามแนวสายส่ง"},
-  {no:199, code:"SM11", cat:"เสาและสายส่ง (Pole/Route)", desc:"Flash Over/Leak", "cause":"Flash Over/Leak", pmAction:"ล้างทำความสะอาดลูกถ้วยในเขตมลพิษสูง ทุก 1 ปี"},
-  {no:200, code:"SM12", cat:"เสาและสายส่ง (Pole/Route)", desc:"ลูกถ้วยหลุด/แตก", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบและเปลี่ยนลูกถ้วยสายส่งที่ชำรุด ทุก 1 ปี"},
-  {no:201, code:"SM13", cat:"เสาและสายส่ง (Pole/Route)", desc:"ฝนตกฟ้าผ่า", "cause":"จากภัยธรรมชาติ", pmAction:"ตรวจสอบสภาพอุปกรณ์ป้องกันฟ้าผ่า (Arrester) ประจำปี"},
-  {no:202, code:"SM14", cat:"เสาและสายส่ง (Pole/Route)", desc:"คอนพับ/Bolt Brace", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบความแน่นของน็อตและโครงสร้างคอนเสาไฟฟ้า ทุก 2 ปี"},
-  {no:203, code:"SM15", cat:"เสาและสายส่ง (Pole/Route)", desc:"สายป้อน/สายสื่อสาร", "cause":"จากวัสดุเสาไฟ", pmAction:"จัดระเบียบสายสื่อสารบนเสาไฟฟ้า (Telecommunication Cable Audit) ทุก 1 ปี"},
-  {no:204, code:"SM16", cat:"เสาและสายส่ง (Pole/Route)", desc:"ไฟฟ้าเขตทำงาน", "cause":"Technical Error", pmAction:"ทบทวนขั้นตอนการปฏิบัติงานและความปลอดภัย (JSA)"},
-  {no:205, code:"SM17", cat:"เสาและสายส่ง (Pole/Route)", desc:"สายป้อนสวิตซ์ตก", "cause":"Technical Error", pmAction:"ตรวจสอบและปรับตั้งค่ารีเลย์ป้องกกันสายป้อน (Feeder Protection)"},
-  {no:206, code:"SM18", cat:"เสาและสายส่ง (Pole/Route)", desc:"เกิดไฟไหม้ใต้แนวสายส่ง", "cause":"จากภัยธรรมชาติ", pmAction:"ตรวจสอบและเคลียร์วัชพืชใต้แนวสายส่งช่วงหน้าแล้ง"},
-  {no:207, code:"SM19", cat:"เสาและสายส่ง (Pole/Route)", desc:"ไม่ทราบสาเหตุ", "cause":"ไม่ทราบสาเหตุ", pmAction:"บันทึกสถิติและวิเคราะห์แนวโน้ม (Trend Analysis)"},
-  {no:208, code:"SM20", cat:"เสาและสายส่ง (Pole/Route)", desc:"อื่นๆ", "cause":"อื่นๆ", pmAction:"ตรวจสอบและประเมินหน้างานตามกรณีศึกษา"},
-  {no:209, code:"SM21", cat:"เสาและสายส่ง (Pole/Route)", desc:"รถชนเสา", "cause":"จากอุบัติเหตุ", pmAction:"ติดตั้งการ์ดเรล (Guard Rail) หรือสะท้อนแสงบริเวณเสาจุดเสี่ยง"},
-  {no:210, code:"SM22", cat:"เสาและสายส่ง (Pole/Route)", desc:"Cable ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบสภาพสายเคเบิลอากาศและใต้ดิน ทุก 1 ปี"},
-  {no:211, code:"SM23", cat:"เสาและสายส่ง (Pole/Route)", desc:"Terminator ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบเทอร์มิเนเตอร์ปลายสายส่ง ทุก 1 ปี"},
-  {no:212, code:"SM24", cat:"เสาและสายส่ง (Pole/Route)", desc:"Lightning ชำรุด", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบลูกถ้วยและอุปกรณ์ป้องกันฟ้าผ่า ทุก 1 ปี"},
-  {no:213, code:"SM25", cat:"เสาและสายส่ง (Pole/Route)", desc:"switch ปลดทาง Remote", "cause":"Technical Error", pmAction:"ทดสอบระบบรีโมทคอนโทรลสวิตช์ตัดตอน (LBS/Recycler) ทุก 6 เดือน"},
-  {no:214, code:"SM26", cat:"เสาและสายส่ง (Pole/Route)", desc:"ชุด Interrupter ไม่ทำงาน", "cause":"Technical Error", pmAction:"ตรวจสอบชุดอินเตอร์rupter ของสวิตช์ตัดตอน ทุก 1 ปี"},
-  {no:215, code:"SM27", cat:"เสาและสายส่ง (Pole/Route)", desc:"switching ปลดสวิตซ์ในสายส่ง", "cause":"Technical Error", pmAction:"ทบทวนคู่มือการสลับจ่ายไฟ (Switching Procedure)"},
-  {no:216, code:"SM28", cat:"เสาและสายส่ง (Pole/Route)", desc:"ปลดสวิตซ์ผิดตัว", "cause":"Technical Error", pmAction:"ตรวจสอบป้ายชี้บ่งอุปกรณ์ (Nameplate) ให้ชัดเจน"},
-  {no:217, code:"SM29", cat:"เสาและสายส่ง (Pole/Route)", desc:"อุปกรณ์ชำรุดภายในสถานี กฟน.", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบอุปกรณ์ภายในสถานีไฟฟ้าย่อยตามรอบ PM ประจำปี"},
-  {no:218, code:"SM30", cat:"เสาและสายส่ง (Pole/Route)", desc:"ต้นไม้ (โดนอุปกรณ์สถานี กฟน.)", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตัดแต่งกิ่งไม้รอบรั้วสถานีไฟฟ้า ทุก 3 เดือน"},
-  {no:219, code:"SM31", cat:"เสาและสายส่ง (Pole/Route)", desc:"อุปกรณ์ชำรุดภายในสถานี กฟผ./กฟภ.", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ประสานงานแลกเปลี่ยนข้อมูลการบำรุงรักษากับการไฟฟ้าฝ่ายร่วม"},
-  {no:220, code:"SM32", cat:"เสาและสายส่ง (Pole/Route)", desc:"อุปกรณ์ชำรุดภายในสถานี ลูกค้า", "cause":"เสื่อมสภาพจากอายุใช้งาน", pmAction:"ตรวจสอบแนะนำระบบไฟฟ้าลูกค้ารายใหญ่ตามวาระ"},
-  {no:221, code:"SM33", cat:"เสาและสายส่ง (Pole/Route)", desc:"สายส่งไม่มีไฟ", "cause":"อื่นๆ", pmAction:"ตรวจสอบระบบจ่ายไฟหลักและระบบป้องกันร่วม"},
-  {no:222, code:"SM34", cat:"เสาและสายส่ง (Pole/Route)", desc:"Charge Line", "cause":"อื่นๆ", pmAction:"ตรวจสอบสถานะการอัดประจุสายส่ง"}
-];
-
-const categories = [...new Set(records.map(r => r.cat))];
+let records = [];
+let categories = [];
 let activeCat = "ALL";
 let query = "";
+let currentTab = 'fmea';
 
-// สร้างปุ่มกรองหมวดหมู่ (Chips)
+// โหลดข้อมูลจาก data.json (ที่แปลงมาจาก RCM.xlsx) หรือ LocalStorage
+async function loadData() {
+  try {
+    const saved = localStorage.getItem('rcm_excel_data_v2');
+    if (saved) {
+      records = JSON.parse(saved);
+    } else {
+      const res = await fetch('data.json');
+      records = await res.json();
+    }
+    
+    // สกัดหมวดหมู่จาก component (เช่น คำนำหน้าก่อนเครื่องหมาย _)
+    records.forEach(r => {
+      if(!r.cat) {
+        r.cat = r.component ? r.component.split('_')[0] : 'OTHER';
+      }
+    });
+
+    categories = [...new Set(records.map(r => r.cat))];
+    document.getElementById('totalCount').textContent = records.length;
+    renderChips();
+    renderTable();
+  } catch (err) {
+    console.error("ไม่สามารถโหลดไฟล์ data.json ได้:", err);
+    document.body.innerHTML = `<div style="color:var(--danger); padding:40px; text-align:center; font-family:sans-serif;">
+      <h2>⚠️ ไม่พบไฟล์ data.json</h2>
+      <p>กรุณารันสคริปต์ Python เพื่อแปลงไฟล์ <b>RCM.xlsx</b> เป็น <b>data.json</b> และวางไว้ในโฟลเดอร์เดียวกันก่อนเปิดใช้งาน</p>
+    </div>`;
+  }
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  if(tab === 'fmea') {
+    document.getElementById('modeTitle').textContent = "FMEA & RPN Assessment";
+    document.getElementById('tableInstruction').textContent = "คลิกช่องคะแนน (S, O, D) ระบบจะคำนวณค่า RPN ให้ทันที";
+  } else {
+    document.getElementById('modeTitle').textContent = "ตารางโครงสร้าง CEHI";
+    document.getElementById('tableInstruction').textContent = "กรอก Test Category, Parameters และคะแนน Si, Smax, Wi เพื่อคำนวณดัชนีสุขภาพ";
+  }
+  renderTable();
+}
+
+// สร้างปุ่มกรองหมวดหมู่
 const chipsWrap = document.getElementById('chips');
 function renderChips(){
   chipsWrap.innerHTML = '';
@@ -639,8 +409,6 @@ function makeChip(label, val){
 const tbody = document.getElementById('tbody');
 const emptyState = document.getElementById('emptyState');
 const visibleCountEl = document.getElementById('visibleCount');
-const totalCountEl = document.getElementById('totalCount');
-totalCountEl.textContent = records.length;
 
 function escapeHtml(str){
   return String(str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -655,82 +423,124 @@ function highlight(text, q){
   }catch(e){ return esc; }
 }
 
-// กำหนดสีของรหัสตามหมวดตัวอักษรนำหน้า
-fnGetCodeClass = (code) => {
-  const prefix = code.charAt(0).toUpperCase();
-  if(prefix === 'T') return '';
-  if(prefix === 'H') return 'h-code';
-  if(prefix === 'M') return 'm-code';
-  if(prefix === 'L') return 'l-code';
-  if(prefix === 'S') return 's-code';
-  if(prefix === 'U') return 'um-code';
-  if(prefix === 'S' && code.startsWith('SM')) return 'sm-code';
-  return '';
-}
-
 function renderTable(){
   const q = query.trim().toLowerCase();
+  const thead = document.getElementById('tableHead');
+  
   const filtered = records.filter(r => {
     if(activeCat !== 'ALL' && r.cat !== activeCat) return false;
     if(!q) return true;
     return (
-      r.code.toLowerCase().includes(q) ||
-      r.desc.toLowerCase().includes(q) ||
-      r.cause.toLowerCase().includes(q) ||
-      r.cat.toLowerCase().includes(q)
+      (r.code && r.code.toLowerCase().includes(q)) ||
+      (r.desc && r.desc.toLowerCase().includes(q)) ||
+      (r.cause && r.cause.toLowerCase().includes(q)) ||
+      (r.component && r.component.toLowerCase().includes(q))
     );
   });
 
-  tbody.innerHTML = '';
-  filtered.forEach(r => {
-    const tr = document.createElement('tr');
-    const codeClass = fnGetCodeClass(r.code);
-    tr.innerHTML = `
-      <td class="num">${r.no}</td>
-      <td><span class="code-pill mono ${codeClass}">${highlight(r.code, q)}</span></td>
-      <td class="catcell">${escapeHtml(r.cat)}</td>
-      <td class="desc">${highlight(r.desc, q)}</td>
-      <td class="cause">${highlight(r.cause, q)}</td>
+  if (currentTab === 'fmea') {
+    thead.innerHTML = `
+      <tr>
+        <th style="width:40px;">#</th>
+        <th style="width:140px;">Component</th>
+        <th style="width:90px;">รหัส</th>
+        <th>Failure Mode / อาการ</th>
+        <th>Failure Cause / สาเหตุ</th>
+        <th style="width:65px; text-align:center;">S</th>
+        <th style="width:65px; text-align:center;">O</th>
+        <th style="width:65px; text-align:center;">D</th>
+        <th style="width:75px; text-align:center;">RPN</th>
+      </tr>
     `;
     
-    tr.addEventListener('click', () => { openRcmModal(r); });
-    tbody.appendChild(tr);
-  });
+    tbody.innerHTML = filtered.map(r => {
+      const s = Number(r.s) || 0;
+      const o = Number(r.o) || 0;
+      const d = Number(r.d) || 0;
+      const rpn = s > 0 && o > 0 && d > 0 ? s * o * d : '';
+      
+      let badgeClass = 'rpn-low';
+      if (rpn >= 100) badgeClass = 'rpn-high';
+      else if (rpn >= 40) badgeClass = 'rpn-mid';
+
+      return `
+        <tr>
+          <td class="num">${r.id}</td>
+          <td><b>${escapeHtml(r.component)}</b></td>
+          <td><span class="code-pill mono">${escapeHtml(r.code)}</span></td>
+          <td>${highlight(r.desc, q)}</td>
+          <td style="color:var(--muted);">${highlight(r.cause, q)}</td>
+          <td style="text-align:center;"><input type="number" min="1" max="10" class="score-input" value="${r.s !== undefined ? r.s : ''}" oninput="updateField(${r.id}, 's', this.value)"></td>
+          <td style="text-align:center;"><input type="number" min="1" max="10" class="score-input" value="${r.o !== undefined ? r.o : ''}" oninput="updateField(${r.id}, 'o', this.value)"></td>
+          <td style="text-align:center;"><input type="number" min="1" max="10" class="score-input" value="${r.d !== undefined ? r.d : ''}" oninput="updateField(${r.id}, 'd', this.value)"></td>
+          <td style="text-align:center;"><span class="rpn-badge ${rpn !== '' ? badgeClass : ''}">${rpn !== '' ? rpn : '-'}</span></td>
+        </tr>
+      `;
+    }).join('');
+  } else {
+    thead.innerHTML = `
+      <tr>
+        <th style="width:40px;">#</th>
+        <th style="width:140px;">Component</th>
+        <th>Test Category</th>
+        <th>Test Items / Parameters</th>
+        <th style="width:80px; text-align:center;">Si</th>
+        <th style="width:80px; text-align:center;">Smax</th>
+        <th style="width:80px; text-align:center;">Wi</th>
+        <th style="width:90px; text-align:center;">Si x Wi</th>
+        <th style="width:90px; text-align:center;">Smax x Wi</th>
+      </tr>
+    `;
+    
+    tbody.innerHTML = filtered.map(r => {
+      const si = Number(r.si) || 0;
+      const smax = Number(r.smax) || 0;
+      const wi = Number(r.wi) || 0;
+      const siWi = si > 0 && wi > 0 ? (si * wi).toFixed(2) : '-';
+      const smaxWi = smax > 0 && wi > 0 ? (smax * wi).toFixed(2) : '-';
+
+      return `
+        <tr>
+          <td class="num">${r.id}</td>
+          <td><b>${escapeHtml(r.component)}</b></td>
+          <td><input type="text" class="text-input" value="${escapeHtml(r.testCategory || '')}" oninput="updateField(${r.id}, 'testCategory', this.value)"></td>
+          <td><input type="text" class="text-input" value="${escapeHtml(r.testItems || '')}" oninput="updateField(${r.id}, 'testItems', this.value)"></td>
+          <td style="text-align:center;"><input type="number" class="score-input" value="${r.si !== undefined ? r.si : ''}" oninput="updateField(${r.id}, 'si', this.value)"></td>
+          <td style="text-align:center;"><input type="number" class="score-input" value="${r.smax !== undefined ? r.smax : ''}" oninput="updateField(${r.id}, 'smax', this.value)"></td>
+          <td style="text-align:center;"><input type="number" class="score-input" value="${r.wi !== undefined ? r.wi : ''}" oninput="updateField(${r.id}, 'wi', this.value)"></td>
+          <td style="text-align:center;" class="mono">${siWi}</td>
+          <td style="text-align:center;" class="mono">${smaxWi}</td>
+        </tr>
+      `;
+    }).join('');
+  }
 
   visibleCountEl.textContent = filtered.length;
   emptyState.style.display = filtered.length === 0 ? 'block' : 'none';
 }
 
-// ควบคุม Modal
-const modalOverlay = document.getElementById('rcmModal');
-const closeModalBtn = document.getElementById('closeModal');
-
-function openRcmModal(r) {
-  document.getElementById('modalCodeTitle').innerHTML = `รหัสความเสียหาย: <span class="mono" style="color:var(--amber);">${escapeHtml(r.code)}</span> <button class="modal-close" id="closeModal">&times;</button>`;
-  document.getElementById('modalCat').textContent = r.cat;
-  document.getElementById('modalDesc').textContent = r.desc;
-  document.getElementById('modalCause').textContent = r.cause;
-  document.getElementById('modalPmAction').textContent = r.pmAction || 'ดำเนินการตรวจสอบเชิงป้องกันตามวาระและคำแนะนำของคู่มือผู้ผลิต (Manufacturer Recommendation)';
-  
-  modalOverlay.classList.add('open');
-  document.getElementById('closeModal').addEventListener('click', closeRcmModal);
+function updateField(id, field, val) {
+  const item = records.find(r => r.id === id);
+  if (item) {
+    item[field] = val;
+    // คำนวณ RPN หรือผลคูณอัตโนมัติเฉพาะแถวแบบเรียลไทม์โดยไม่ต้องรีเรนเดอร์ทั้งตารางเพื่อความลื่นไหล
+    if (currentTab === 'fmea' && ['s', 'o', 'd'].includes(field)) {
+      renderTable();
+    }
+  }
 }
 
-function closeRcmModal() {
-  modalOverlay.classList.remove('open');
+function saveData() {
+  localStorage.setItem('rcm_excel_data_v2', JSON.stringify(records));
+  alert('✨ บันทึกข้อมูลคะแนนของคุณลงในหน่วยความจำเบราว์เซอร์ (LocalStorage) เรียบร้อยแล้ว!');
 }
-
-modalOverlay.addEventListener('click', (e) => {
-  if (e.target === modalOverlay) { closeRcmModal(); }
-});
 
 document.getElementById('search').addEventListener('input', (e) => {
   query = e.target.value;
   renderTable();
 });
 
-renderChips();
-renderTable();
+loadData();
 </script>
 </body>
 </html>
