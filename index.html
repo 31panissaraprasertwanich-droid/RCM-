@@ -103,13 +103,21 @@
   .stat-warning { color: var(--primary); }
   .stat-critical { color: var(--danger); }
 
-  .search-wrap{ position:relative; margin-bottom:10px; }
+  .search-wrap{ position:relative; margin-bottom:10px; flex: 1; min-width: 250px; }
   #search{
     width:100%; background:var(--panel-2); border:1px solid var(--border); color:var(--text);
     font-family:inherit; font-size:0.9rem; padding:10px 14px 10px 40px; border-radius:6px; outline:none;
   }
   #search:focus{ border-color: var(--primary); }
   .search-wrap svg{ position:absolute; left:13px; top:50%; transform:translateY(-50%); width:16px; height:16px; stroke:var(--muted); }
+
+  .toolbar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+  .risk-filters { display: flex; gap: 6px; }
+  .filter-chip {
+    font-size: 0.75rem; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--panel-2); color: var(--muted); cursor: pointer; user-select: none;
+  }
+  .filter-chip.active { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight: 600; }
 
   .chips{ display:flex; flex-wrap:wrap; gap:6px; max-height:80px; overflow-y:auto; padding-bottom:2px; }
   .chip{
@@ -185,9 +193,9 @@
         <button class="mode-toggle-btn" id="modeToggleBtn" onclick="toggleLightDarkMode()" title="สลับโหมด มืด/สว่าง">🌙 โหมดมืด</button>
 
         <div class="nav-tabs">
-          <button class="tab-btn active" onclick="switchTab('fmea')">1. FMEA & RPN</button>
-          <button class="tab-btn" onclick="switchTab('cehi')">2. โครงสร้าง CEHI</button>
-          <button class="tab-btn" onclick="switchTab('plan')" id="btnPlan">3. PM/CBM Action Plan</button>
+          <button class="tab-btn active" onclick="switchTab('fmea', this)">1. FMEA & RPN</button>
+          <button class="tab-btn" onclick="switchTab('cehi', this)">2. โครงสร้าง CEHI</button>
+          <button class="tab-btn" onclick="switchTab('plan', this)" id="btnPlan">3. PM/CBM Action Plan</button>
         </div>
         <button class="save-btn" onclick="saveData()">💾 บันทึกข้อมูล</button>
       </div>
@@ -212,9 +220,16 @@
       </div>
     </div>
 
-    <div class="search-wrap" id="searchBoxWrap">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input id="search" type="text" placeholder="พิมพ์ค้นหารหัส เช่น T001, Component, หรือสาเหตุ..." autocomplete="off">
+    <div class="toolbar-row" id="toolbarRow">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input id="search" type="text" placeholder="พิมพ์ค้นหารหัส เช่น T001, Component, หรือสาเหตุ..." autocomplete="off">
+      </div>
+      <div class="risk-filters" id="riskFilters">
+        <div class="filter-chip active" onclick="setRiskFilter('ALL', this)">ทั้งหมด</div>
+        <div class="filter-chip" onclick="setRiskFilter('CRITICAL', this)">🚨 วิกฤต</div>
+        <div class="filter-chip" onclick="setRiskFilter('WARNING', this)">⚠️ เฝ้าระวัง</div>
+      </div>
     </div>
 
     <div class="chips" id="chips"></div>
@@ -242,7 +257,6 @@
 </footer>
 
 <script>
-// ข้อมูล FMEA หลัก 223 รายการ
 let records = [
   {id:1, component:"TR_Counter L/A", code:"T001", desc:"Counter Lightning Arrester ชำรุด", cause:"โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", s:"", o:"", d:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
   {id:2, component:"TR_OLevelGauge", code:"T002", desc:"Oil level gauge ชำรุด", cause:"โครงแตก, กลไกชำรุด", s:"", o:"", d:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
@@ -468,20 +482,18 @@ let records = [
   {id:222, component:"เสา/สาย", code:"SM34", desc:"Charge Line", cause:"อื่นๆ", s:"", o:"", d:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"}
 ];
 
-// โครงสร้างข้อมูล CEHI แยกอิสระต่ออุปกรณ์ สามารถเพิ่มหลายแถวต่อ 1 อุปกรณ์ได้
 let cehiRecords = [];
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v15');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v16');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v15');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v16');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
-    // กำหนดค่าเริ่มต้น: ดึงรายชื่อ Component มาสร้างแถว CEHI ตั้งต้นอุปกรณ์ละ 1 แถว
     let uniqueComps = [...new Set(records.map(r => r.component))];
     cehiRecords = uniqueComps.map((comp, idx) => ({
       uid: 'c_' + idx,
@@ -510,9 +522,8 @@ function initApp() {
   renderTable();
 }
 
-// ฟังก์ชันกดปุ่มเพิ่มแถวการทดสอบสำหรับอุปกรณ์นั้นๆ ในหน้า CEHI
 function addCehiRow(compName) {
-  const newUid = 'c_' + Date.now() + Math.random().toString(36.2);
+  const newUid = 'c_' + Date.now() + Math.random().toString(36).substring(2, 7);
   cehiRecords.push({
     uid: newUid,
     component: compName,
@@ -525,7 +536,6 @@ function addCehiRow(compName) {
   renderTable();
 }
 
-// ฟังก์ชันลบแถวการทดสอบ
 function deleteCehiRow(uid) {
   cehiRecords = cehiRecords.filter(item => item.uid !== uid);
   renderTable();
@@ -553,15 +563,22 @@ function toggleLightDarkMode() {
   localStorage.setItem('rcm_theme_mode', isLight ? 'light' : 'dark');
 }
 
+function setRiskFilter(filter, el) {
+  riskFilter = filter;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
+}
+
 let activeCat = "ALL";
 let riskFilter = "ALL";
 let query = "";
 let currentTab = 'fmea';
 
-function switchTab(tab) {
+function switchTab(tab, el) {
   currentTab = tab;
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  el.classList.add('active');
   
   if(tab === 'fmea') {
     document.getElementById('modeTitle').textContent = "FMEA & RPN Assessment";
@@ -692,7 +709,6 @@ function renderTable(){
       </tr>
     `;
 
-    // กรอง CEHI ตามหมวดหมู่ Component
     const filteredCehi = cehiRecords.filter(item => {
       if (activeCat !== 'ALL') {
         let catPrefix = item.component ? item.component.split('_')[0] : '';
@@ -749,13 +765,12 @@ function renderTable(){
       globalTotalSiWi += compSiWi;
       globalTotalSmaxWi += compSmaxWi;
 
-      // เพิ่มปุ่มกดเพิ่มการทดสอบ (Add Test Item) ไว้ใต้กลุ่มอุปกรณ์แต่ละตัว
       htmlRows += `
-        <tr style="background:var(--panel-2);">
-          <td colspan="9" style="padding:8px 12px; display:flex; justify-content:space-between; align-items:center;">
+        <tr style="background:var(--panel-2); border-top:1px solid var(--border);">
+          <td colspan="9" style="padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
             <button class="add-row-btn" onclick="addCehiRow('${escapeHtml(comp)}')">➕ เพิ่มการทดสอบให้ ${escapeHtml(comp)}</button>
-            <div style="font-size:0.8rem; color:var(--teal);">
-              <b>ยอดรวม ${comp}:</b> <span class="mono">${compSiWi.toFixed(2)}</span> | <b>CEHI:</b> <span class="mono">${compCehi}%</span>
+            <div style="font-size:0.85rem; color:var(--teal);">
+              <b>ยอดรวมของ ${escapeHtml(comp)} (Total):</b> <span class="mono">${compSiWi.toFixed(2)}</span> &nbsp;|&nbsp; <b>CEHI (%):</b> <span class="mono">${compCehi}%</span>
             </div>
           </td>
         </tr>
@@ -767,7 +782,7 @@ function renderTable(){
 
     tfoot.innerHTML = `
       <tr style="background:var(--panel-2); font-weight:bold; border-top:4px solid var(--primary);">
-        <td colspan="7" style="text-align:right; padding:14px;">รวมทั้งหมดทุกอุปกรณ์ (Grand Total):</td>
+        <td colspan="7" style="text-align:right; padding:14px; font-size:0.95rem;">รวมทั้งหมดทุกอุปกรณ์ (Grand Total):</td>
         <td style="text-align:center;" class="mono">${globalTotalSiWi.toFixed(2)}</td>
         <td></td>
       </tr>
@@ -873,25 +888,9 @@ function closeModal() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v15', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v15', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v16', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v16', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลคะแนนและรายการทดสอบของคุณเรียบร้อยแล้ว!');
-}
-
-function exportToCSV() {
-  let csvContent = "\uFEFFID,Component,Code,Failure Mode,Failure Cause,Severity,Occurrence,Detection,RPN\n";
-  records.forEach(r => {
-    const rpn = (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0);
-    csvContent += `"${r.id}","${r.component}","${r.code}","${r.desc}","${r.cause || ''}","${r.s || ''}","${r.o || ''}","${r.d || ''}","${rpn}"\n`;
-  });
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `RCM_Report_${new Date().toISOString().slice(0,10)}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
 }
 
 document.getElementById('search').addEventListener('input', (e) => {
