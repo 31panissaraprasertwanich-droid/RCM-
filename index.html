@@ -486,12 +486,12 @@ let records = [
 let cehiRecords = [];
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v18');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v19');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v18');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v19');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -740,7 +740,6 @@ function renderTable(){
         const smax = Number(r.smax) || 0;
         const wi = Number(r.wi) || 0;
         const siWi = si > 0 && wi > 0 ? (si * wi).toFixed(2) : '-';
-        const smaxWi = smax > 0 && wi > 0 ? (smax * wi).toFixed(2) : '-';
 
         if (si > 0 && wi > 0) compSiWi += si * wi;
         if (smax > 0 && wi > 0) compSmaxWi += smax * wi;
@@ -749,8 +748,8 @@ function renderTable(){
           <tr>
             <td class="num">${rowIdx++}</td>
             <td><b>${escapeHtml(r.component)}</b></td>
-            <td><input type="text" class="text-input" value="${escapeHtml(r.testCategory || '')}" placeholder="เช่น DGA, น้ำมันฉนวน..." oninput="updateCehi('${r.uid}', 'testCategory', this.value)"></td>
-            <td><input type="text" class="Test-Input text-input" value="${escapeHtml(r.testItems || '')}" placeholder="เช่น ความชื้น, ความเป็นฉนวน..." oninput="updateCehi('${r.uid}', 'testItems', this.value)"></td>
+            <td><input type="text" class="text-input" value="${escapeHtml(r.testCategory || '')}" placeholder="ระบุหมวดทดสอบ..." oninput="updateCehi('${r.uid}', 'testCategory', this.value)"></td>
+            <td><input type="text" class="text-input" value="${escapeHtml(r.testItems || '')}" placeholder="ระบุหัวข้อ/พารามิเตอร์..." oninput="updateCehi('${r.uid}', 'testItems', this.value)"></td>
             <td style="text-align:center;"><input type="number" class="score-input" value="${r.si ?? ''}" oninput="updateCehi('${r.uid}', 'si', this.value)"></td>
             <td style="text-align:center;"><input type="number" class="score-input" value="${r.smax ?? ''}" oninput="updateCehi('${r.uid}', 'smax', this.value)"></td>
             <td style="text-align:center;"><input type="number" class="score-input" value="${r.wi ?? ''}" oninput="updateCehi('${r.uid}', 'wi', this.value)"></td>
@@ -766,12 +765,15 @@ function renderTable(){
       globalTotalSiWi += compSiWi;
       globalTotalSmaxWi += compSmaxWi;
 
+      // จัดวางปุ่มเพิ่มไว้ซ้าย และผลรวมไว้ขวาอย่างเป็นระเบียบตามที่คุณต้องการ
       htmlRows += `
         <tr style="background:var(--panel-2); border-top:1px solid var(--border);">
-          <td colspan="9" style="padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-            <button class="add-row-btn" onclick="addCehiRow('${escapeHtml(comp)}')">➕ เพิ่มการทดสอบให้ ${escapeHtml(comp)}</button>
-            <div style="font-size:0.88rem; color:var(--teal);">
-              <b>ยอดรวมของ ${escapeHtml(comp)}:</b> <span class="mono">${compSiWi.toFixed(2)}</span> &nbsp;|&nbsp; <b>CEHI (%):</b> <span class="mono">${compCehi}%</span>
+          <td colspan="9" style="padding:12px 16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:10px;">
+              <button class="add-row-btn" onclick="addCehiRow('${escapeHtml(comp)}')">➕ เพิ่มการทดสอบให้ ${escapeHtml(comp)}</button>
+              <div style="font-size:0.88rem; color:var(--teal);">
+                <b>ยอดรวมของ ${escapeHtml(comp)}:</b> <span class="mono">${compSiWi.toFixed(2)}</span> &nbsp;|&nbsp; <b>CEHI (%):</b> <span class="mono">${compCehi}%</span>
+              </div>
             </div>
           </td>
         </tr>
@@ -889,8 +891,8 @@ function closeModal() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v18', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v18', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v19', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v19', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลคะแนนและรายการทดสอบของคุณเรียบร้อยแล้ว!');
 }
 
