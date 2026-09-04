@@ -47,12 +47,15 @@
   }
   .mono{font-family:'IBM Plex Mono', monospace;}
 
+  /* เอา position: sticky ออก เพื่อไม่ให้ Header และกราฟลอยทับเวลาเลื่อนหน้าเว็บ */
   header{
-    position:sticky; top:0; z-index:20; background:var(--panel); backdrop-filter:blur(8px);
-    border-bottom:1px solid var(--border); padding:16px 28px; transition: background 0.2s, border-color 0.2s;
+    background:var(--panel);
+    border-bottom:1px solid var(--border);
+    padding:20px 28px;
+    transition: background 0.2s, border-color 0.2s;
   }
   .header-inner{ max-width:1350px; margin:0 auto; }
-  .title-row{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:12px; }
+  .title-row{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:14px; }
   h1{ font-size:1.25rem; font-weight:700; margin:0; }
   h1 .accent{color: var(--primary);}
   .subtitle{ color:var(--muted); font-size:0.8rem; margin-top:2px; }
@@ -97,7 +100,7 @@
 
   /* ส่วนแสดงกราฟวิเคราะห์ (Analytics Dashboard Charts) */
   .charts-container {
-    display: grid; grid-template-columns: 1fr 2fr; gap: 14px; margin-bottom: 20px;
+    display: grid; grid-template-columns: 1fr 2fr; gap: 14px; margin-bottom: 14px;
   }
   @media(max-width: 900px) { .charts-container { grid-template-columns: 1fr; } }
   .chart-card {
@@ -550,16 +553,15 @@ let doughnutChartInstance = null;
 let barChartInstance = null;
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v22');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v23');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v22');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v23');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
-    // ผูกข้อมูลเริ่มต้นครบทั้ง 222 ตัว
     cehiRecords = records.map((r, idx) => ({
       uid: 'c_' + r.id,
       component: r.component,
@@ -643,7 +645,7 @@ function toggleLightDarkMode() {
   const isLight = document.body.classList.contains('light-mode');
   document.getElementById('modeToggleBtn').textContent = isLight ? '☀️ โหมดสว่าง' : '🌙 โหมดมืด';
   localStorage.setItem('rcm_theme_mode', isLight ? 'light' : 'dark');
-  initCharts(); // รีเฟรชสีของกราฟตามธีม
+  initCharts();
 }
 
 function setRiskFilter(filter, el) {
@@ -989,17 +991,15 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v22', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v22', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v23', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v23', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลคะแนนและรายการทดสอบของคุณเรียบร้อยแล้ว!');
 }
 
-// ฟังก์ชันสร้างและอัปเดตกราฟ (Chart.js)
 function initCharts() {
   const isLight = document.body.classList.contains('light-mode');
   const textColor = isLight ? '#1e293b' : '#e7ecf0';
 
-  // 1. Doughnut Chart (สัดส่วนความเสี่ยง)
   const ctxDoughnut = document.getElementById('riskDoughnutChart').getContext('2d');
   if (doughnutChartInstance) doughnutChartInstance.destroy();
   doughnutChartInstance = new Chart(ctxDoughnut, {
@@ -1021,7 +1021,6 @@ function initCharts() {
     }
   });
 
-  // 2. Bar Chart (Top 5 ความเสี่ยงสูงสุด)
   const ctxBar = document.getElementById('topRiskBarChart').getContext('2d');
   if (barChartInstance) barChartInstance.destroy();
   barChartInstance = new Chart(ctxBar, {
@@ -1054,7 +1053,6 @@ function updateCharts(normal, warning, critical) {
   }
 
   if (barChartInstance) {
-    // หา 5 อุปกรณ์ที่ RPN สูงสุด
     let sortedRecords = [...records].map(r => ({
       name: r.code + ' (' + r.component + ')',
       rpn: (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0)
