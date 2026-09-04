@@ -71,24 +71,17 @@
   .tab-btn:hover{border-color:var(--primary); color:var(--text);}
   .tab-btn.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight:600; }
 
+  .action-btn{
+    background:var(--teal-dim); border:1px solid var(--teal); color:var(--teal);
+    padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; font-family:inherit;
+  }
+  .action-btn:hover{background:#264d47;}
+
   .save-btn{
     background:var(--teal-dim); border:1px solid var(--teal); color:var(--teal);
     padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; font-family:inherit;
   }
   .save-btn:hover{background:#264d47;}
-
-  .add-row-btn {
-    background: var(--primary-dim); border: 1px solid var(--primary); color: var(--primary);
-    padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600;
-    display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s;
-  }
-  .add-row-btn:hover { background: var(--primary); color: var(--bg); }
-
-  .del-row-btn {
-    background: rgba(217,105,79,0.15); border: 1px solid var(--danger); color: var(--danger);
-    padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; transition: all 0.15s;
-  }
-  .del-row-btn:hover { background: var(--danger); color: #fff; }
 
   .dashboard-stats {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 14px;
@@ -139,7 +132,7 @@
     padding:12px 14px; border-bottom:1px solid var(--border); background:var(--panel-2);
   }
   
-  tbody tr{ border-bottom:1px solid var(--border); transition:background .1s ease; }
+  tbody tr{ border-bottom:1px solid var(--border); transition:background .1s ease; cursor: pointer; }
   tbody tr:hover{background:var(--panel-2);}
   tbody td{ padding:10px 14px; vertical-align:middle; }
   td.num{ color:var(--muted); font-family:'IBM Plex Mono', monospace; font-size:0.78rem; }
@@ -168,6 +161,23 @@
   .rpn-low { background: #1c3a37; color: var(--teal); }
   .rpn-mid { background: #4a3a20; color: #e8a33d; }
   .rpn-high { background: #4a2720; color: var(--danger); }
+
+  /* Modal Drill-down รายละเอียดอุปกรณ์ */
+  .modal-overlay{
+    position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(10,14,18,0.8);
+    backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center;
+    z-index:100; padding:20px; opacity:0; pointer-events:none; transition:opacity .2s ease;
+  }
+  .modal-overlay.open{ opacity:1; pointer-events:auto; }
+  .modal{
+    background:var(--panel); border:1px solid var(--border); border-radius:10px;
+    width:100%; max-width:600px; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.5);
+  }
+  .modal h3{ margin:0 0 16px 0; font-size:1.1rem; color:var(--primary); display:flex; justify-content:space-between; align-items:center; }
+  .modal-close{ background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer; }
+  .modal-grid{ display:grid; grid-template-columns:130px 1fr; gap:10px 16px; font-size:0.88rem; margin-bottom:16px; }
+  .modal-grid .label{ color:var(--muted); font-weight:500; }
+  .modal-grid .val{ color:var(--text); }
 
   mark{ background: var(--primary-dim); color:inherit; border-radius:2px; padding:0 1px; }
 
@@ -198,7 +208,8 @@
           <button class="tab-btn" onclick="switchTab('cehi', this)">2. โครงสร้าง CEHI</button>
           <button class="tab-btn" onclick="switchTab('plan', this)" id="btnPlan">3. PM/CBM Action Plan</button>
         </div>
-        <button class="save-btn" onclick="saveData()">💾 บันทึกข้อมูล</button>
+        <button class="action-btn" onclick="exportToCSV()" title="ดาวน์โหลดรายงาน CSV">📥 ส่งออกรายงาน</button>
+        <button class="save-btn" onclick="saveData()">💾 บันทึก</button>
       </div>
     </div>
 
@@ -239,7 +250,7 @@
 
 <main>
   <div class="section-label">
-    <span id="tableInstruction">คลิกช่องคะแนนเพื่อประเมินค่า</span>
+    <span id="tableInstruction">คลิกที่แถวเพื่อดูรายละเอียดรายอุปกรณ์ หรือคลิกช่องคะแนนเพื่อประเมิน RPN</span>
     <span style="font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--teal);">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</span>
   </div>
   <table>
@@ -256,6 +267,28 @@
 <footer>
   ฐานข้อมูล RCM จากไฟล์ RCM.xlsx (ข้อมูลจริง 223 รายการ) — ระบบบันทึกอัตโนมัติผ่าน LocalStorage
 </footer>
+
+<!-- Modal แสดงรายละเอียดรายอุปกรณ์ (Drill-down) -->
+<div class="modal-overlay" id="drilldownModal">
+  <div class="modal">
+    <h3 id="modalTitle">รายละเอียดอุปกรณ์ <button class="modal-close" onclick="closeModal()">&times;</button></h3>
+    <div class="modal-grid">
+      <div class="label">Component:</div>
+      <div class="val" id="modalComp">-</div>
+      <div class="label">รหัสความเสียหาย:</div>
+      <div class="val" id="modalCode" style="color:var(--primary); font-family:monospace; font-weight:bold;">-</div>
+      <div class="label">อาการ (Failure Mode):</div>
+      <div class="val" id="modalDesc">-</div>
+      <div class="label">สาเหตุ (Cause):</div>
+      <div class="val" id="modalCause">-</div>
+      <div class="label">ค่าความเสี่ยง (RPN):</div>
+      <div class="val" id="modalRpn">-</div>
+    </div>
+    <div style="background:var(--panel-2); padding:12px; border-radius:6px; font-size:0.85rem; color:var(--muted);">
+      💡 <b>คำแนะนำเชิงวิศวกรรม RCM:</b> อุปกรณ์ชิ้นนี้ควรได้รับการตรวจสอบตามรอบแผนงานซ่อมบำรุงเชิงป้องกัน (PM) เพื่อลดโอกาสเกิดความเสียหายฉุกเฉิน
+    </div>
+  </div>
+</div>
 
 <script>
 let records = [
@@ -486,12 +519,12 @@ let records = [
 let cehiRecords = [];
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v19');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v20');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v19');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v20');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -765,7 +798,6 @@ function renderTable(){
       globalTotalSiWi += compSiWi;
       globalTotalSmaxWi += compSmaxWi;
 
-      // จัดวางปุ่มเพิ่มไว้ซ้าย และผลรวมไว้ขวาอย่างเป็นระเบียบตามที่คุณต้องการ
       htmlRows += `
         <tr style="background:var(--panel-2); border-top:1px solid var(--border);">
           <td colspan="9" style="padding:12px 16px;">
@@ -891,8 +923,8 @@ function closeModal() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v19', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v19', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v20', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v20', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลคะแนนและรายการทดสอบของคุณเรียบร้อยแล้ว!');
 }
 
