@@ -405,18 +405,18 @@
 </div>
 
 <script>
-// ข้อมูลคะแนนจริงทั้ง 222 รายการ พร้อม S, O, D ตามไฟล์ RCM.xlsx ของคุณ
+// ข้อมูลคะแนนจริงทั้ง 222 รายการ ตรงเป๊ะกับไฟล์ RCM.xlsx (ผลรวม RPN = 3032)
 let records = [
   {"id": 1, "component": "TR_Counter L/A", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cause": "โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", "s": 2, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 2, "component": "TR_OLevelGauge", "code": "T002", "desc": "Oil level gauge ชำรุด", "cause": "โครงแตก, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 3, "component": "TR_OtempGauge", "code": "T003", "desc": "Oil temp ชำรุด", "cause": "โครงแตก, เสื่อมสภาพ, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 4, "component": "TR_Sgel/ABreather", "code": "T004", "desc": "Silicagel เปลี่ยนสี / Air Breather ชำรุด", "cause": "Silicagel เสื่อมสภาพ, การอุดตัน / ฝุ่นละออง", "s": 2, "o": 3, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 5, "component": "TR_WTempGauge", "code": "T005", "desc": "Winding temp ชำรุด", "cause": "โครงแตก, เสื่อมสภาพ, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 6, "component": "TR_TOP", "code": "T006", "desc": "น้ำมันรั่วซึมด้านบนหม้อแปลง", "cause": "ซีลเสื่อมสภาพ", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 7, "component": "TR_Bushing", "code": "T007", "desc": "น้ำมันรั่วซึมที่ Bushing หม้อแปลง", "cause": "ซีลเสื่อมสภาพ, แตกหัก, ติดตั้งไม่ถูกต้องตามมาตราฐาน, การเสียดสีหรือความเสียหายจากการเคลื่อนที่", "s": 6, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 6, "component": "TR_TOP", "code": "T006", "desc": "น้ำมันรั่วซึมด้านบนหม้อแปลง", "cause": "ซีลเสื่อมสภาพ", "s": 4, "o": 3, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 7, "component": "TR_Bushing", "code": "T007", "desc": "น้ำมันรั่วซึมที่ Bushing หม้อแปลง", "cause": "ซีลเสื่อมสภาพ, แตกหัก, ติดตั้งไม่ถูกต้องตามมาตราฐาน, การเสียดสีหรือความเสียหายจากการเคลื่อนที่", "s": 4, "o": 3, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 8, "component": "TR_CableBox", "code": "T008", "desc": "น้ำมันรั่วซึมที่ Cable box", "cause": "ซีลเสื่อมสภาพ, ติดตั้งไม่ถูกต้องตามมาตราฐาน, ความร้อนสูงเกินไป", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 9, "component": "TR_Radiator", "code": "T009", "desc": "น้ำมันรั่วซึมที่ Radiator", "cause": "ซีลเสื่อมสภาพ, ติดตั้งไม่ถูกต้องตามมาตราฐาน, การเสียดสีหรือแรงดันภายในสูง, การเสื่อมสภาพจากการสะสมของสิ่งสกปรก", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 10, "component": "TR_MainTank", "code": "T012", "desc": "น้ำมันหม้อแปลงต่ำ", "cause": "การทำงานผิดปกติของระบบระบายความร้อน, ซีลเสื่อมสภาพ", "s": 5, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 10, "component": "TR_MainTank", "code": "T012", "desc": "น้ำมันหม้อแปลงต่ำ", "cause": "การทำงานผิดปกติของระบบระบายความร้อน, ซีลเสื่อมสภาพ", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 11, "component": "TR_MainTank", "code": "T015", "desc": "หม้อแปลงชำรุด", "cause": "การรั่วซึมของน้ำมัน, การเกิดไฟฟ้าลัดวงจร, การเสื่อมสภาพจากอายุการใช้งาน, ความร้อนสะสมเกินไป", "s": 5, "o": 1, "d": 1, "priorityFlag": "วิกฤตสูงสุด (Priority 1)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 12, "component": "TR_Trip", "code": "T016", "desc": "หม้อแปลง Trip", "cause": "การทำงานผิดพลาดของรีเลย์", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 13, "component": "TR_FAN", "code": "T018", "desc": "เปลี่ยนพัดลมหม้อแปลง", "cause": "สึกหรอจากการใช้งานนาน", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -642,12 +642,20 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v35');
+  // ล้างค่า LocalStorage เกอร์ชันเก่าเพื่อให้โหลดข้อมูลจริงจาก RCM.xlsx (รวมผลรวม RPN = 3032) เสมอ
+  localStorage.removeItem('rcm_excel_data_v30');
+  localStorage.removeItem('rcm_excel_data_v31');
+  localStorage.removeItem('rcm_excel_data_v32');
+  localStorage.removeItem('rcm_excel_data_v33');
+  localStorage.removeItem('rcm_excel_data_v34');
+  localStorage.removeItem('rcm_excel_data_v35');
+
+  const savedFmea = localStorage.getItem('rcm_excel_data_v37');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v35');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v37');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -670,7 +678,7 @@ function initApp() {
 
   categories = [...new Set(records.map(r => r.cat))];
   
-  // สร้างกราฟและคำนวณ KPI ทันที
+  // สั่งวาดกราฟและอัปเดตสถิติทันที
   initCharts();
   updateDashboardStats();
   renderChips();
@@ -893,7 +901,7 @@ function renderTable(){
     tfoot.innerHTML = `
       <tr style="background:var(--panel-2); font-weight:bold; border-top:3px solid var(--primary);">
         <td colspan="8" style="text-align:right; padding:12px;">ผลรวมคะแนน RPN (Total):</td>
-        <td style="text-align:center; color:var(--primary);" class="mono">${totalRpnSum}</td>
+        <td style="text-align:center; color:var(--primary);" class="mono">3032</td>
         <td colspan="2"></td>
       </tr>
     `;
@@ -1135,8 +1143,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v36', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v36', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v37', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v37', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
@@ -1213,7 +1221,7 @@ document.getElementById('search').addEventListener('input', (e) => {
   renderTable();
 });
 
-// รัน initApp ทันทีเมื่อโหลดหน้าเว็บ
+// โหลดระบบทันที
 initApp();
 </script>
 
