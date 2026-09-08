@@ -23,7 +23,6 @@
     --teal: #4fb8a6;
     --teal-dim: #1c3a37;
     --danger: #d9694f;
-    --warning-color: #e8a33d;
   }
 
   body.light-mode {
@@ -54,7 +53,7 @@
     padding:16px 20px;
     transition: background 0.2s, border-color 0.2s;
   }
-  .header-inner{ max-width:1450px; margin:0 auto; }
+  .header-inner{ max-width:1500px; margin:0 auto; }
   .title-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
   h1{ font-size:1.15rem; font-weight:700; margin:0; }
   h1 .accent{color: var(--primary);}
@@ -133,7 +132,7 @@
   .chip:hover{border-color:var(--primary); color:var(--text);}
   .chip.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); }
 
-  main{ max-width:1450px; margin:0 auto; padding:16px 20px 40px; }
+  main{ max-width:1500px; margin:0 auto; padding:16px 20px 40px; }
 
   .empty{ text-align:center; padding:50px 20px; color:var(--muted); }
   .empty .big{ font-family:'IBM Plex Mono', monospace; font-size:1.8rem; color:var(--border); margin-bottom:8px; }
@@ -146,7 +145,7 @@
     border-radius: 8px;
     background: var(--panel);
   }
-  table{ width: 100%; min-width: 950px; border-collapse: collapse; font-size: 0.82rem; }
+  table{ width: 100%; min-width: 1100px; border-collapse: collapse; font-size: 0.82rem; }
   thead th{
     text-align: left; font-size: 0.72rem; color: var(--muted); font-weight: 600;
     padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--panel-2);
@@ -184,13 +183,10 @@
   .flag-orange { background: rgba(232, 163, 61, 0.2); color: #e8a33d; border: 1px solid #e8a33d; }
   .flag-green { background: rgba(79, 184, 166, 0.2); color: #4fb8a6; border: 1px solid #4fb8a6; }
 
-  .rpn-badge {
-    font-family: 'IBM Plex Mono', monospace; font-weight: 700; padding: 3px 7px;
-    border-radius: 4px; display: inline-block; text-align: center; min-width: 40px; font-size: 0.8rem;
+  /* หมายเหตุให้ขยายกว้างขึ้น และมีเอฟเฟกต์โฮเวอร์อ่านเต็มๆ */
+  .note-input {
+    min-width: 220px;
   }
-  .rpn-low { background: #1c3a37; color: var(--teal); }
-  .rpn-mid { background: #4a3a20; color: #e8a33d; }
-  .rpn-high { background: #4a2720; color: var(--danger); }
 
   .modal-overlay{
     position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(10,14,18,0.8);
@@ -200,7 +196,7 @@
   .modal-overlay.open{ opacity:1; pointer-events:auto; }
   .modal{
     background:var(--panel); border:1px solid var(--border); border-radius:10px;
-    width:100%; max-width:650px; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.5);
+    width:100%; max-width:700px; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.5);
     max-height: 90vh; overflow-y: auto;
   }
   .modal h3{ margin:0 0 16px 0; font-size:1.1rem; color:var(--primary); display:flex; justify-content:space-between; align-items:center; }
@@ -210,7 +206,7 @@
   .guideline-table th, .guideline-table td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; }
   .guideline-table th { background: var(--panel-2); color: var(--primary); }
 
-  .modal-grid{ display:grid; grid-template-columns:110px 1fr; gap:8px 14px; font-size:0.85rem; margin-bottom:14px; }
+  .modal-grid{ display:grid; grid-template-columns:130px 1fr; gap:8px 14px; font-size:0.85rem; margin-bottom:14px; }
   .modal-grid .label{ color:var(--muted); font-weight:500; }
   .modal-grid .val{ color:var(--text); word-break: break-all; }
 
@@ -220,7 +216,7 @@
     font-size:0.75rem; color:var(--muted); margin:0 0 8px 2px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
   }
 
-  footer{ max-width:1450px; margin:0 auto; padding:0 20px 30px; color:var(--muted); font-size:0.72rem; text-align: center; }
+  footer{ max-width:1500px; margin:0 auto; padding:0 20px 30px; color:var(--muted); font-size:0.72rem; text-align: center; }
 
   @media (max-width: 600px) {
     header { padding: 12px 14px; }
@@ -242,7 +238,7 @@
       </div>
       
       <div class="header-controls">
-        <button class="guideline-btn" onclick="openGuidelineModal()">📘 ดูเกณฑ์ S-O-D</button>
+        <button class="guideline-btn" onclick="openGuidelineModal()">📘 ดูเกณฑ์ S-O-D & PM</button>
         <button class="mode-toggle-btn" id="modeToggleBtn" onclick="toggleLightDarkMode()" title="สลับโหมด">🌙</button>
 
         <div class="nav-tabs">
@@ -298,7 +294,7 @@
     <div class="toolbar-row" id="toolbarRow">
       <div class="search-wrap">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input id="search" type="text" placeholder="พิมพ์ค้นหารหัส เช่น T001, สาเหตุ..." autocomplete="off">
+        <input id="search" type="text" placeholder="พิมพ์ค้นหารหัส เช่น T001, สาเหตุ, หมายเหตุ..." autocomplete="off">
       </div>
       <div class="risk-filters" id="riskFilters">
         <div class="filter-chip active" onclick="setRiskFilter('ALL', this)">ทั้งหมด</div>
@@ -335,12 +331,25 @@
   ฐานข้อมูล RCM ตามเกณฑ์มาตรฐาน MIL-STD-1629A — ระบบบันทึกอัตโนมัติผ่าน LocalStorage
 </footer>
 
-<!-- Modal ดูเกณฑ์มาตรฐาน S, O, D -->
+<!-- Modal ดูเกณฑ์มาตรฐาน S, O, D และหลักการพิจารณา PM -->
 <div class="modal-overlay" id="guidelineModal">
   <div class="modal">
-    <h3>📘 เกณฑ์มาตรฐาน MIL-STD-1629A <button class="modal-close" onclick="closeGuidelineModal()">&times;</button></h3>
+    <h3>📘 เกณฑ์มาตรฐานและหลักการพิจารณา PM (MIL-STD-1629A) <button class="modal-close" onclick="closeGuidelineModal()">&times;</button></h3>
     
-    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">1. เกณฑ์ความรุนแรง (Severity: S)</div>
+    <div style="background:var(--panel-2); padding:12px; border-radius:6px; font-size:0.82rem; margin-bottom:14px; border-left:4px solid var(--primary);">
+      💡 <b>ทำไมค่า RPN เพียงอย่างเดียวจึงไม่พอ?</b><br>
+      การใช้ค่า RPN ($S \times O \times D$) อาจทำให้มองข้ามอุปกรณ์ที่มีความรุนแรงระดับหายนะ ($S=5$) แต่โอกาสเกิดน้อย ระบบ RCM จึงต้องใช้ <b>Priority Flag</b> เข้ามากรองเพื่อคัดแยกความเสี่ยงระดับวิกฤตไม่ให้ตกหล่น
+    </div>
+
+    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">1. เกณฑ์การพิจารณาเข้าทำ PM / CBM (Priority Flag)</div>
+    <table class="guideline-table">
+      <tr><th>ระดับความสำคัญ</th><th>เงื่อนไขการพิจารณา</th><th>แนวทางบริหารจัดการ (Action Strategy)</th></tr>
+      <tr><td><span style="color:#f87171; font-weight:bold;">วิกฤตสูงสุด (Priority 1)</span></td><td>Severity ($S$) = 5 (สูญเสียชีวิต / ระบบล่มเป็นวงกว้าง)</td><td>กำหนดมาตรการป้องกันเด็ดขาดทันที (ไม่คำนึงถึง RPN) ต้องทำ PM เชิงลึกหรือติดตั้งระบบสำรอง</td></tr>
+      <tr><td><span style="color:#e8a33d; font-weight:bold;">สูง (Priority 2)</span></td><td>Severity ($S$) = 4 หรือ RPN สูง</td><td>จัดทำแผนบำรุงรักษาเชิงป้องกัน (PM ตามรอบเวลา) หรือติดตามสภาพด้วย CBM</td></tr>
+      <tr><td><span style="color:#4fb8a6; font-weight:bold;">ปานกลาง/ต่ำ</span></td><td>Severity ($S$) $\le$ 3 และ RPN ต่ำ</td><td>บริหารจัดการตามรอบการซ่อมบำรุงปกติ (Run-to-maintenance หรือ Inspect ตามรอบปี)</td></tr>
+    </table>
+
+    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-top:12px; margin-bottom: 6px;">2. เกณฑ์ความรุนแรง (Severity: S)</div>
     <table class="guideline-table">
       <tr><th>Rank</th><th>Severity Criteria</th></tr>
       <tr><td>1</td><td>ไม่มีผลกระทบ (Minor)</td></tr>
@@ -350,32 +359,14 @@
       <tr><td>5</td><td>ความเสียหายระดับหายนะ, สูญเสียชีวิตได้ (Catastrophic)</td></tr>
     </table>
 
-    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">2. เกณฑ์ความถี่ (Occurrence: O)</div>
+    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">3. เกณฑ์ความถี่ (Occurrence: O) & โอกาสตรวจพบ (Detection: D)</div>
     <table class="guideline-table">
-      <tr><th>Rank</th><th>Occurrence Criteria</th><th>Occurrence Rates</th></tr>
-      <tr><td>1</td><td>ไม่น่าเกิด (Extremely Unlikely)</td><td>-</td></tr>
-      <tr><td>2</td><td>เกิดขึ้นค่อนข้างน้อย (Remote)</td><td>1/10,000</td></tr>
-      <tr><td>3</td><td>เกิดได้บางครั้ง บางคราว (Occasional)</td><td>1/1,000</td></tr>
-      <tr><td>4</td><td>น่าจะเกิดขึ้นได้ (Reasonably Probable)</td><td>1/100</td></tr>
-      <tr><td>5</td><td>เกิดขึ้นบ่อย (Frequent)</td><td>1/10</td></tr>
-    </table>
-
-    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">3. เกณฑ์โอกาสตรวจพบ (Detection: D)</div>
-    <table class="guideline-table">
-      <tr><th>Rank</th><th>Detection Criteria</th><th>Probability</th></tr>
-      <tr><td>1</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าสูงมาก</td><td>80% - 100%</td></tr>
-      <tr><td>2</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าสูง</td><td>60% - 80%</td></tr>
-      <tr><td>3</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าปานกลาง</td><td>40% - 60%</td></tr>
-      <tr><td>4</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าต่ำ</td><td>20% - 40%</td></tr>
-      <tr><td>5</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าน้อยมาก</td><td>0% - 20%</td></tr>
-    </table>
-
-    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">4. เกณฑ์การจัดลำดับความสำคัญ (Priority Flag)</div>
-    <table class="guideline-table">
-      <tr><th>Severity</th><th>สีสถานะ</th><th>ความหมาย</th></tr>
-      <tr><td>Severity = 5</td><td><span style="color:#f87171; font-weight:bold;">สีแดง (วิกฤตสูงสุด)</span></td><td>Priority 1: ความเสี่ยงระดับรุนแรงสูงสุด จัดลำดับก่อนเสมอ ไม่คำนึงถึงค่า RPN</td></tr>
-      <tr><td>Severity = 4</td><td><span style="color:#e8a33d; font-weight:bold;">สีส้ม (สูง)</span></td><td>Priority 2: ความเสี่ยงสูงที่มีผลกระทบต่อระบบหลัก จัดลำดับรองลงมาเรียงตาม RPN</td></tr>
-      <tr><td>Severity &lt;= 3</td><td><span style="color:#4fb8a6; font-weight:bold;">สีเขียว (ปานกลาง/ต่ำ)</span></td><td>ความเสี่ยงต่ำ บริหารจัดการตามรอบปกติ</td></tr>
+      <tr><th>Rank</th><th>Occurrence Criteria (O)</th><th>Detection Criteria (D)</th></tr>
+      <tr><td>1</td><td>ไม่น่าเกิด (Extremely Unlikely)</td><td>ตรวจพบได้ล่วงหน้า 80% - 100%</td></tr>
+      <tr><td>2</td><td>เกิดขึ้นค่อนข้างน้อย (Remote)</td><td>ตรวจพบได้ล่วงหน้า 60% - 80%</td></tr>
+      <tr><td>3</td><td>เกิดได้บางครั้ง บางคราว (Occasional)</td><td>ตรวจพบได้ล่วงหน้า 40% - 60%</td></tr>
+      <tr><td>4</td><td>น่าจะเกิดขึ้นได้ (Reasonably Probable)</td><td>ตรวจพบได้ล่วงหน้า 20% - 40%</td></tr>
+      <tr><td>5</td><td>เกิดขึ้นบ่อย (Frequent)</td><td>ตรวจพบได้ล่วงหน้าน้อยมาก 0% - 20%</td></tr>
     </table>
   </div>
 </div>
@@ -395,9 +386,11 @@
       <div class="val" id="modalCause">-</div>
       <div class="label">ค่าความเสี่ยง (RPN):</div>
       <div class="val" id="modalRpn">-</div>
+      <div class="label">หมายเหตุ (Note):</div>
+      <div class="val" id="modalNote">-</div>
     </div>
     <div style="background:var(--panel-2); padding:10px; border-radius:6px; font-size:0.8rem; color:var(--muted);">
-      💡 <b>เกณฑ์ MIL-STD-1629A:</b> Severity = 5 จัดเป็นวิกฤตสูงสุด (Priority 1) ต้องจัดการเร่งด่วน
+      💡 <b>หลักการพิจารณา PM:</b> ตรวจสอบค่า Severity และ Priority Flag ควบคู่กับ RPN เสมอเพื่อความปลอดภัยสูงสุด
     </div>
   </div>
 </div>
@@ -618,7 +611,7 @@ let records = [
   {"id": 211, "component": "เสา/สาย", "code": "SM23", "desc": "Terminator ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 212, "component": "เสา/สาย", "code": "SM24", "desc": "Lightning ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 213, "component": "เสา/สาย", "code": "SM25", "desc": "switch ปลดทาง Remote", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 214, "component": "เสา/สาย", code: "SM26", "desc": "ชุด Interrupter ไม่ทำงาน", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 214, "component": "เสา/สาย", "code": "SM26", "desc": "ชุด Interrupter ไม่ทำงาน", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 215, "component": "เสา/สาย", "code": "SM27", "desc": "switching ปลดสวิตซ์ในสายส่ง", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 216, "component": "เสา/สาย", "code": "SM28", "desc": "ปลดสวิตซ์ผิดตัว", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 217, "component": "เสา/สาย", "code": "SM29", "desc": "อุปกรณ์ชำรุดภายในสถานี กฟน.", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -634,12 +627,12 @@ let doughnutChartInstance = null;
 let barChartInstance = null;
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v27');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v28');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v27');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v28');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -830,7 +823,7 @@ function renderTable(){
         <th style="width:45px; text-align:center;">D</th>
         <th style="width:60px; text-align:center;">RPN</th>
         <th style="width:140px; text-align:center;">Priority Flag</th>
-        <th style="width:180px;">หมายเหตุ / Note</th>
+        <th style="width:200px;">หมายเหตุ / Note</th>
       </tr>
     `;
 
@@ -871,7 +864,7 @@ function renderTable(){
           <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.d ?? ''}" oninput="updateFmea(${r.id}, 'd', this.value)"></td>
           <td style="text-align:center;" class="mono">${rpn > 0 ? rpn : '-'}</td>
           <td style="text-align:center;"><span class="flag-badge ${flagClass}">${flagText}</span></td>
-          <td onclick="event.stopPropagation()"><input type="text" class="text-input" value="${escapeHtml(r.note || '')}" placeholder="ระบุหมายเหตุ..." oninput="updateFmea(${r.id}, 'note', this.value)"></td>
+          <td onclick="event.stopPropagation()"><input type="text" class="text-input note-input" value="${escapeHtml(r.note || '')}" placeholder="ระบุหมายเหตุ..." oninput="updateFmea(${r.id}, 'note', this.value)"></td>
         </tr>
       `;
     }).join('');
@@ -1087,6 +1080,7 @@ function openDrilldown(id) {
   document.getElementById('modalDesc').textContent = r.desc;
   document.getElementById('modalCause').textContent = r.cause || '-';
   document.getElementById('modalRpn').textContent = rpn > 0 ? rpn : 'ยังไม่ประเมิน';
+  document.getElementById('modalNote').textContent = r.note || '-';
   
   document.getElementById('drilldownModal').classList.add('open');
 }
@@ -1120,8 +1114,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v27', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v27', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v28', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v28', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
