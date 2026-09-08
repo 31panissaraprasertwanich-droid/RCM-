@@ -183,9 +183,11 @@
   .flag-orange { background: rgba(232, 163, 61, 0.2); color: #e8a33d; border: 1px solid #e8a33d; }
   .flag-green { background: rgba(79, 184, 166, 0.2); color: #4fb8a6; border: 1px solid #4fb8a6; }
 
-  /* หมายเหตุให้ขยายกว้างขึ้น และมีเอฟเฟกต์โฮเวอร์อ่านเต็มๆ */
-  .note-input {
-    min-width: 220px;
+  .note-input { min-width: 220px; }
+
+  .plan-info-banner {
+    background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--primary);
+    padding: 12px 16px; border-radius: 6px; margin-bottom: 14px; font-size: 0.83rem; line-height: 1.5;
   }
 
   .modal-overlay{
@@ -313,6 +315,8 @@
     <span style="font-family:'IBM Plex Mono', monospace; font-size:0.75rem; color:var(--teal);">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</span>
   </div>
   
+  <div id="planBannerContainer"></div>
+
   <div class="table-responsive">
     <table>
       <thead id="tableHead"></thead>
@@ -331,25 +335,19 @@
   ฐานข้อมูล RCM ตามเกณฑ์มาตรฐาน MIL-STD-1629A — ระบบบันทึกอัตโนมัติผ่าน LocalStorage
 </footer>
 
-<!-- Modal ดูเกณฑ์มาตรฐาน S, O, D และหลักการพิจารณา PM -->
+<!-- Modal ดูเกณฑ์มาตรฐาน S, O, D -->
 <div class="modal-overlay" id="guidelineModal">
   <div class="modal">
     <h3>📘 เกณฑ์มาตรฐานและหลักการพิจารณา PM (MIL-STD-1629A) <button class="modal-close" onclick="closeGuidelineModal()">&times;</button></h3>
     
     <div style="background:var(--panel-2); padding:12px; border-radius:6px; font-size:0.82rem; margin-bottom:14px; border-left:4px solid var(--primary);">
-      💡 <b>ทำไมค่า RPN เพียงอย่างเดียวจึงไม่พอ?</b><br>
-      การใช้ค่า RPN ($S \times O \times D$) อาจทำให้มองข้ามอุปกรณ์ที่มีความรุนแรงระดับหายนะ ($S=5$) แต่โอกาสเกิดน้อย ระบบ RCM จึงต้องใช้ <b>Priority Flag</b> เข้ามากรองเพื่อคัดแยกความเสี่ยงระดับวิกฤตไม่ให้ตกหล่น
+      💡 <b>หลักการพิจารณา PM / CBM:</b><br>
+      • <b>Priority 1 (วิกฤตสูงสุด | S=5):</b> ต้องกำหนดมาตรการป้องกันเด็ดขาดทันที ไม่คำนึงถึงค่า RPN<br>
+      • <b>Priority 2 (สูง | S=4):</b> จัดทำแผนบำรุงรักษาเชิงป้องกัน (PM ตามรอบเวลา)<br>
+      • <b>ปานกลาง/ต่ำ (S &le; 3):</b> บริหารจัดการตามรอบการซ่อมบำรุงปกติหรือใช้ CBM
     </div>
 
-    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">1. เกณฑ์การพิจารณาเข้าทำ PM / CBM (Priority Flag)</div>
-    <table class="guideline-table">
-      <tr><th>ระดับความสำคัญ</th><th>เงื่อนไขการพิจารณา</th><th>แนวทางบริหารจัดการ (Action Strategy)</th></tr>
-      <tr><td><span style="color:#f87171; font-weight:bold;">วิกฤตสูงสุด (Priority 1)</span></td><td>Severity ($S$) = 5 (สูญเสียชีวิต / ระบบล่มเป็นวงกว้าง)</td><td>กำหนดมาตรการป้องกันเด็ดขาดทันที (ไม่คำนึงถึง RPN) ต้องทำ PM เชิงลึกหรือติดตั้งระบบสำรอง</td></tr>
-      <tr><td><span style="color:#e8a33d; font-weight:bold;">สูง (Priority 2)</span></td><td>Severity ($S$) = 4 หรือ RPN สูง</td><td>จัดทำแผนบำรุงรักษาเชิงป้องกัน (PM ตามรอบเวลา) หรือติดตามสภาพด้วย CBM</td></tr>
-      <tr><td><span style="color:#4fb8a6; font-weight:bold;">ปานกลาง/ต่ำ</span></td><td>Severity ($S$) $\le$ 3 และ RPN ต่ำ</td><td>บริหารจัดการตามรอบการซ่อมบำรุงปกติ (Run-to-maintenance หรือ Inspect ตามรอบปี)</td></tr>
-    </table>
-
-    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-top:12px; margin-bottom: 6px;">2. เกณฑ์ความรุนแรง (Severity: S)</div>
+    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">1. เกณฑ์ความรุนแรง (Severity: S)</div>
     <table class="guideline-table">
       <tr><th>Rank</th><th>Severity Criteria</th></tr>
       <tr><td>1</td><td>ไม่มีผลกระทบ (Minor)</td></tr>
@@ -359,7 +357,7 @@
       <tr><td>5</td><td>ความเสียหายระดับหายนะ, สูญเสียชีวิตได้ (Catastrophic)</td></tr>
     </table>
 
-    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">3. เกณฑ์ความถี่ (Occurrence: O) & โอกาสตรวจพบ (Detection: D)</div>
+    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">2. เกณฑ์ความถี่ (Occurrence: O) & โอกาสตรวจพบ (Detection: D)</div>
     <table class="guideline-table">
       <tr><th>Rank</th><th>Occurrence Criteria (O)</th><th>Detection Criteria (D)</th></tr>
       <tr><td>1</td><td>ไม่น่าเกิด (Extremely Unlikely)</td><td>ตรวจพบได้ล่วงหน้า 80% - 100%</td></tr>
@@ -390,13 +388,12 @@
       <div class="val" id="modalNote">-</div>
     </div>
     <div style="background:var(--panel-2); padding:10px; border-radius:6px; font-size:0.8rem; color:var(--muted);">
-      💡 <b>หลักการพิจารณา PM:</b> ตรวจสอบค่า Severity และ Priority Flag ควบคู่กับ RPN เสมอเพื่อความปลอดภัยสูงสุด
+      💡 <b>เกณฑ์ MIL-STD-1629A:</b> ตรวจสอบค่า Severity และ Priority Flag ควบคู่กับ RPN เสมอ
     </div>
   </div>
 </div>
 
 <script>
-// ข้อมูลคะแนนจริงทั้ง 222 รายการ พร้อม Priority Flag และ Note ตาม RCM.xlsx
 let records = [
   {"id": 1, "component": "TR_Counter L/A", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cause": "โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", "s": 2, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 2, "component": "TR_OLevelGauge", "code": "T002", "desc": "Oil level gauge ชำรุด", "cause": "โครงแตก, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -627,12 +624,12 @@ let doughnutChartInstance = null;
 let barChartInstance = null;
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v28');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v29');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v28');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v29');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -750,6 +747,9 @@ function switchTab(tab, el) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
   
+  const bannerContainer = document.getElementById('planBannerContainer');
+  bannerContainer.innerHTML = '';
+  
   if(tab === 'fmea') {
     document.getElementById('modeTitle').textContent = "FMEA & RPN Assessment";
     document.getElementById('tableInstruction').textContent = "คลิกแถวเพื่อดูรายละเอียด หรือคลิกช่องคะแนนเพื่อประเมิน";
@@ -762,9 +762,19 @@ function switchTab(tab, el) {
     document.getElementById('chips').style.display = 'flex';
   } else if(tab === 'plan') {
     document.getElementById('modeTitle').textContent = "PM/CBM Action Plan Table";
-    document.getElementById('tableInstruction').textContent = "แสดงรายการที่ผ่านการประเมินคะแนน (RPN > 0)";
+    document.getElementById('tableInstruction').textContent = "แสดงรายการที่ผ่านการประเมินคะแนน (RPN > 0) เรียงตามลำดับความสำคัญ";
     document.getElementById('toolbarRow').style.display = 'none';
     document.getElementById('chips').style.display = 'none';
+    
+    // เพิ่มกล่องข้อความอธิบายหลักการพิจารณา PM / CBM ไว้ที่หัวตาราง Plan ตามที่คุณต้องการ
+    bannerContainer.innerHTML = `
+      <div class="plan-info-banner">
+        📋 <b>หลักการพิจารณาจัดทำแผน PM / CBM:</b><br>
+        • <b>วิกฤตสูงสุด (Priority 1 | S=5):</b> ระบบจัดลำดับความสำคัญสูงสุดก่อนเสมอเพื่อความปลอดภัย ต้องกำหนดมาตรการป้องกันเด็ดขาดทันที<br>
+        • <b>สูง (Priority 2 | S=4) และ RPN สูง:</b> จัดทำแผนบำรุงรักษาเชิงป้องกัน (PM ตามรอบเวลา) หรือติดตามสภาพด้วย CBM<br>
+        • <b>ปานกลาง/ต่ำ (S &le; 3):</b> บริหารจัดการตามรอบการซ่อมบำรุงปกติ
+      </div>
+    `;
   }
   renderTable();
 }
@@ -1114,8 +1124,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v28', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v28', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v29', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v29', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
