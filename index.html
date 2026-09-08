@@ -23,6 +23,7 @@
     --teal: #4fb8a6;
     --teal-dim: #1c3a37;
     --danger: #d9694f;
+    --warning-color: #e8a33d;
   }
 
   body.light-mode {
@@ -75,10 +76,12 @@
   .tab-btn:hover{border-color:var(--primary); color:var(--text);}
   .tab-btn.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight:600; }
 
-  .action-btn, .save-btn {
+  .action-btn, .save-btn, .guideline-btn {
     background: var(--teal-dim); border: 1px solid var(--teal); color: var(--teal);
     padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: 600; font-family: inherit;
   }
+  .guideline-btn { background: #1e3a8a; border-color: #3b82f6; color: #93c5fd; }
+  .guideline-btn:hover { background: #1d4ed8; color: #fff; }
   .action-btn:hover, .save-btn:hover { background: #264d47; }
 
   .dashboard-stats {
@@ -173,14 +176,16 @@
   }
   input.text-input:focus, select.text-input:focus { border-color: var(--primary); outline: none; }
 
+  /* สีตามระดับความสำคัญและ RPN (Priority Flag) */
   .rpn-badge {
-    font-family: 'IBM Plex Mono', monospace; font-weight: 700; padding: 3px 7px;
-    border-radius: 4px; display: inline-block; text-align: center; min-width: 40px; font-size: 0.8rem;
+    font-family: 'IBM Plex Mono', monospace; font-weight: 700; padding: 4px 8px;
+    border-radius: 6px; display: inline-block; text-align: center; min-width: 45px; font-size: 0.8rem;
   }
-  .rpn-low { background: #1c3a37; color: var(--teal); }
-  .rpn-mid { background: #4a3a20; color: #e8a33d; }
-  .rpn-high { background: #4a2720; color: var(--danger); }
+  .rpn-green { background: rgba(79, 184, 166, 0.2); color: #4fb8a6; border: 1px solid #4fb8a6; }
+  .rpn-orange { background: rgba(232, 163, 61, 0.2); color: #e8a33d; border: 1px solid #e8a33d; }
+  .rpn-red { background: rgba(217, 105, 79, 0.25); color: #f87171; border: 1px solid #d9694f; }
 
+  /* Modal Styling */
   .modal-overlay{
     position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(10,14,18,0.8);
     backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center;
@@ -189,10 +194,16 @@
   .modal-overlay.open{ opacity:1; pointer-events:auto; }
   .modal{
     background:var(--panel); border:1px solid var(--border); border-radius:10px;
-    width:100%; max-width:550px; padding:20px; box-shadow:0 20px 40px rgba(0,0,0,0.5);
+    width:100%; max-width:650px; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.5);
+    max-height: 90vh; overflow-y: auto;
   }
-  .modal h3{ margin:0 0 14px 0; font-size:1.05rem; color:var(--primary); display:flex; justify-content:space-between; align-items:center; }
+  .modal h3{ margin:0 0 16px 0; font-size:1.1rem; color:var(--primary); display:flex; justify-content:space-between; align-items:center; }
   .modal-close{ background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer; }
+  
+  .guideline-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-bottom: 14px; }
+  .guideline-table th, .guideline-table td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+  .guideline-table th { background: var(--panel-2); color: var(--primary); }
+
   .modal-grid{ display:grid; grid-template-columns:110px 1fr; gap:8px 14px; font-size:0.85rem; margin-bottom:14px; }
   .modal-grid .label{ color:var(--muted); font-weight:500; }
   .modal-grid .val{ color:var(--text); word-break: break-all; }
@@ -225,6 +236,7 @@
       </div>
       
       <div class="header-controls">
+        <button class="guideline-btn" onclick="openGuidelineModal()">📘 ดูเกณฑ์ S-O-D</button>
         <button class="mode-toggle-btn" id="modeToggleBtn" onclick="toggleLightDarkMode()" title="สลับโหมด">🌙</button>
 
         <div class="nav-tabs">
@@ -248,7 +260,7 @@
         <div class="stat-value stat-normal" id="statNormal">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-title">⚠️ เฝ้าระวัง (Priority 2)</div>
+        <div class="stat-title">⚠️ สูง (Priority 2)</div>
         <div class="stat-value stat-warning" id="statWarning">0</div>
       </div>
       <div class="stat-card">
@@ -317,7 +329,52 @@
   ฐานข้อมูล RCM ตามเกณฑ์มาตรฐาน MIL-STD-1629A — ระบบบันทึกอัตโนมัติผ่าน LocalStorage
 </footer>
 
-<!-- Modal -->
+<!-- Modal ดูเกณฑ์มาตรฐาน S, O, D -->
+<div class="modal-overlay" id="guidelineModal">
+  <div class="modal">
+    <h3>📘 เกณฑ์มาตรฐาน MIL-STD-1629A <button class="modal-close" onclick="closeGuidelineModal()">&times;</button></h3>
+    
+    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">1. เกณฑ์ความรุนแรง (Severity: S)</div>
+    <table class="guideline-table">
+      <tr><th>Rank</th><th>Severity Criteria</th></tr>
+      <tr><td>1</td><td>ไม่มีผลกระทบ (Minor)</td></tr>
+      <tr><td>2</td><td>มีผลบ้างแต่ไม่มากหรือส่งผลให้ระบบเสียหาย (Marginal)</td></tr>
+      <tr><td>3</td><td>มีความรุนแรงปานกลางทำให้ระบบเสียหายได้ (Moderate)</td></tr>
+      <tr><td>4</td><td>มีความรุนแรงวิกฤตทำให้ระบบเสียหายมาก (Critical)</td></tr>
+      <tr><td>5</td><td>ความเสียหายระดับหายนะ, สูญเสียชีวิตได้ (Catastrophic)</td></tr>
+    </table>
+
+    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">2. เกณฑ์ความถี่ (Occurrence: O)</div>
+    <table class="guideline-table">
+      <tr><th>Rank</th><th>Occurrence Criteria</th><th>Occurrence Rates</th></tr>
+      <tr><td>1</td><td>ไม่น่าเกิด (Extremely Unlikely)</td><td>-</td></tr>
+      <tr><td>2</td><td>เกิดขึ้นค่อนข้างน้อย (Remote)</td><td>1/10,000</td></tr>
+      <tr><td>3</td><td>เกิดได้บางครั้ง บางคราว (Occasional)</td><td>1/1,000</td></tr>
+      <tr><td>4</td><td>น่าจะเกิดขึ้นได้ (Reasonably Probable)</td><td>1/100</td></tr>
+      <tr><td>5</td><td>เกิดขึ้นบ่อย (Frequent)</td><td>1/10</td></tr>
+    </table>
+
+    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">3. เกณฑ์โอกาสตรวจพบ (Detection: D)</div>
+    <table class="guideline-table">
+      <tr><th>Rank</th><th>Detection Criteria</th><th>Probability</th></tr>
+      <tr><td>1</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าสูงมาก</td><td>80% - 100%</td></tr>
+      <tr><td>2</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าสูง</td><td>60% - 80%</td></tr>
+      <tr><td>3</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าปานกลาง</td><td>40% - 60%</td></tr>
+      <tr><td>4</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าต่ำ</td><td>20% - 40%</td></tr>
+      <tr><td>5</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าน้อยมาก</td><td>0% - 20%</td></tr>
+    </table>
+
+    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">4. เกณฑ์การจัดลำดับความสำคัญ (Priority Flag)</div>
+    <table class="guideline-table">
+      <tr><th>Severity</th><th>สีสถานะ</th><th>ความหมาย</th></tr>
+      <tr><td>Severity = 5</td><td><span style="color:#f87171; font-weight:bold;">สีแดง (วิกฤตสูงสุด)</span></td><td>Priority 1: ความเสี่ยงระดับรุนแรงสูงสุด จัดลำดับก่อนเสมอ ไม่คำนึงถึงค่า RPN</td></tr>
+      <tr><td>Severity = 4</td><td><span style="color:#e8a33d; font-weight:bold;">สีส้ม (สูง)</span></td><td>Priority 2: ความเสี่ยงสูงที่มีผลกระทบต่อระบบหลัก จัดลำดับรองลงมาเรียงตาม RPN</td></tr>
+      <tr><td>Severity &lt;= 3</td><td><span style="color:#4fb8a6; font-weight:bold;">สีเขียว (ปานกลาง/ต่ำ)</span></td><td>ความเสี่ยงต่ำ บริหารจัดการตามรอบปกติ</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- Modal รายละเอียดอุปกรณ์ -->
 <div class="modal-overlay" id="drilldownModal">
   <div class="modal">
     <h3 id="modalTitle">รายละเอียดอุปกรณ์ <button class="modal-close" onclick="closeModal()">&times;</button></h3>
@@ -340,7 +397,6 @@
 </div>
 
 <script>
-// ข้อมูลคะแนนจริงทั้ง 222 รายการ ดึงมาจาก RCM.xlsx เรียบร้อยแล้ว
 let records = [
   {"id": 1, "component": "TR_Counter L/A", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cause": "โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", "s": 2, "o": 2, "d": 2, "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 2, "component": "TR_OLevelGauge", "code": "T002", "desc": "Oil level gauge ชำรุด", "cause": "โครงแตก, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -571,12 +627,12 @@ let doughnutChartInstance = null;
 let barChartInstance = null;
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v25');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v26');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v25');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v26');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -634,7 +690,6 @@ function updateDashboardStats() {
 
   records.forEach(r => {
     const s = Number(r.s) || 0;
-    // ตามเกณฑ์ MIL-STD-1629A: Severity = 5 คือ วิกฤตสูงสุด (Priority 1)
     if (s === 5) {
       critical++;
     } else if (s === 4) {
@@ -774,9 +829,14 @@ function renderTable(){
 
     let totalRpnSum = 0;
     tbody.innerHTML = filtered.map(r => {
-      const rpn = (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0);
+      const s = Number(r.s) || 0;
+      const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
       totalRpnSum += rpn;
-      let badgeClass = rpn >= 100 ? 'rpn-high' : (rpn >= 40 ? 'rpn-mid' : 'rpn-low');
+      
+      // แบ่งสีตามสถานะ Severity (ตามเกณฑ์ MIL-STD-1629A)
+      let badgeClass = 'rpn-green';
+      if (s === 5) badgeClass = 'rpn-red';       // วิกฤตสูงสุด (Priority 1)
+      else if (s === 4) badgeClass = 'rpn-orange'; // สูง (Priority 2)
 
       return `
         <tr onclick="openDrilldown(${r.id})">
@@ -788,7 +848,7 @@ function renderTable(){
           <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.s ?? ''}" oninput="updateFmea(${r.id}, 's', this.value)"></td>
           <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.o ?? ''}" oninput="updateFmea(${r.id}, 'o', this.value)"></td>
           <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.d ?? ''}" oninput="updateFmea(${r.id}, 'd', this.value)"></td>
-          <td style="text-align:center;"><span class="rpn-badge ${rpn > 0 ? badgeClass : ''}">${rpn > 0 ? rpn : '-'}</span></td>
+          <td style="text-align:center;"><span class="rpn-badge ${badgeClass}">${rpn > 0 ? rpn : '-'}</span></td>
         </tr>
       `;
     }).join('');
@@ -928,8 +988,9 @@ function renderTable(){
       tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:40px; color:var(--muted);">⚠️ ยังไม่มีข้อมูลแผนงาน เนื่องจากยังไม่ได้ประเมินคะแนนในหน้า FMEA</td></tr>`;
     } else {
       tbody.innerHTML = filteredPlan.map((r, index) => {
-        const rpn = (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0);
-        let badgeClass = rpn >= 100 ? 'rpn-high' : (rpn >= 40 ? 'rpn-mid' : 'rpn-low');
+        const s = Number(r.s) || 0;
+        const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
+        let badgeClass = s === 5 ? 'rpn-red' : (s === 4 ? 'rpn-orange' : 'rpn-green');
 
         return `
           <tr onclick="openDrilldown(${r.id})">
@@ -997,6 +1058,14 @@ function closeModal() {
   document.getElementById('drilldownModal').classList.remove('open');
 }
 
+function openGuidelineModal() {
+  document.getElementById('guidelineModal').classList.add('open');
+}
+
+function closeGuidelineModal() {
+  document.getElementById('guidelineModal').classList.remove('open');
+}
+
 function exportToCSV() {
   let csvContent = "\uFEFFID,Component,Code,Failure Mode,Failure Cause,Severity,Occurrence,Detection,RPN\n";
   records.forEach(r => {
@@ -1014,8 +1083,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v25', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v25', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v26', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v26', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
@@ -1028,7 +1097,7 @@ function initCharts() {
   doughnutChartInstance = new Chart(ctxDoughnut, {
     type: 'doughnut',
     data: {
-      labels: ['ปกติ', 'เฝ้าระวัง (P2)', 'วิกฤตสูงสุด (P1)'],
+      labels: ['ปกติ', 'สูง (P2)', 'วิกฤตสูงสุด (P1)'],
       datasets: [{
         data: [222, 0, 0],
         backgroundColor: ['#4fb8a6', '#e8a33d', '#d9694f'],
