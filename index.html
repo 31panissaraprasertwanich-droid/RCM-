@@ -405,7 +405,6 @@
 </div>
 
 <script>
-// ข้อมูลคะแนนจริงทั้ง 222 รายการ พร้อม S, O, D ตามไฟล์ RCM.xlsx
 let records = [
   {"id": 1, "component": "TR_Counter L/A", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cause": "โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", "s": 2, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 2, "component": "TR_OLevelGauge", "code": "T002", "desc": "Oil level gauge ชำรุด", "cause": "โครงแตก, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -636,13 +635,19 @@ let doughnutChartInstance = null;
 let barChartInstance = null;
 
 function initApp() {
-  // บังคับเคลียร์ LocalStorage เก่าเวอร์ชันที่มีปัญหา แล้วใช้ชุดข้อมูลจริงล่าสุด
-  const savedFmea = localStorage.getItem('rcm_excel_data_v32');
+  const savedTheme = localStorage.getItem('rcm_theme_mode');
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-mode');
+    document.getElementById('modeToggleBtn').textContent = '☀️';
+  }
+
+  // โหลดข้อมูล LocalStorage ถ้ามี หรือใช้ชุดข้อมูลเริ่มต้น
+  const savedFmea = localStorage.getItem('rcm_excel_data_v34');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v32');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v34');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -657,12 +662,6 @@ function initApp() {
     }));
   }
 
-  const savedTheme = localStorage.getItem('rcm_theme_mode');
-  if (savedTheme === 'light') {
-    document.body.classList.add('light-mode');
-    document.getElementById('modeToggleBtn').textContent = '☀️';
-  }
-
   records.forEach(r => {
     if(!r.cat) r.cat = r.component ? r.component.split('_')[0] : 'OTHER';
     const s = Number(r.s) || 0;
@@ -670,6 +669,8 @@ function initApp() {
   });
 
   categories = [...new Set(records.map(r => r.cat))];
+  
+  // เรียกคำนวณและวาดกราฟทันที
   updateDashboardStats();
   renderChips();
   renderTable();
@@ -1134,8 +1135,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v33', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v33', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v35', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v35', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
@@ -1212,6 +1213,7 @@ document.getElementById('search').addEventListener('input', (e) => {
   renderTable();
 });
 
+// รัน initApp และคำนวณกราฟทันทีเมื่อเปิดหน้าเว็บ
 initApp();
 </script>
 
