@@ -198,7 +198,7 @@
   .modal-overlay.open{ opacity:1; pointer-events:auto; }
   .modal{
     background:var(--panel); border:1px solid var(--border); border-radius:10px;
-    width:100%; max-width:700px; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.5);
+    width:100%; max-width:750px; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.5);
     max-height: 90vh; overflow-y: auto;
   }
   .modal h3{ margin:0 0 16px 0; font-size:1.1rem; color:var(--primary); display:flex; justify-content:space-between; align-items:center; }
@@ -240,7 +240,7 @@
       </div>
       
       <div class="header-controls">
-        <button class="guideline-btn" onclick="openGuidelineModal()">📘 ดูเกณฑ์ S-O-D & PM</button>
+        <button class="guideline-btn" onclick="openGuidelineModal()">📘 ดูเกณฑ์มาตรฐาน (MIL-STD-1629A)</button>
         <button class="mode-toggle-btn" id="modeToggleBtn" onclick="toggleLightDarkMode()" title="สลับโหมด">🌙</button>
 
         <div class="nav-tabs">
@@ -335,36 +335,47 @@
   ฐานข้อมูล RCM ตามเกณฑ์มาตรฐาน MIL-STD-1629A — ระบบบันทึกอัตโนมัติผ่าน LocalStorage
 </footer>
 
-<!-- Modal ดูเกณฑ์มาตรฐาน S, O, D -->
+<!-- Modal ดูเกณฑ์มาตรฐาน S, O, D และ Priority Flag แบบครบถ้วนตามไฟล์ Excel -->
 <div class="modal-overlay" id="guidelineModal">
   <div class="modal">
-    <h3>📘 เกณฑ์มาตรฐานและหลักการพิจารณา PM (MIL-STD-1629A) <button class="modal-close" onclick="closeGuidelineModal()">&times;</button></h3>
+    <h3>📘 เกณฑ์มาตรฐาน MIL-STD-1629A / Detect-ability <button class="modal-close" onclick="closeGuidelineModal()">&times;</button></h3>
     
-    <div style="background:var(--panel-2); padding:12px; border-radius:6px; font-size:0.82rem; margin-bottom:14px; border-left:4px solid var(--primary);">
-      💡 <b>หลักการพิจารณา PM / CBM:</b><br>
-      • <b>Priority 1 (วิกฤตสูงสุด | S=5):</b> ต้องกำหนดมาตรการป้องกันเด็ดขาดทันที ไม่คำนึงถึงค่า RPN<br>
-      • <b>Priority 2 (สูง | S=4):</b> จัดทำแผนบำรุงรักษาเชิงป้องกัน (PM ตามรอบเวลา)<br>
-      • <b>ปานกลาง/ต่ำ (S &le; 3):</b> บริหารจัดการตามรอบการซ่อมบำรุงปกติหรือใช้ CBM
-    </div>
-
-    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">1. เกณฑ์ความรุนแรง (Severity: S)</div>
+    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">1. ตารางเกณฑ์ความรุนแรง (Severity: S)</div>
     <table class="guideline-table">
-      <tr><th>Rank</th><th>Severity Criteria</th></tr>
-      <tr><td>1</td><td>ไม่มีผลกระทบ (Minor)</td></tr>
-      <tr><td>2</td><td>มีผลบ้างแต่ไม่มากหรือส่งผลให้ระบบเสียหาย (Marginal)</td></tr>
-      <tr><td>3</td><td>มีความรุนแรงปานกลางทำให้ระบบเสียหายได้ (Moderate)</td></tr>
-      <tr><td>4</td><td>มีความรุนแรงวิกฤตทำให้ระบบเสียหายมาก (Critical)</td></tr>
-      <tr><td>5</td><td>ความเสียหายระดับหายนะ, สูญเสียชีวิตได้ (Catastrophic)</td></tr>
+      <tr><th style="width: 60px; text-align:center;">Rank</th><th>Severity Criteria</th></tr>
+      <tr><td style="text-align:center;">1</td><td>ไม่มีผลกระทบ (Minor)</td></tr>
+      <tr><td style="text-align:center;">2</td><td>มีผลบ้างแต่ไม่มากหรือส่งผลให้ระบบเสียหาย (Marginal)</td></tr>
+      <tr><td style="text-align:center;">3</td><td>มีความรุนแรงปานกลางทำให้ระบบเสียหายได้ (Moderate)</td></tr>
+      <tr><td style="text-align:center;">4</td><td>มีความรุนแรงวิกฤตทำให้ระบบเสียหายมาก (Critical)</td></tr>
+      <tr><td style="text-align:center;">5</td><td>ความเสียหายระดับหายนะ, สูญเสียชีวิตได้ (Catastrophic)</td></tr>
     </table>
 
-    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">2. เกณฑ์ความถี่ (Occurrence: O) & โอกาสตรวจพบ (Detection: D)</div>
+    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">2. ตารางเกณฑ์ความถี่ (Occurrence: O)</div>
     <table class="guideline-table">
-      <tr><th>Rank</th><th>Occurrence Criteria (O)</th><th>Detection Criteria (D)</th></tr>
-      <tr><td>1</td><td>ไม่น่าเกิด (Extremely Unlikely)</td><td>ตรวจพบได้ล่วงหน้า 80% - 100%</td></tr>
-      <tr><td>2</td><td>เกิดขึ้นค่อนข้างน้อย (Remote)</td><td>ตรวจพบได้ล่วงหน้า 60% - 80%</td></tr>
-      <tr><td>3</td><td>เกิดได้บางครั้ง บางคราว (Occasional)</td><td>ตรวจพบได้ล่วงหน้า 40% - 60%</td></tr>
-      <tr><td>4</td><td>น่าจะเกิดขึ้นได้ (Reasonably Probable)</td><td>ตรวจพบได้ล่วงหน้า 20% - 40%</td></tr>
-      <tr><td>5</td><td>เกิดขึ้นบ่อย (Frequent)</td><td>ตรวจพบได้ล่วงหน้าน้อยมาก 0% - 20%</td></tr>
+      <tr><th style="width: 60px; text-align:center;">Rank</th><th>Occurrence Criteria</th><th>Occurrence Rates (Cycles, Hrs, etc.)</th></tr>
+      <tr><td style="text-align:center;">1</td><td>ไม่น่าเกิด (Extremely Unlikely)</td><td>-</td></tr>
+      <tr><td style="text-align:center;">2</td><td>เกิดขึ้นค่อนข้างน้อย (Remote)</td><td>1/10,000</td></tr>
+      <tr><td style="text-align:center;">3</td><td>เกิดได้บางครั้ง บางคราว (Occasional)</td><td>1/1,000</td></tr>
+      <tr><td style="text-align:center;">4</td><td>น่าจะเกิดขึ้นได้ (Reasonably Probable)</td><td>1/100</td></tr>
+      <tr><td style="text-align:center;">5</td><td>เกิดขึ้นบ่อย (Frequent)</td><td>1/10</td></tr>
+    </table>
+
+    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">3. ตารางเกณฑ์โอกาสตรวจพบ (Detection: D)</div>
+    <table class="guideline-table">
+      <tr><th style="width: 60px; text-align:center;">Rank</th><th>Detection Criteria</th><th>Probability</th></tr>
+      <tr><td style="text-align:center;">1</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าสูงมาก</td><td>80% - 100%</td></tr>
+      <tr><td style="text-align:center;">2</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าสูง</td><td>60% - 80%</td></tr>
+      <tr><td style="text-align:center;">3</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าปานกลาง</td><td>40% - 60%</td></tr>
+      <tr><td style="text-align:center;">4</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าต่ำ</td><td>20% - 40%</td></tr>
+      <tr><td style="text-align:center;">5</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าน้อยมาก</td><td>0% - 20%</td></tr>
+    </table>
+
+    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">4. เกณฑ์การจัดลำดับความสำคัญ (Priority Flag)</div>
+    <table class="guideline-table">
+      <tr><th style="width: 140px;">Severity</th><th style="width: 80px; text-align:center;">สีสถานะ</th><th>ความหมาย</th></tr>
+      <tr><td>Severity = 5</td><td style="text-align:center;"><span style="display:inline-block; width:35px; height:14px; background:#d9694f; border-radius:3px;"></span></td><td><b>วิกฤตสูงสุด (Priority 1):</b> ความเสี่ยงระดับรุนแรงสูงสุด (อันตรายถึงชีวิต/ระบบล่มเป็นวงกว้าง) จัดลำดับความสำคัญก่อนเสมอ ไม่คำนึงถึงค่า RPN</td></tr>
+      <tr><td>Severity = 4</td><td style="text-align:center;"><span style="display:inline-block; width:35px; height:14px; background:#e8a33d; border-radius:3px;"></span></td><td><b>สูง (Priority 2):</b> ความเสี่ยงระดับสูงที่มีผลกระทบต่อระบบหลัก จัดลำดับรองลงมาโดยเรียงตามค่า RPN จากมากไปน้อย</td></tr>
+      <tr><td>Severity &lt;= 3</td><td style="text-align:center;"><span style="display:inline-block; width:35px; height:14px; background:#4fb8a6; border-radius:3px;"></span></td><td><b>ปานกลาง/ต่ำ:</b> ความเสี่ยงของอุปกรณ์เสริมหรือผลกระทบน้อย บริหารจัดการตามรอบปกติ</td></tr>
     </table>
   </div>
 </div>
@@ -394,6 +405,7 @@
 </div>
 
 <script>
+// ข้อมูลคะแนนจริงทั้ง 222 รายการ พร้อม Priority Flag และ Note ตาม RCM.xlsx
 let records = [
   {"id": 1, "component": "TR_Counter L/A", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cause": "โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", "s": 2, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 2, "component": "TR_OLevelGauge", "code": "T002", "desc": "Oil level gauge ชำรุด", "cause": "โครงแตก, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -624,12 +636,12 @@ let doughnutChartInstance = null;
 let barChartInstance = null;
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v29');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v30');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v29');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v30');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -766,7 +778,6 @@ function switchTab(tab, el) {
     document.getElementById('toolbarRow').style.display = 'none';
     document.getElementById('chips').style.display = 'none';
     
-    // เพิ่มกล่องข้อความอธิบายหลักการพิจารณา PM / CBM ไว้ที่หัวตาราง Plan ตามที่คุณต้องการ
     bannerContainer.innerHTML = `
       <div class="plan-info-banner">
         📋 <b>หลักการพิจารณาจัดทำแผน PM / CBM:</b><br>
@@ -1124,8 +1135,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v29', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v29', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v30', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v30', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
