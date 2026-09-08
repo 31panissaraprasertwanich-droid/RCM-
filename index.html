@@ -405,6 +405,7 @@
 </div>
 
 <script>
+// ข้อมูลคะแนนจริงทั้ง 222 รายการ พร้อม S, O, D ตามไฟล์ RCM.xlsx ของคุณ
 let records = [
   {"id": 1, "component": "TR_Counter L/A", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cause": "โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", "s": 2, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 2, "component": "TR_OLevelGauge", "code": "T002", "desc": "Oil level gauge ชำรุด", "cause": "โครงแตก, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -641,13 +642,12 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  // โหลดข้อมูล LocalStorage ถ้ามี หรือใช้ชุดข้อมูลเริ่มต้น
-  const savedFmea = localStorage.getItem('rcm_excel_data_v34');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v35');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v34');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v35');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -670,11 +670,11 @@ function initApp() {
 
   categories = [...new Set(records.map(r => r.cat))];
   
-  // เรียกคำนวณและวาดกราฟทันที
+  // สร้างกราฟและคำนวณ KPI ทันที
+  initCharts();
   updateDashboardStats();
   renderChips();
   renderTable();
-  initCharts();
 }
 
 function addCehiRow(compName) {
@@ -1135,8 +1135,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v35', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v35', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v36', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v36', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
@@ -1213,7 +1213,7 @@ document.getElementById('search').addEventListener('input', (e) => {
   renderTable();
 });
 
-// รัน initApp และคำนวณกราฟทันทีเมื่อเปิดหน้าเว็บ
+// รัน initApp ทันทีเมื่อโหลดหน้าเว็บ
 initApp();
 </script>
 
