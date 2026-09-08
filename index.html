@@ -264,11 +264,11 @@
         <div class="stat-value stat-normal" id="statNormal">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-title">⚠️ สูง (Priority 2)</div>
+        <div class="stat-title">⚠️ เฝ้าระวัง</div>
         <div class="stat-value stat-warning" id="statWarning">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-title">🚨 วิกฤต (Priority 1)</div>
+        <div class="stat-title">🚨 วิกฤตสูงสุด (P1)</div>
         <div class="stat-value stat-critical" id="statCritical">0</div>
       </div>
       <div class="stat-card">
@@ -301,7 +301,7 @@
       <div class="risk-filters" id="riskFilters">
         <div class="filter-chip active" onclick="setRiskFilter('ALL', this)">ทั้งหมด</div>
         <div class="filter-chip" onclick="setRiskFilter('CRITICAL', this)">🚨 วิกฤตสูงสุด (P1)</div>
-        <div class="filter-chip" onclick="setRiskFilter('WARNING', this)">⚠️ สูง (P2)</div>
+        <div class="filter-chip" onclick="setRiskFilter('WARNING', this)">⚠️ เฝ้าระวัง</div>
       </div>
     </div>
 
@@ -335,7 +335,7 @@
   ฐานข้อมูล RCM ตามเกณฑ์มาตรฐาน MIL-STD-1629A — ระบบบันทึกอัตโนมัติผ่าน LocalStorage
 </footer>
 
-<!-- Modal ดูเกณฑ์มาตรฐาน S, O, D และ Priority Flag แบบครบถ้วนตามไฟล์ Excel -->
+<!-- Modal ดูเกณฑ์มาตรฐาน S, O, D -->
 <div class="modal-overlay" id="guidelineModal">
   <div class="modal">
     <h3>📘 เกณฑ์มาตรฐาน MIL-STD-1629A / Detect-ability <button class="modal-close" onclick="closeGuidelineModal()">&times;</button></h3>
@@ -373,9 +373,9 @@
     <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">4. เกณฑ์การจัดลำดับความสำคัญ (Priority Flag)</div>
     <table class="guideline-table">
       <tr><th style="width: 140px;">Severity</th><th style="width: 80px; text-align:center;">สีสถานะ</th><th>ความหมาย</th></tr>
-      <tr><td>Severity = 5</td><td style="text-align:center;"><span style="display:inline-block; width:35px; height:14px; background:#d9694f; border-radius:3px;"></span></td><td><b>วิกฤตสูงสุด (Priority 1):</b> ความเสี่ยงระดับรุนแรงสูงสุด (อันตรายถึงชีวิต/ระบบล่มเป็นวงกว้าง) จัดลำดับความสำคัญก่อนเสมอ ไม่คำนึงถึงค่า RPN</td></tr>
-      <tr><td>Severity = 4</td><td style="text-align:center;"><span style="display:inline-block; width:35px; height:14px; background:#e8a33d; border-radius:3px;"></span></td><td><b>สูง (Priority 2):</b> ความเสี่ยงระดับสูงที่มีผลกระทบต่อระบบหลัก จัดลำดับรองลงมาโดยเรียงตามค่า RPN จากมากไปน้อย</td></tr>
-      <tr><td>Severity &lt;= 3</td><td style="text-align:center;"><span style="display:inline-block; width:35px; height:14px; background:#4fb8a6; border-radius:3px;"></span></td><td><b>ปานกลาง/ต่ำ:</b> ความเสี่ยงของอุปกรณ์เสริมหรือผลกระทบน้อย บริหารจัดการตามรอบปกติ</td></tr>
+      <tr><td>Severity = 5</td><td style="text-align:center;"><span style="display:inline-block; width:35px; height:14px; background:#d9694f; border-radius:3px;"></span></td><td><b>วิกฤตสูงสุด (Priority 1):</b> ความเสี่ยงระดับรุนแรงสูงสุด จัดลำดับก่อนเสมอ ไม่คำนึงถึงค่า RPN</td></tr>
+      <tr><td>Severity = 4</td><td style="text-align:center;"><span style="display:inline-block; width:35px; height:14px; background:#e8a33d; border-radius:3px;"></span></td><td><b>เฝ้าระวัง:</b> ความเสี่ยงระดับสูงที่มีผลกระทบต่อระบบหลัก จัดลำดับรองลงมาเรียงตาม RPN</td></tr>
+      <tr><td>Severity &lt;= 3</td><td style="text-align:center;"><span style="display:inline-block; width:35px; height:14px; background:#4fb8a6; border-radius:3px;"></span></td><td><b>ปานกลาง/ต่ำ:</b> ความเสี่ยงของอุปกรณ์เสริม ผลกระทบน้อย บริหารจัดการตามรอบปกติ</td></tr>
     </table>
   </div>
 </div>
@@ -405,37 +405,37 @@
 </div>
 
 <script>
-// ข้อมูลคะแนนจริงทั้ง 222 รายการ พร้อม Priority Flag และ Note ตาม RCM.xlsx
+// ข้อมูลคะแนนจริงทั้ง 222 รายการ พร้อม S, O, D ตามไฟล์ RCM.xlsx ของคุณ
 let records = [
   {"id": 1, "component": "TR_Counter L/A", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cause": "โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", "s": 2, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 2, "component": "TR_OLevelGauge", "code": "T002", "desc": "Oil level gauge ชำรุด", "cause": "โครงแตก, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 3, "component": "TR_OtempGauge", "code": "T003", "desc": "Oil temp ชำรุด", "cause": "โครงแตก, เสื่อมสภาพ, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 4, "component": "TR_Sgel/ABreather", "code": "T004", "desc": "Silicagel เปลี่ยนสี / Air Breather ชำรุด", "cause": "Silicagel เสื่อมสภาพ, การอุดตัน / ฝุ่นละออง", "s": 2, "o": 3, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 5, "component": "TR_WTempGauge", "code": "T005", "desc": "Winding temp ชำรุด", "cause": "โครงแตก, เสื่อมสภาพ, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 6, "component": "TR_TOP", "code": "T006", "desc": "น้ำมันรั่วซึมด้านบนหม้อแปลง", "cause": "ซีลเสื่อมสภาพ", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 7, "component": "TR_Bushing", "code": "T007", "desc": "น้ำมันรั่วซึมที่ Bushing หม้อแปลง", "cause": "ซีลเสื่อมสภาพ, แตกหัก, ติดตั้งไม่ถูกต้องตามมาตราฐาน, การเสียดสีหรือความเสียหายจากการเคลื่อนที่", "s": 6, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 8, "component": "TR_CableBox", "code": "T008", "desc": "น้ำมันรั่วซึมที่ Cable box", "cause": "ซีลเสื่อมสภาพ, ติดตั้งไม่ถูกต้องตามมาตราฐาน, ความร้อนสูงเกินไป", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 9, "component": "TR_Radiator", "code": "T009", "desc": "น้ำมันรั่วซึมที่ Radiator", "cause": "ซีลเสื่อมสภาพ, ติดตั้งไม่ถูกต้องตามมาตราฐาน, การเสียดสีหรือแรงดันภายในสูง, การเสื่อมสภาพจากการสะสมของสิ่งสกปรก", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 10, "component": "TR_MainTank", "code": "T012", "desc": "น้ำมันหม้อแปลงต่ำ", "cause": "การทำงานผิดปกติของระบบระบายความร้อน, ซีลเสื่อมสภาพ", "s": 5, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 6, "component": "TR_TOP", "code": "T006", "desc": "น้ำมันรั่วซึมด้านบนหม้อแปลง", "cause": "ซีลเสื่อมสภาพ", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 7, "component": "TR_Bushing", "code": "T007", "desc": "น้ำมันรั่วซึมที่ Bushing หม้อแปลง", "cause": "ซีลเสื่อมสภาพ, แตกหัก, ติดตั้งไม่ถูกต้องตามมาตราฐาน, การเสียดสีหรือความเสียหายจากการเคลื่อนที่", "s": 6, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 8, "component": "TR_CableBox", "code": "T008", "desc": "น้ำมันรั่วซึมที่ Cable box", "cause": "ซีลเสื่อมสภาพ, ติดตั้งไม่ถูกต้องตามมาตราฐาน, ความร้อนสูงเกินไป", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 9, "component": "TR_Radiator", "code": "T009", "desc": "น้ำมันรั่วซึมที่ Radiator", "cause": "ซีลเสื่อมสภาพ, ติดตั้งไม่ถูกต้องตามมาตราฐาน, การเสียดสีหรือแรงดันภายในสูง, การเสื่อมสภาพจากการสะสมของสิ่งสกปรก", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 10, "component": "TR_MainTank", "code": "T012", "desc": "น้ำมันหม้อแปลงต่ำ", "cause": "การทำงานผิดปกติของระบบระบายความร้อน, ซีลเสื่อมสภาพ", "s": 5, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 11, "component": "TR_MainTank", "code": "T015", "desc": "หม้อแปลงชำรุด", "cause": "การรั่วซึมของน้ำมัน, การเกิดไฟฟ้าลัดวงจร, การเสื่อมสภาพจากอายุการใช้งาน, ความร้อนสะสมเกินไป", "s": 5, "o": 1, "d": 1, "priorityFlag": "วิกฤตสูงสุด (Priority 1)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 12, "component": "TR_Trip", "code": "T016", "desc": "หม้อแปลง Trip", "cause": "การทำงานผิดพลาดของรีเลย์", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 12, "component": "TR_Trip", "code": "T016", "desc": "หม้อแปลง Trip", "cause": "การทำงานผิดพลาดของรีเลย์", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 13, "component": "TR_FAN", "code": "T018", "desc": "เปลี่ยนพัดลมหม้อแปลง", "cause": "สึกหรอจากการใช้งานนาน", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 14, "component": "TR_FAN", "code": "T019", "desc": "พัดลมหม้อแปลงถอดไปซ่อม", "cause": "สึกหรอจากการใช้งานนาน", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 15, "component": "TR_FAN", "code": "T020", "desc": "พัดลมหม้อแปลงไม่ทำงาน", "cause": "การเสียหายของมอเตอร์", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 16, "component": "TR_Coil", "code": "T023", "desc": "ขดลวดหม้อแปลงชำรุด", "cause": "การโอเวอร์โหลด, ความผิดปกติของแรงดัน, การผลิตที่ไม่ดี, การเกิดความชื้น", "s": 5, "o": 1, "d": 4, "priorityFlag": "วิกฤตสูงสุด (Priority 1)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 17, "component": "TR_Core", "code": "T024", "desc": "แกนเหล็กหม้อแปลงชำรุด", "cause": "การออกแบบที่ผิดพลาด, ความเครียดจากการเปลี่ยนแปลงกระแสไฟฟ้า", "s": 4, "o": 1, "d": 4, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 18, "component": "TR_HVBushing", "code": "T025", "desc": "TR_HVBushing หม้อแปลงชำรุด", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 19, "component": "TR_MVBushing", "code": "T026", "desc": "TR_MVBushing หม้อแปลงชำรุด", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 17, "component": "TR_Core", "code": "T024", "desc": "แกนเหล็กหม้อแปลงชำรุด", "cause": "การออกแบบที่ผิดพลาด, ความเครียดจากการเปลี่ยนแปลงกระแสไฟฟ้า", "s": 4, "o": 1, "d": 4, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 18, "component": "TR_HVBushing", "code": "T025", "desc": "TR_HVBushing หม้อแปลงชำรุด", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 19, "component": "TR_MVBushing", "code": "T026", "desc": "TR_MVBushing หม้อแปลงชำรุด", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 20, "component": "TR_OFFLTAP", "code": "T027", "desc": "OFF LODE TAP หม้อแปลงชำรุด", "cause": "เสื่อมสภาพ", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 21, "component": "TR_BuchRelay", "code": "T028", "desc": "Buchholz relay ชำรุด", "cause": "ลัดวงจรหรือความผิดพลาดภายใน, การติดตั้งไม่ถูกต้อง, เสื่อมสภาพจากอายุใช้งาน, อุณหภูมิสูงเกิน, กลไกติดขัด", "s": 4, "o": 1, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 22, "component": "TR_PresRelief", "code": "T029", "desc": "Pressure relief ชำรุด", "cause": "การติดตั้งไม่ถูกต้อง, เสื่อมสภาพจากอายุใช้งาน, กลไกติดขัด, แรงดันเกินขีดจำกัดบ่อยเกิน", "s": 4, "o": 1, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 21, "component": "TR_BuchRelay", "code": "T028", "desc": "Buchholz relay ชำรุด", "cause": "ลัดวงจรหรือความผิดพลาดภายใน, การติดตั้งไม่ถูกต้อง, เสื่อมสภาพจากอายุใช้งาน, อุณหภูมิสูงเกิน, กลไกติดขัด", "s": 4, "o": 1, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 22, "component": "TR_PresRelief", "code": "T029", "desc": "Pressure relief ชำรุด", "cause": "การติดตั้งไม่ถูกต้อง, เสื่อมสภาพจากอายุใช้งาน, กลไกติดขัด, แรงดันเกินขีดจำกัดบ่อยเกิน", "s": 4, "o": 1, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 23, "component": "TR_Control_desk", "code": "T101", "desc": "Control desk tap อ่านไม่ตรง", "cause": "เสื่อมสภาพจากอายุใช้งาน, ความชื้นหรือสิ่งสกปรก", "s": 2, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 24, "component": "TR_Control_Lampdesk", "code": "T102", "desc": "Control desk หลอดขาด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 2, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 25, "component": "TR_FanControl", "code": "T103", "desc": "Control พัดลมชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 2, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 26, "component": "TR_Relay", "code": "T104", "desc": "Differential relay ชำรุด", "cause": "การทำงานผิดพลาดในระบบควบคุม, Current Transformer Malfunction, การตั้งค่าผิด", "s": 4, "o": 1, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 27, "component": "TR_DifRelay", "code": "T105", "desc": "Differential relay เปลี่ยน", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 28, "component": "TR_Relay", "code": "T106", "desc": "Tripping relay ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 29, "component": "TR_TrippingRelay", "code": "T107", "desc": "Tripping relay เปลี่ยน", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 26, "component": "TR_Relay", "code": "T104", "desc": "Differential relay ชำรุด", "cause": "การทำงานผิดพลาดในระบบควบคุม, Current Transformer Malfunction, การตั้งค่าผิด", "s": 4, "o": 1, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 27, "component": "TR_DifRelay", "code": "T105", "desc": "Differential relay เปลี่ยน", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 28, "component": "TR_Relay", "code": "T106", "desc": "Tripping relay ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 29, "component": "TR_TrippingRelay", "code": "T107", "desc": "Tripping relay เปลี่ยน", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 30, "component": "TR_CountTap", "code": "T206", "desc": "Counter Tap ไม่ทำงาน", "cause": "กลไกติดขัด, ชุดเฟืองภายในชำรุด, Lubrication, เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 31, "component": "TR_Microlimit", "code": "T208", "desc": "Micro sw. Lower & upper limit ค้าง", "cause": "กลไกติดขัด", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 32, "component": "TR_OLTC Tap", "code": "T209", "desc": "OLTC เปลี่ยน Tap ทางไฟฟ้าไม่ได้", "cause": "OLTC เปลี่ยน Tap ทางไฟฟ้า ไม่ทำงานจริง", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -443,8 +443,8 @@ let records = [
   {"id": 34, "component": "TR_OLTC Tap", "code": "T211", "desc": "เปลี่ยน Tap แล้วมีเสียงดัง", "cause": "เปลี่ยน Tap แล้วมีเสียงดังจากกลไก", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 35, "component": "TR_OLTC Tap", "code": "T212", "desc": "ระดับน้ำมันต่ำที่ OLTC", "cause": "ระดับน้ำมันต่ำที่ OLTC ชีลเสื่อมสภาพ", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 36, "component": "TR_OLTC_ProRelay", "code": "T215", "desc": "Tap protective relay ชำรุด", "cause": "กลไกเสื่อมสภาพ, ความชื้น ฝุ่น การกัดกร่อน, มีการต่อสายผิด หรือมี short ที่ terminal", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 37, "component": "TR_OLTC_MainContact", "code": "T216", "desc": "Main contact ชำรุด", "cause": "การอาร์ก ระหว่างเปลี่ยน TAP ที่บ่อยครั้ง, อุณหภูมิสูงเกินจากกระแสเกิน, น้ำมัน OLTC เสื่อมสภาพ, กลไกบังคับ contact ทำงานผิดพลาด", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 38, "component": "TR_OLTC_TransitContact", "code": "T217", "desc": "Transition contact ชำรุด", "cause": "การอาร์ก (Arc) ซ้ำซ้อนขณะสลับ Tap, น้ำมัน OLTC เสื่อมสภาพ, สปริง/กลไกกด contact เสียหาย, ความต้านทาน contact เพิ่มขึ้น", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 37, "component": "TR_OLTC_MainContact", "code": "T216", "desc": "Main contact ชำรุด", "cause": "การอาร์ก ระหว่างเปลี่ยน TAP ที่บ่อยครั้ง, อุณหภูมิสูงเกินจากกระแสเกิน, น้ำมัน OLTC เสื่อมสภาพ, กลไกบังคับ contact ทำงานผิดพลาด", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 38, "component": "TR_OLTC_TransitContact", "code": "T217", "desc": "Transition contact ชำรุด", "cause": "การอาร์ก (Arc) ซ้ำซ้อนขณะสลับ Tap, น้ำมัน OLTC เสื่อมสภาพ, สปริง/กลไกกด contact เสียหาย, ความต้านทาน contact เพิ่มขึ้น", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 39, "component": "TR_OLTC_Gear", "code": "T218", "desc": "Gear unit ชำรุด", "cause": "สึกหรอ", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 40, "component": "TR_OLTC_Access", "code": "T219", "desc": "OLTC Accessories ชำรุด", "cause": "ชำรุดจาก Accessories", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 41, "component": "TR_OLTC_MotorControlBoard", "code": "T220", "desc": "Motor drive control board ชำรุด", "cause": "แรงดันไฟฟ้าผิดปกติ, ความชื้นและฝุ่นละอองในกล่องควบคุม, เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -457,20 +457,20 @@ let records = [
   {"id": 48, "component": "HV_Mechnism_CB", "code": "H002", "desc": "Mechanism CB ขัดข้อง,", "cause": "ขาดการบำรุงรักษา, Spring เสื่อมหรือหัก, Misalignment ของกลไก", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 49, "component": "HV_PumpMotor_CB", "code": "H003", "desc": "Pump motor ของ CB ไม่ทำงาน", "cause": "ไฟไม่เข้าที่มอเตอร์, Pressure switch ชำรุด", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 50, "component": "HV_PumpMotor_CB", "code": "H005", "desc": "Pump motor ของ CB ทำงานบ่อย", "cause": "ระบบรั่ว (Internal หรือ External Leak), Accumulator เสื่อมหรือแรงดันไม่พอ, Pressure switch ตั้งผิดหรือเสีย, เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 51, "component": "HV_SF6LowGas", "code": "H006", "desc": "SF6 low gas", "cause": "รั่ว (Gas Leakage), เสื่อมสภาพจากอายุใช้งาน, Gas Pressure Gauge / Sensor เสีย", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 52, "component": "HV_SF6LowGas", "code": "H007", "desc": "SF6 over gas", "cause": "อุณหภูมิสูงผิดปกติ, Internal Arc หรือ Fault ทำให้ความร้อนสูงขึ้น, เติมก๊าซตอนอุณหภูมิต่ำ แล้วเมื่ออากาศร้อนขึ้นทำให้แรงดันเกิน, เติมก๊าซเกินตอนบำรุงรักษา (Overfilling)", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 53, "component": "HV_GIS_CB", "code": "H010", "desc": "GIS ชำรุด", "cause": "การติดตั้งหรือประกอบผิดพลาด, Internal Arc / Flashover, เสื่อมสภาพจากอายุใช้งาน, Human Error จากการบำรงุรักษา", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 54, "component": "HV_GIS_CB_SW", "code": "H011", "desc": "SW ปลด / สับ ไม่ได้", "cause": "กลไกติดขัด, Charge Spring ไม่ทำงาน, Control Circuit Fault", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 55, "component": "HV_GIS_CB_Hydraulic", "code": "H012", "desc": "Earthing SW ปลด / สับ ไม่ได้", "cause": "กลไกติดขัด, Control Circuit Fault, Residual Voltage, Sensor หรือ Feedback Error", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 56, "component": "HV_GIS_CB_Hydraulic", "code": "H013", "desc": "Earthing SW ชำรุด", "cause": "กลไกติดขัด, Contact Point ชำรุด, Motorized ES ชำรุด", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 57, "component": "HV_GIS_CB_Hydraulic", "code": "H014", "desc": "น้ำมัน Hydraulic รั่วซึม", "cause": "ซีลเสื่อมสภาพ, ความดันระบบสูงเกินมาตรฐาน, ท่อไฮดรอลิก (Hose/Tube) แตก, Bolt/Flange ของถังหรือชุด Actuator หลวม", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 58, "component": "HV_GIS_CB", "code": "H015", "desc": "น้ำมันรั่วซึมที่ Pole ของ CB", "cause": "ซีลเสื่อมสภาพ", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 59, "component": "HV_GIS_CB", "code": "H018", "desc": "CB Main Contact ชำรุด", "cause": "Mechanical / Electrical Life Time, แรงกด Contact ไม่เพียงพอ, High Fault Current, ความชื้นหรือฝุ่นภายใน CB, กลไกติดขัด", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 60, "component": "HV_GIS_CB_ES/DS_MainContact", "code": "H019", "desc": "ES/DS Main Contact ชำรุด", "cause": "Mechanical / Electrical Life Time, แรงกด Contact ไม่เพียงพอ, High Fault Current, ความชื้นหรือฝุ่นภายใน CB, กลไกติดขัด", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 51, "component": "HV_SF6LowGas", "code": "H006", "desc": "SF6 low gas", "cause": "รั่ว (Gas Leakage), เสื่อมสภาพจากอายุใช้งาน, Gas Pressure Gauge / Sensor เสีย", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 52, "component": "HV_SF6LowGas", "code": "H007", "desc": "SF6 over gas", "cause": "อุณหภูมิสูงผิดปกติ, Internal Arc หรือ Fault ทำให้ความร้อนสูงขึ้น, เติมก๊าซตอนอุณหภูมิต่ำ แล้วเมื่ออากาศร้อนขึ้นทำให้แรงดันเกิน, เติมก๊าซเกินตอนบำรุงรักษา (Overfilling)", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 53, "component": "HV_GIS_CB", "code": "H010", "desc": "GIS ชำรุด", "cause": "การติดตั้งหรือประกอบผิดพลาด, Internal Arc / Flashover, เสื่อมสภาพจากอายุใช้งาน, Human Error จากการบำรงุรักษา", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 54, "component": "HV_GIS_CB_SW", "code": "H011", "desc": "SW ปลด / สับ ไม่ได้", "cause": "กลไกติดขัด, Charge Spring ไม่ทำงาน, Control Circuit Fault", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 55, "component": "HV_GIS_CB_Hydraulic", "code": "H012", "desc": "Earthing SW ปลด / สับ ไม่ได้", "cause": "กลไกติดขัด, Control Circuit Fault, Residual Voltage, Sensor หรือ Feedback Error", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 56, "component": "HV_GIS_CB_Hydraulic", "code": "H013", "desc": "Earthing SW ชำรุด", "cause": "กลไกติดขัด, Contact Point ชำรุด, Motorized ES ชำรุด", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 57, "component": "HV_GIS_CB_Hydraulic", "code": "H014", "desc": "น้ำมัน Hydraulic รั่วซึม", "cause": "ซีลเสื่อมสภาพ, ความดันระบบสูงเกินมาตรฐาน, ท่อไฮดรอลิก (Hose/Tube) แตก, Bolt/Flange ของถังหรือชุด Actuator หลวม", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 58, "component": "HV_GIS_CB", "code": "H015", "desc": "น้ำมันรั่วซึมที่ Pole ของ CB", "cause": "ซีลเสื่อมสภาพ", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 59, "component": "HV_GIS_CB", "code": "H018", "desc": "CB Main Contact ชำรุด", "cause": "Mechanical / Electrical Life Time, แรงกด Contact ไม่เพียงพอ, High Fault Current, ความชื้นหรือฝุ่นภายใน CB, กลไกติดขัด", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 60, "component": "HV_GIS_CB_ES/DS_MainContact", "code": "H019", "desc": "ES/DS Main Contact ชำรุด", "cause": "Mechanical / Electrical Life Time, แรงกด Contact ไม่เพียงพอ, High Fault Current, ความชื้นหรือฝุ่นภายใน CB, กลไกติดขัด", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 61, "component": "HV_GIS_CB_ES/DS_Mechanism", "code": "H020", "desc": "DS/ES Mechanism ชำรุด", "cause": "กลไกติดขัด", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 62, "component": "HV_GIS_CB", "code": "H021", "desc": "Trip coil ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน, ปัญหาจากการป้องกันไฟกระชาก, ความชื้นหรือสิ่งสกปรก, การทำงานผิดพลาดในระบบควบคุม", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 63, "component": "HV_GIS_CB", "code": "H022", "desc": "แก๊ส SF6 รั่ว", "cause": "รั่ว (Gas Leakage)", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 64, "component": "HV_GIS_CB", "code": "H023", "desc": "แก๊ส SF6 เสื่อมสภาพ", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 62, "component": "HV_GIS_CB", "code": "H021", "desc": "Trip coil ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน, ปัญหาจากการป้องกันไฟกระชาก, ความชื้นหรือสิ่งสกปรก, การทำงานผิดพลาดในระบบควบคุม", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 63, "component": "HV_GIS_CB", "code": "H022", "desc": "แก๊ส SF6 รั่ว", "cause": "รั่ว (Gas Leakage)", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 64, "component": "HV_GIS_CB", "code": "H023", "desc": "แก๊ส SF6 เสื่อมสภาพ", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 65, "component": "HV_GIS_CB_SF6PressGage", "code": "H024", "desc": "SF6 Pressure gage ชำรุด", "cause": "รั่ว (Gas Leakage), การปนเปื้อนหรือฝุ่นใน Pressure Gauge, การผิดพลาดจากกระบวนการติดตั้ง, อุณหภูมิหรือการเปลี่ยนแปลงของอุณหภูมิ, การสึกหรอจากการใช้งาน", "s": 3, "o": 2, "d": 3, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 66, "component": "HV_HVSW_CTPT", "code": "H101", "desc": "SW ไม่สามารถ Control ทางไฟฟ้าได้", "cause": "Control Circuit Fault", "s": 3, "o": 2, "d": 3, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 67, "component": "HV_HVSW_CTPT", "code": "H102", "desc": "CT, PT ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 3, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -488,42 +488,42 @@ let records = [
   {"id": 79, "component": "HV_HVSW_CTPT", "code": "H117", "desc": "DS/ES Mechanism ชำรุด", "cause": "กลไกติดขัด", "s": 3, "o": 2, "d": 3, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 80, "component": "HV_Cap", "code": "H201", "desc": "Capacitor bank ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 81, "component": "HV_Cap", "code": "H202", "desc": "อุปกรณ์ชุดปลด-สับ Capacitor bank ไม่ทำงาน", "cause": "อุปกรณ์ทำงานผิดพลาด", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 82, "component": "HV_ShowReset", "code": "H301", "desc": "Alarm show reset ไม่ได้", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 83, "component": "HV_DisRelay", "code": "H305", "desc": "Distance relay ชำรุด", "cause": "การทำงานผิดพลาดในระบบควบคุม, Current Transformer Malfunction, การตั้งค่าผิด, สัญญาณผิดปกติจากระบบภายนอก", "s": 4, "o": 1, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 84, "component": "HV_Relay", "code": "H308", "desc": "Overcurrent relay ชำรุด", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 4, "o": 1, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 85, "component": "HV_OCRelay", "code": "H309", "desc": "Overcurrent relay เปลี่ยน", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 82, "component": "HV_ShowReset", "code": "H301", "desc": "Alarm show reset ไม่ได้", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 83, "component": "HV_DisRelay", "code": "H305", "desc": "Distance relay ชำรุด", "cause": "การทำงานผิดพลาดในระบบควบคุม, Current Transformer Malfunction, การตั้งค่าผิด, สัญญาณผิดปกติจากระบบภายนอก", "s": 4, "o": 1, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 84, "component": "HV_Relay", "code": "H308", "desc": "Overcurrent relay ชำรุด", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 4, "o": 1, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 85, "component": "HV_OCRelay", "code": "H309", "desc": "Overcurrent relay เปลี่ยน", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 86, "component": "MV_Relay", "code": "M311", "desc": "ซ่อม Relay เสีย", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 3, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 87, "component": "MV_Alarm", "code": "M312", "desc": "สวิตช์ตก alarm ไม่ดัง", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 3, "o": 2, "d": 3, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 88, "component": "HV_Distance", "code": "H313", "desc": "ถอด Distance relay ไว้", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 3, "o": 2, "d": 3, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 89, "component": "HV_SW_LTO", "code": "H314", "desc": "สายส่ง SW ตก LTO ไม่ทำงาน", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 3, "o": 2, "d": 3, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 90, "component": "HV_LampDC", "code": "H315", "desc": "หลอด DC supply show reset ไม่ได้", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 3, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 91, "component": "MV_SWGR_CB", "code": "M001", "desc": "CB ปลดไม่ได้", "cause": "กลไกติดขัด", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 92, "component": "MV_SWGR_CB_PT", "code": "M002", "desc": "PT ชำรุด", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 93, "component": "MV_SWGR_CB", "code": "M003", "desc": "GCB low gas", "cause": "การรั่วซึมของ gas", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 94, "component": "MV_SWGR_CB_VacInter", "code": "M004", "desc": "Vacuum interrupter ชำรุด", "cause": "กลไกติดขัด", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 91, "component": "MV_SWGR_CB", "code": "M001", "desc": "CB ปลดไม่ได้", "cause": "กลไกติดขัด", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 92, "component": "MV_SWGR_CB_PT", "code": "M002", "desc": "PT ชำรุด", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 93, "component": "MV_SWGR_CB", "code": "M003", "desc": "GCB low gas", "cause": "การรั่วซึมของ gas", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 94, "component": "MV_SWGR_CB_VacInter", "code": "M004", "desc": "Vacuum interrupter ชำรุด", "cause": "กลไกติดขัด", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 95, "component": "MV_SWGR_CB_Heater", "code": "M005", "desc": "Heater ชำรุด", "cause": "กลไกติดขัด", "s": 3, "o": 2, "d": 3, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 96, "component": "MV_SWGR_CB_Mechanism", "code": "M006", "desc": "Mechanism ของ CB ขัดข้อง", "cause": "อุปกรณ์ทำงานผิดพลาด", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 97, "component": "MV_SWGR_CB_MotorChargSpring", "code": "M007", "desc": "Motor charge spring ไม่ทำงาน/ทำงานตลอด", "cause": "อุปกรณ์ทำงานผิดพลาด", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 96, "component": "MV_SWGR_CB_Mechanism", "code": "M006", "desc": "Mechanism ของ CB ขัดข้อง", "cause": "อุปกรณ์ทำงานผิดพลาด", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 97, "component": "MV_SWGR_CB_MotorChargSpring", "code": "M007", "desc": "Motor charge spring ไม่ทำงาน/ทำงานตลอด", "cause": "อุปกรณ์ทำงานผิดพลาด", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 98, "component": "MV_SWGR_OCB", "code": "M008", "desc": "OCB มีน้ำมันไหลซึม", "cause": "การรั่วซึมของน้ำมัน", "s": 5, "o": 1, "d": 1, "priorityFlag": "วิกฤตสูงสุด (Priority 1)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 99, "component": "MV_SWGR_TR_StationService", "code": "M009", "desc": "Station service / Pad mounted TR น้ำมันรั่วซึม", "cause": "การรั่วซึมของน้ำมัน", "s": 5, "o": 1, "d": 1, "priorityFlag": "วิกฤตสูงสุด (Priority 1)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 100, "component": "MV_SWGR_CB", "code": "M010", "desc": "SWGR ระเบิด", "cause": "การเกิดไฟฟ้าลัดวงจร (Short Circuit)", "s": 5, "o": 1, "d": 1, "priorityFlag": "วิกฤตสูงสุด (Priority 1)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 101, "component": "MV_SWGR_CB", "code": "M011", "desc": "ขณะปลด lock เพื่อ isolate CB สับเข้าเอง", "cause": "กลไกติดขัด", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 102, "component": "MV_SWGR_CB", "code": "M012", "desc": "ซ่อม Circuit breaker ชำรุด", "cause": "กลไกชำรุด", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 103, "component": "MV_SWGR_CB", "code": "M013", "desc": "นำ CB ออกนอกตู้ไม่ได้", "cause": "อุปกรณ์ทำงานผิดพลาด", "s": 5, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 104, "component": "MV_SWGR_CB", "code": "M014", "desc": "เปลี่ยน SWGR ชำรุด", "cause": "อุปกรณ์ทำงานผิดพลาด", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 105, "component": "MV_SWGR_CB", "code": "M015", "desc": "แผง SWGR มีเสียงดังผิดปกติ", "cause": "อุปกรณ์ทำงานผิดพลาด", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 106, "component": "MV_SWGR_CB", "code": "M016", "desc": "สวิตช์ตกไม่สับ ทั้ง RR on อยู่", "cause": "กลไกชำรุด, เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 107, "component": "MV_SWGR_CB", "code": "M017", "desc": "Earthing SW ปลดไม่ได้", "cause": "กลไกชำรุด", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 108, "component": "MV_SWGR_CB", "code": "M018", "desc": "Earthing SWชำรุด", "cause": "กลไกชำรุด", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 109, "component": "MV_SWGR_TR_StationService", "code": "M021", "desc": "Station service transformer ชำรุด", "cause": "การเกิดไฟฟ้าลัดวงจร", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 110, "component": "MV_GIS_CB", "code": "M101", "desc": "CB ขัดข้อง ปลด-สับ ไม่ได้", "cause": "", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 111, "component": "MV_GIS_CB", "code": "M102", "desc": "GIS ชำรุด", "cause": "กลไกชำรุด", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 112, "component": "MV_GIS_CB", "code": "M103", "desc": "Low gas alarm show reset ไม่ได้", "cause": "เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 113, "component": "MV_GIS_CB", "code": "M104", "desc": "Motor ของ Bus isolate ชำรุด", "cause": "กลไกชำรุด", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 114, "component": "MV_GIS_CB", "code": "M105", "desc": "Motor ของ Bus isolate ถอดไปซ่อมและนำเข้าใช้งาน", "cause": "", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 115, "component": "MV_GIS_CB", "code": "M106", "desc": "Bus isolate ชำรุด", "cause": "", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 116, "component": "MV_GIS_CB", "code": "M107", "desc": "SF6 over gas", "cause": "SF6 over gas", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 117, "component": "MV_GIS_CB", "code": "M108", "desc": "SF6 low gas", "cause": "SF6 low gas", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 101, "component": "MV_SWGR_CB", "code": "M011", "desc": "ขณะปลด lock เพื่อ isolate CB สับเข้าเอง", "cause": "กลไกติดขัด", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 102, "component": "MV_SWGR_CB", "code": "M012", "desc": "ซ่อม Circuit breaker ชำรุด", "cause": "กลไกชำรุด", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 103, "component": "MV_SWGR_CB", "code": "M013", "desc": "นำ CB ออกนอกตู้ไม่ได้", "cause": "อุปกรณ์ทำงานผิดพลาด", "s": 5, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 104, "component": "MV_SWGR_CB", "code": "M014", "desc": "เปลี่ยน SWGR ชำรุด", "cause": "อุปกรณ์ทำงานผิดพลาด", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 105, "component": "MV_SWGR_CB", "code": "M015", "desc": "แผง SWGR มีเสียงดังผิดปกติ", "cause": "อุปกรณ์ทำงานผิดพลาด", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 106, "component": "MV_SWGR_CB", "code": "M016", "desc": "สวิตช์ตกไม่สับ ทั้ง RR on อยู่", "cause": "กลไกชำรุด, เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 107, "component": "MV_SWGR_CB", "code": "M017", "desc": "Earthing SW ปลดไม่ได้", "cause": "กลไกชำรุด", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 108, "component": "MV_SWGR_CB", "code": "M018", "desc": "Earthing SWชำรุด", "cause": "กลไกชำรุด", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 109, "component": "MV_SWGR_TR_StationService", "code": "M021", "desc": "Station service transformer ชำรุด", "cause": "การเกิดไฟฟ้าลัดวงจร", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 110, "component": "MV_GIS_CB", "code": "M101", "desc": "CB ขัดข้อง ปลด-สับ ไม่ได้", "cause": "", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 111, "component": "MV_GIS_CB", "code": "M102", "desc": "GIS ชำรุด", "cause": "กลไกชำรุด", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 112, "component": "MV_GIS_CB", "code": "M103", "desc": "Low gas alarm show reset ไม่ได้", "cause": "เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 113, "component": "MV_GIS_CB", "code": "M104", "desc": "Motor ของ Bus isolate ชำรุด", "cause": "กลไกชำรุด", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 114, "component": "MV_GIS_CB", "code": "M105", "desc": "Motor ของ Bus isolate ถอดไปซ่อมและนำเข้าใช้งาน", "cause": "", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 115, "component": "MV_GIS_CB", "code": "M106", "desc": "Bus isolate ชำรุด", "cause": "", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 116, "component": "MV_GIS_CB", "code": "M107", "desc": "SF6 over gas", "cause": "SF6 over gas", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 117, "component": "MV_GIS_CB", "code": "M108", "desc": "SF6 low gas", "cause": "SF6 low gas", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 118, "component": "MV_Cap_Bushing", "code": "M201", "desc": "Bushing capacitor มีน้ำมันรั่ว", "cause": "การรั่วซึมของน้ำมัน", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 119, "component": "MV_Cap", "code": "M202", "desc": "Capacitor bank ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 120, "component": "MV_Cap_UVRelay", "code": "M203", "desc": "Capacitor bank ปลดออกอัตโนมัติเนื่องจาก", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -531,25 +531,25 @@ let records = [
   {"id": 122, "component": "MV_Cap", "code": "M205", "desc": "Fuse capacitor bank ขาด", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 123, "component": "MV_Cap_VacuumSw", "code": "M206", "desc": "Vacuum Sw ปลด-สับไม่ได้", "cause": "กลไกชำรุด", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 124, "component": "MV_Cap", "code": "M207", "desc": "เปลี่ยน Capacitor bank แทนชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 125, "component": "MV_BTO", "code": "M302", "desc": "BTO ไม่ทำงาน", "cause": "เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", "s": 4, "o": 1, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 126, "component": "MV_BusDifRelay", "code": "M303", "desc": "Bus differential relay ชำรุด", "cause": "การทำงานผิดพลาดในระบบควบคุม, Current Transformer Malfunction, การตั้งค่าผิด, สัญญาณผิดปกติจากระบบภายนอก", "s": 4, "o": 1, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 127, "component": "MV_LBP/CBF", "code": "M304", "desc": "LBP/CBF ทำงาน", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 4, "o": 1, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 128, "component": "MV_Relay", "code": "M306", "desc": "Overcurrent relay ชำรุด", "cause": "Current Transformer Malfunction, การตั้งค่าผิด, สัญญาณผิดปกติจากระบบภายนอก", "s": 4, "o": 1, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 129, "component": "MV_Relay", "code": "M307", "desc": "Overcurrent relay เปลี่ยน", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 130, "component": "MV_Relay", "code": "M308", "desc": "Relay เสีย", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 131, "component": "MV_Control", "code": "M310", "desc": "ชุด Control relay OC,EF on แล้ว trip", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 132, "component": "LV_BatCharger_Trip", "code": "L001", "desc": "Breaker trip ของ AC Source", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 133, "component": "LV_BatCharger_Trip", "code": "L002", "desc": "Breaker trip ของ DC Rectifier/Load", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 134, "component": "LV_BatCharger", "code": "L003", "desc": "Charger ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 135, "component": "LV_Battery", "code": "L004", "desc": "DC Volt ต่ำ/สูงกว่ามาตรฐาน", "cause": "แรงดันไม่ได้มาตรฐาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 136, "component": "LV_Battery", "code": "L005", "desc": "ถ.พ.ต่ำ/สูง บาง cell", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 137, "component": "LV_Battery", "code": "L006", "desc": "เปลี่ยน Battery รั่วบาง cell", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 138, "component": "LV_Battery", "code": "L007", "desc": "Case ของ Battery แตกลายงา/เปลี่ยนสี", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 139, "component": "LV_Battery", "code": "L008", "desc": "ระดับน้ำกลั่น ต่ำ / สูง กว่ามาตรฐาน", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 140, "component": "LV_BatCharger", "code": "L011", "desc": "DC ลงกราวน์", "cause": "DC ลงกราวน์", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 141, "component": "LV_BatCharger", "code": "L012", "desc": "Amp. Meter battery charger ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 142, "component": "LV_BatCharger", "code": "L013", "desc": "Volt. Meter battery charger ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 143, "component": "LV_Battery", "code": "L014", "desc": "Battery low capacity", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 125, "component": "MV_BTO", "code": "M302", "desc": "BTO ไม่ทำงาน", "cause": "เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", "s": 4, "o": 1, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 126, "component": "MV_BusDifRelay", "code": "M303", "desc": "Bus differential relay ชำรุด", "cause": "การทำงานผิดพลาดในระบบควบคุม, Current Transformer Malfunction, การตั้งค่าผิด, สัญญาณผิดปกติจากระบบภายนอก", "s": 4, "o": 1, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 127, "component": "MV_LBP/CBF", "code": "M304", "desc": "LBP/CBF ทำงาน", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 4, "o": 1, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 128, "component": "MV_Relay", "code": "M306", "desc": "Overcurrent relay ชำรุด", "cause": "Current Transformer Malfunction, การตั้งค่าผิด, สัญญาณผิดปกติจากระบบภายนอก", "s": 4, "o": 1, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 129, "component": "MV_Relay", "code": "M307", "desc": "Overcurrent relay เปลี่ยน", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 130, "component": "MV_Relay", "code": "M308", "desc": "Relay เสีย", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 131, "component": "MV_Control", "code": "M310", "desc": "ชุด Control relay OC,EF on แล้ว trip", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 1, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 132, "component": "LV_BatCharger_Trip", "code": "L001", "desc": "Breaker trip ของ AC Source", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 133, "component": "LV_BatCharger_Trip", "code": "L002", "desc": "Breaker trip ของ DC Rectifier/Load", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 134, "component": "LV_BatCharger", "code": "L003", "desc": "Charger ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 135, "component": "LV_Battery", "code": "L004", "desc": "DC Volt ต่ำ/สูงกว่ามาตรฐาน", "cause": "แรงดันไม่ได้มาตรฐาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 136, "component": "LV_Battery", "code": "L005", "desc": "ถ.พ.ต่ำ/สูง บาง cell", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 137, "component": "LV_Battery", "code": "L006", "desc": "เปลี่ยน Battery รั่วบาง cell", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 138, "component": "LV_Battery", "code": "L007", "desc": "Case ของ Battery แตกลายงา/เปลี่ยนสี", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 139, "component": "LV_Battery", "code": "L008", "desc": "ระดับน้ำกลั่น ต่ำ / สูง กว่ามาตรฐาน", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 140, "component": "LV_BatCharger", "code": "L011", "desc": "DC ลงกราวน์", "cause": "DC ลงกราวน์", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 141, "component": "LV_BatCharger", "code": "L012", "desc": "Amp. Meter battery charger ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 142, "component": "LV_BatCharger", "code": "L013", "desc": "Volt. Meter battery charger ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 143, "component": "LV_Battery", "code": "L014", "desc": "Battery low capacity", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 144, "component": "LV_AC/DCBoard", "code": "L101", "desc": "AC board Breaker ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 145, "component": "LV_AC/DCBoard", "code": "L102", "desc": "DC board Breaker ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 146, "component": "LV_AC/DCBoard", "code": "L103", "desc": "Breaker ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -557,15 +557,15 @@ let records = [
   {"id": 148, "component": "LV_AC/DCBoard", "code": "L107", "desc": "วงจร ATF ชำรุดที่ AC Panel", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 149, "component": "LV_Fprotection", "code": "L201", "desc": "Air compressor มีน้ำมันซึม", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 150, "component": "LV_Fprotection", "code": "L202", "desc": "Alarm ที่ตู้ CWS show reset ไม่ได้", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 151, "component": "LV_Fprotection", "code": "L203", "desc": "Alarm ที่ตู้ Fire Control reset ไม่ได้", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 2, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 151, "component": "LV_Fprotection", "code": "L203", "desc": "Alarm ที่ตู้ Fire Control reset ไม่ได้", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 2, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 152, "component": "LV_Fprotection", "code": "L204", "desc": "Nitrogen รั่ว", "cause": "Nitrogen รั่วซึม", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 153, "component": "LV_Fprotection", "code": "L205", "desc": "Air pressure ของชุด Detector ต่ำกว่ามาตรฐาน", "cause": "การทำงานผิดพลาดของอุปกรณ์", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 154, "component": "LV_Fprotection", "code": "L206", "desc": "Battery ชุดตู้ Fire control เสื่อมสภาพ", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 155, "component": "LV_Fprotection", "code": "L207", "desc": "Battery ชุดเครื่องยนต์ดับเพลิงเสื่อมสภาพ", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 156, "component": "LV_Fprotection", "code": "L208", "desc": "Priming tank มีสนิมภายในมาก", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 157, "component": "LV_Fprotection", "code": "L209", "desc": "เครื่องยนต์ดับเพลิง start ไม่ติด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 158, "component": "LV_Fprotection", "code": "L210", "desc": "น้ำไม่เข้าถัง Priming tank", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 159, "component": "LV_Fprotection", "code": "L211", "desc": "น้ำที่ Pilot line / น้ำยา Soft drops รั่ว", "cause": "รั่ว", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 154, "component": "LV_Fprotection", "code": "L206", "desc": "Battery ชุดตู้ Fire control เสื่อมสภาพ", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 155, "component": "LV_Fprotection", "code": "L207", "desc": "Battery ชุดเครื่องยนต์ดับเพลิงเสื่อมสภาพ", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 156, "component": "LV_Fprotection", "code": "L208", "desc": "Priming tank มีสนิมภายในมาก", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 157, "component": "LV_Fprotection", "code": "L209", "desc": "เครื่องยนต์ดับเพลิง start ไม่ติด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 158, "component": "LV_Fprotection", "code": "L210", "desc": "น้ำไม่เข้าถัง Priming tank", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 159, "component": "LV_Fprotection", "code": "L211", "desc": "น้ำที่ Pilot line / น้ำยา Soft drops รั่ว", "cause": "รั่ว", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 160, "component": "SCADA_MMI", "code": "S001", "desc": "Measurement ที่หน้าจอ MMI ไม่เปลี่ยน", "cause": "เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 161, "component": "SCADA_ShowFail", "code": "S002", "desc": "Show Communication fail", "cause": "เสื่อมสภาพจากอายุใช้งาน, การทำงานผิดพลาดในระบบควบคุม", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 162, "component": "SCADA_UPS", "code": "S004", "desc": "UPS / Converter / Inverter ขัดข้อง", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -574,18 +574,18 @@ let records = [
   {"id": 165, "component": "SCADA_CB-EF-RR", "code": "S007", "desc": "เรียก menu control CB, EF, RR ไม่ได้", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 166, "component": "SCADA_FireAlarm", "code": "S101", "desc": "Fire Alarm Zone Show Reset ไม่ได้", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 167, "component": "SCADA_Control", "code": "S102", "desc": "ตู้ Control ที่ alarm ดังตลอด", "cause": "การทำงานผิดพลาดในระบบควบคุม", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 168, "component": "Pole/Route บ่อพัก/Cable", "code": "UM01", "desc": "ข้อต่อสายหลวม", "cause": "การติดตั้งไม่ถูก", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 169, "component": "Pole/Route บ่อพัก/Cable", "code": "UM02", "desc": "เทอร์มิเนเตอร์ซิลิโคนคอมปาวด์รั่ว", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 168, "component": "Pole/Route บ่อพัก/Cable", "code": "UM01", "desc": "ข้อต่อสายหลวม", "cause": "การติดตั้งไม่ถูก", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 169, "component": "Pole/Route บ่อพัก/Cable", "code": "UM02", "desc": "เทอร์มิเนเตอร์ซิลิโคนคอมปาวด์รั่ว", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 170, "component": "Pole/Route บ่อพัก/Cable", "code": "UM03", "desc": "ครีบเทอร์มิเนเตอร์แตก", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 5, "o": 1, "d": 3, "priorityFlag": "วิกฤตสูงสุด (Priority 1)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 171, "component": "Pole/Route บ่อพัก/Cable", "code": "UM04", "desc": "เทอร์มิเนเตอร์ระเบิดชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 5, "o": 1, "d": 3, "priorityFlag": "วิกฤตสูงสุด (Priority 1)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 172, "component": "Pole/Route บ่อพัก/Cable", "code": "UM05", "desc": "สายกราวด์หาย", "cause": "Non Technical Loss", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 173, "component": "Pole/Route บ่อพัก/Cable", "code": "UM06", "desc": "เปลือกสายเคเบิลแตก", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 174, "component": "Pole/Route บ่อพัก/Cable", "code": "UM07", "desc": "แคมป์ยึดสายเคเบิลแตกชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 173, "component": "Pole/Route บ่อพัก/Cable", "code": "UM06", "desc": "เปลือกสายเคเบิลแตก", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 174, "component": "Pole/Route บ่อพัก/Cable", "code": "UM07", "desc": "แคมป์ยึดสายเคเบิลแตกชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 175, "component": "Pole/Route บ่อพัก/Cable", "code": "UM08", "desc": "บ่อพักท่อร้อยสายชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 3, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 176, "component": "Pole/Route บ่อพัก/Cable", "code": "UM09", "desc": "กระแสกราวด์สูงเกินปกติ", "cause": "ไม่ทราบสาเหตุ", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 177, "component": "Pole/Route บ่อพัก/Cable", "code": "UM10", "desc": "หัวต่อสายฯชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 178, "component": "Pole/Route บ่อพัก/Cable", "code": "UM11", "desc": "เทอร์มิเนเตอร์และหัวต่อสายฯมีอุณหภูมิสูง", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 179, "component": "Pole/Route บ่อพัก/Cable", "code": "UM12", "desc": "เคเบิล 230เควี น้ำมันรั่วซึม", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 177, "component": "Pole/Route บ่อพัก/Cable", "code": "UM10", "desc": "หัวต่อสายฯชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 178, "component": "Pole/Route บ่อพัก/Cable", "code": "UM11", "desc": "เทอร์มิเนเตอร์และหัวต่อสายฯมีอุณหภูมิสูง", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 179, "component": "Pole/Route บ่อพัก/Cable", "code": "UM12", "desc": "เคเบิล 230เควี น้ำมันรั่วซึม", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 180, "component": "Pole/Route บ่อพัก/Cable", "code": "UM13", "desc": "ระบบพัดลมระบายอากาศชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 181, "component": "Pole/Route บ่อพัก/Cable", "code": "UM14", "desc": "PLC ระบบอุโมงค์ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 182, "component": "Pole/Route บ่อพัก/Cable", "code": "UM15", "desc": "ปั๊มน้ำในอุโมงค์ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -594,39 +594,39 @@ let records = [
   {"id": 185, "component": "Pole/Route บ่อพัก/Cable", "code": "UM18", "desc": "ระบบไฟแรงต่ำอุโมงค์ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 186, "component": "Pole/Route บ่อพัก/Cable", "code": "UM19", "desc": "เคเบิลการ์ดชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 3, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 187, "component": "Pole/Route บ่อพัก/Cable", "code": "UM20", "desc": "อุปกรณ์ป้องกันเพลิงไหม้ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 188, "component": "Pole/Route บ่อพัก/Cable", "code": "UM21", "desc": "สายไฟฟ้าใต้ดินชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 188, "component": "Pole/Route บ่อพัก/Cable", "code": "UM21", "desc": "สายไฟฟ้าใต้ดินชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 189, "component": "Pole/Route บ่อพัก/Cable", "code": "UM22", "desc": "ปลวกกัดแทะสาย", "cause": "การกัดของสัตว์หรือแมลง", "s": 3, "o": 2, "d": 3, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 190, "component": "เสา/สาย", "code": "SM01", "desc": "Crane / Back-Hoe", "cause": "รถและเครื่องจักร", "s": 5, "o": 2, "d": 1, "priorityFlag": "วิกฤตสูงสุด (Priority 1)", "note": "ความเสี่ยงจากบุคคลที่ 3 (Third-party) ไม่ใช่ความล้มเหลวของอุปกรณ์ — ต้องมีมาตรการป้องกันแยกต่างหาก (safety fencing, การแจ้งเตือนก่อนขุด, ประสานผู้รับเหมา) ไม่ใช่แผนบำรุงรักษาอุปกรณ์ตามปกติ", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 191, "component": "เสา/สาย", "code": "SM02", "desc": "ผู้รับเหมาโดนสายส่ง", "cause": "ไฟช็อคจากคนหรือสัตว์", "s": 5, "o": 2, "d": 1, "priorityFlag": "วิกฤตสูงสุด (Priority 1)", "note": "ความเสี่ยงจากบุคคลที่ 3 (Third-party) ไม่ใช่ความล้มเหลวของอุปกรณ์ — ต้องมีมาตรการป้องกันแยกต่างหาก (safety fencing, การแจ้งเตือนก่อนขุด, ประสานผู้รับเหมา) ไม่ใช่แผนบำรุงรักษาอุปกรณ์ตามปกติ", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 192, "component": "เสา/สาย", "code": "SM03", "desc": "บุคคลโดนสายส่ง", "cause": "ไฟช็อคจากคนหรือสัตว์", "s": 5, "o": 2, "d": 1, "priorityFlag": "วิกฤตสูงสุด (Priority 1)", "note": "ความเสี่ยงจากบุคคลที่ 3 (Third-party) ไม่ใช่ความล้มเหลวของอุปกรณ์ — ต้องมีมาตรการป้องกันแยกต่างหาก (safety fencing, การแจ้งเตือนก่อนขุด, ประสานผู้รับเหมา) ไม่ใช่แผนบำรุงรักษาอุปกรณ์ตามปกติ", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 193, "component": "เสา/สาย", "code": "SM05", "desc": "งู/นก/สัตว์", "cause": "ไฟช็อคจากคนหรือสัตว์", "s": 4, "o": 3, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 194, "component": "เสา/สาย", "code": "SM06", "desc": "ป้ายโฆษณา/สังกะสี", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 195, "component": "เสา/สาย", "code": "SM07", "desc": "ว่าว/ลูกโป่ง/เศษผ้า", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 196, "component": "เสา/สาย", "code": "SM08", "desc": "Bond wire/ OHGW", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 197, "component": "เสา/สาย", "code": "SM09", "desc": "ต้นไม้/เสา TV", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 198, "component": "เสา/สาย", "code": "SM10", "desc": "เศษวัสดุ", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 199, "component": "เสา/สาย", "code": "SM11", "desc": "Flash Over/Leak", "cause": "Flash Over/Leak", "s": 4, "o": 2, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 200, "component": "เสา/สาย", "code": "SM12", "desc": "ลูกถ้วยหลุด/แตก", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 201, "component": "เสา/สาย", "code": "SM13", "desc": "ฝนตกฟ้าผ่า", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 202, "component": "เสา/สาย", "code": "SM14", "desc": "คอนพับ/Bolt Brace", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 193, "component": "เสา/สาย", "code": "SM05", "desc": "งู/นก/สัตว์", "cause": "ไฟช็อคจากคนหรือสัตว์", "s": 4, "o": 3, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 194, "component": "เสา/สาย", "code": "SM06", "desc": "ป้ายโฆษณา/สังกะสี", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 195, "component": "เสา/สาย", "code": "SM07", "desc": "ว่าว/ลูกโป่ง/เศษผ้า", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 196, "component": "เสา/สาย", "code": "SM08", "desc": "Bond wire/ OHGW", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 197, "component": "เสา/สาย", "code": "SM09", "desc": "ต้นไม้/เสา TV", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 198, "component": "เสา/สาย", "code": "SM10", "desc": "เศษวัสดุ", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 199, "component": "เสา/สาย", "code": "SM11", "desc": "Flash Over/Leak", "cause": "Flash Over/Leak", "s": 4, "o": 2, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 200, "component": "เสา/สาย", "code": "SM12", "desc": "ลูกถ้วยหลุด/แตก", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 201, "component": "เสา/สาย", "code": "SM13", "desc": "ฝนตกฟ้าผ่า", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 202, "component": "เสา/สาย", "code": "SM14", "desc": "คอนพับ/Bolt Brace", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 203, "component": "เสา/สาย", "code": "SM15", "desc": "สายป้อน/สายสื่อสาร", "cause": "จากวัสดุเสาไฟ", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 204, "component": "เสา/สาย", "code": "SM16", "desc": "ไฟฟ้าเขตทำงาน", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 205, "component": "เสา/สาย", "code": "SM17", "desc": "สายป้อนสวิตซ์ตก", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 206, "component": "เสา/สาย", "code": "SM18", "desc": "เกิดไฟไหม้ใต้แนวสายส่ง", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 206, "component": "เสา/สาย", "code": "SM18", "desc": "เกิดไฟไหม้ใต้แนวสายส่ง", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 207, "component": "เสา/สาย", "code": "SM19", "desc": "ไม่ทราบสาเหตุ", "cause": "ไม่ทราบสาเหตุ", "s": 3, "o": 2, "d": 4, "priorityFlag": "ปานกลาง/ต่ำ", "note": "ความเสี่ยงจากบุคคลที่ 3 (Third-party) ไม่ใช่ความล้มเหลวของอุปกรณ์ — ต้องมีมาตรการป้องกันแยกต่างหาก (safety fencing, การแจ้งเตือนก่อนขุด, ประสานผู้รับเหมา) ไม่ใช่แผนบำรุงรักษาอุปกรณ์ตามปกติ", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 208, "component": "เสา/สาย", "code": "SM20", "desc": "อื่นๆ", "cause": "อื่นๆ", "s": 3, "o": 2, "d": 4, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 209, "component": "เสา/สาย", "code": "SM21", "desc": "รถชนเสา", "cause": "จากอุบัติเหตุ", "s": 5, "o": 2, "d": 1, "priorityFlag": "วิกฤตสูงสุด (Priority 1)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 210, "component": "เสา/สาย", "code": "SM22", "desc": "Cable ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 211, "component": "เสา/สาย", "code": "SM23", "desc": "Terminator ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 212, "component": "เสา/สาย", "code": "SM24", "desc": "Lightning ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 210, "component": "เสา/สาย", "code": "SM22", "desc": "Cable ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 211, "component": "เสา/สาย", "code": "SM23", "desc": "Terminator ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 212, "component": "เสา/สาย", "code": "SM24", "desc": "Lightning ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 213, "component": "เสา/สาย", "code": "SM25", "desc": "switch ปลดทาง Remote", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 214, "component": "เสา/สาย", "code": "SM26", "desc": "ชุด Interrupter ไม่ทำงาน", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 215, "component": "เสา/สาย", "code": "SM27", "desc": "switching ปลดสวิตซ์ในสายส่ง", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 216, "component": "เสา/สาย", "code": "SM28", "desc": "ปลดสวิตซ์ผิดตัว", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 217, "component": "เสา/สาย", "code": "SM29", "desc": "อุปกรณ์ชำรุดภายในสถานี กฟน.", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 218, "component": "เสา/สาย", "code": "SM30", "desc": "ต้นไม้ (โดนอุปกรณ์สถานี กฟน.)", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 3, "d": 1, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 219, "component": "เสา/สาย", "code": "SM31", "desc": "อุปกรณ์ชำรุดภายในสถานี กฟผ./กฟภ.", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 220, "component": "เสา/สาย", "code": "SM32", "desc": "อุปกรณ์ชำรุดภายในสถานี ลูกค้า", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "สูง (Priority 2)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 217, "component": "เสา/สาย", "code": "SM29", "desc": "อุปกรณ์ชำรุดภายในสถานี กฟน.", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 218, "component": "เสา/สาย", "code": "SM30", "desc": "ต้นไม้ (โดนอุปกรณ์สถานี กฟน.)", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 3, "d": 1, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 219, "component": "เสา/สาย", "code": "SM31", "desc": "อุปกรณ์ชำรุดภายในสถานี กฟผ./กฟภ.", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 220, "component": "เสา/สาย", "code": "SM32", "desc": "อุปกรณ์ชำรุดภายในสถานี ลูกค้า", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "priorityFlag": "เฝ้าระวัง", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 221, "component": "เสา/สาย", "code": "SM33", "desc": "สายส่งไม่มีไฟ", "cause": "อื่นๆ", "s": 3, "o": 2, "d": 4, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 222, "component": "เสา/สาย", "code": "SM34", "desc": "Charge Line", "cause": "อื่นๆ", "s": 3, "o": 2, "d": 4, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"}
 ];
@@ -636,12 +636,12 @@ let doughnutChartInstance = null;
 let barChartInstance = null;
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v30');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v31');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v30');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v31');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -664,9 +664,9 @@ function initApp() {
 
   records.forEach(r => {
     if(!r.cat) r.cat = r.component ? r.component.split('_')[0] : 'OTHER';
+    const s = Number(r.s) || 0;
     if(!r.priorityFlag) {
-      const s = Number(r.s) || 0;
-      r.priorityFlag = s === 5 ? 'วิกฤตสูงสุด (Priority 1)' : (s === 4 ? 'สูง (Priority 2)' : 'ปานกลาง/ต่ำ');
+      r.priorityFlag = s === 5 ? 'วิกฤตสูงสุด (Priority 1)' : (s === 4 ? 'เฝ้าระวัง' : 'ปานกลาง/ต่ำ');
     }
   });
 
@@ -708,7 +708,7 @@ function updateDashboardStats() {
       r.priorityFlag = 'วิกฤตสูงสุด (Priority 1)';
     } else if (s === 4) {
       warning++;
-      r.priorityFlag = 'สูง (Priority 2)';
+      r.priorityFlag = 'เฝ้าระวัง';
     } else {
       normal++;
       r.priorityFlag = 'ปานกลาง/ต่ำ';
@@ -782,7 +782,7 @@ function switchTab(tab, el) {
       <div class="plan-info-banner">
         📋 <b>หลักการพิจารณาจัดทำแผน PM / CBM:</b><br>
         • <b>วิกฤตสูงสุด (Priority 1 | S=5):</b> ระบบจัดลำดับความสำคัญสูงสุดก่อนเสมอเพื่อความปลอดภัย ต้องกำหนดมาตรการป้องกันเด็ดขาดทันที<br>
-        • <b>สูง (Priority 2 | S=4) และ RPN สูง:</b> จัดทำแผนบำรุงรักษาเชิงป้องกัน (PM ตามรอบเวลา) หรือติดตามสภาพด้วย CBM<br>
+        • <b>เฝ้าระวัง (S=4) และ RPN สูง:</b> จัดทำแผนบำรุงรักษาเชิงป้องกัน (PM ตามรอบเวลา) หรือติดตามสภาพด้วย CBM<br>
         • <b>ปานกลาง/ต่ำ (S &le; 3):</b> บริหารจัดการตามรอบการซ่อมบำรุงปกติ
       </div>
     `;
@@ -870,7 +870,7 @@ function renderTable(){
         flagText = 'วิกฤตสูงสุด (Priority 1)';
       } else if (s === 4) {
         flagClass = 'flag-orange';
-        flagText = 'สูง (Priority 2)';
+        flagText = 'เฝ้าระวัง';
       }
 
       return `
@@ -1037,7 +1037,7 @@ function renderTable(){
           flagText = 'วิกฤตสูงสุด (Priority 1)';
         } else if (s === 4) {
           flagClass = 'flag-orange';
-          flagText = 'สูง (Priority 2)';
+          flagText = 'เฝ้าระวัง';
         }
 
         return `
@@ -1077,7 +1077,7 @@ function updateFmea(id, field, val) {
     item[field] = val;
     if (['s', 'o', 'd'].includes(field)) {
       const s = Number(item.s) || 0;
-      item.priorityFlag = s === 5 ? 'วิกฤตสูงสุด (Priority 1)' : (s === 4 ? 'สูง (Priority 2)' : 'ปานกลาง/ต่ำ');
+      item.priorityFlag = s === 5 ? 'วิกฤตสูงสุด (Priority 1)' : (s === 4 ? 'เฝ้าระวัง' : 'ปานกลาง/ต่ำ');
       updateDashboardStats();
     }
   }
@@ -1135,8 +1135,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v30', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v30', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v32', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v32', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
@@ -1149,9 +1149,9 @@ function initCharts() {
   doughnutChartInstance = new Chart(ctxDoughnut, {
     type: 'doughnut',
     data: {
-      labels: ['ปานกลาง/ต่ำ', 'สูง (P2)', 'วิกฤตสูงสุด (P1)'],
+      labels: ['ปานกลาง/ต่ำ', 'เฝ้าระวัง', 'วิกฤตสูงสุด (P1)'],
       datasets: [{
-        data: [222, 0, 0],
+        data: [0, 0, 0],
         backgroundColor: ['#4fb8a6', '#e8a33d', '#d9694f'],
         borderWidth: 0
       }]
@@ -1170,7 +1170,7 @@ function initCharts() {
   barChartInstance = new Chart(ctxBar, {
     type: 'bar',
     data: {
-      labels: ['(ยังไม่มีข้อมูล)', '-', '-', '-', '-'],
+      labels: ['-', '-', '-', '-', '-'],
       datasets: [{
         label: 'คะแนน RPN',
         data: [0, 0, 0, 0, 0],
