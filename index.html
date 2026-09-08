@@ -106,7 +106,8 @@
     background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 14px;
   }
   .chart-title { font-size: 0.8rem; font-weight: 600; color: var(--muted); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-  .chart-box { position: relative; height: 180px; width: 100%; display: flex; align-items: center; justify-content: center; }
+  /* ขยายความสูงกล่องกราฟให้แสดงผลได้อย่างสมบูรณ์แบบ */
+  .chart-box { position: relative; height: 220px; width: 100%; }
 
   .search-wrap{ position:relative; margin-bottom:10px; flex: 1; min-width: 220px; }
   #search{
@@ -383,7 +384,7 @@
 <!-- Modal รายละเอียดอุปกรณ์ -->
 <div class="modal-overlay" id="drilldownModal">
   <div class="modal">
-    <h3 id="modalTitle">รายละเอียดอุปกรณ์ <button class="modal-close" onclick="closeModal()">&times;</button></h3>
+    <h3>รายละเอียดอุปกรณ์ <button class="modal-close" onclick="closeModal()">&times;</button></h3>
     <div class="modal-grid">
       <div class="label">Component:</div>
       <div class="val" id="modalComp">-</div>
@@ -636,12 +637,12 @@ let doughnutChartInstance = null;
 let barChartInstance = null;
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v31');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v32');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v31');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v32');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -1135,8 +1136,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v32', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v32', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v33', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v33', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
