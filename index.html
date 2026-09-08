@@ -106,8 +106,7 @@
     background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 14px;
   }
   .chart-title { font-size: 0.8rem; font-weight: 600; color: var(--muted); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-  /* ขยายความสูงกล่องกราฟให้แสดงผลได้อย่างสมบูรณ์แบบ */
-  .chart-box { position: relative; height: 220px; width: 100%; }
+  .chart-box { position: relative; height: 180px; width: 100%; display: flex; align-items: center; justify-content: center; }
 
   .search-wrap{ position:relative; margin-bottom:10px; flex: 1; min-width: 220px; }
   #search{
@@ -406,7 +405,7 @@
 </div>
 
 <script>
-// ข้อมูลคะแนนจริงทั้ง 222 รายการ พร้อม S, O, D ตามไฟล์ RCM.xlsx ของคุณ
+// ข้อมูลคะแนนจริงทั้ง 222 รายการ พร้อม S, O, D ตามไฟล์ RCM.xlsx
 let records = [
   {"id": 1, "component": "TR_Counter L/A", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cause": "โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", "s": 2, "o": 2, "d": 2, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 2, "component": "TR_OLevelGauge", "code": "T002", "desc": "Oil level gauge ชำรุด", "cause": "โครงแตก, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "priorityFlag": "ปานกลาง/ต่ำ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -637,6 +636,7 @@ let doughnutChartInstance = null;
 let barChartInstance = null;
 
 function initApp() {
+  // บังคับเคลียร์ LocalStorage เก่าเวอร์ชันที่มีปัญหา แล้วใช้ชุดข้อมูลจริงล่าสุด
   const savedFmea = localStorage.getItem('rcm_excel_data_v32');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
@@ -666,9 +666,7 @@ function initApp() {
   records.forEach(r => {
     if(!r.cat) r.cat = r.component ? r.component.split('_')[0] : 'OTHER';
     const s = Number(r.s) || 0;
-    if(!r.priorityFlag) {
-      r.priorityFlag = s === 5 ? 'วิกฤตสูงสุด (Priority 1)' : (s === 4 ? 'เฝ้าระวัง' : 'ปานกลาง/ต่ำ');
-    }
+    r.priorityFlag = s === 5 ? 'วิกฤตสูงสุด (Priority 1)' : (s === 4 ? 'เฝ้าระวัง' : 'ปานกลาง/ต่ำ');
   });
 
   categories = [...new Set(records.map(r => r.cat))];
