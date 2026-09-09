@@ -576,7 +576,7 @@ let doughnutChartInstance = null;
 let barChartInstance = null;
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v25');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v24');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
@@ -586,12 +586,20 @@ function initApp() {
   });
   categories = [...new Set(records.map(r => r.cat))];
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v25');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v24');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
-    // ปล่อยว่างไว้ตามความต้องการ
-    cehiRecords = [];
+    // ปล่อยช่องข้อมูล CEHI ไว้ว่างตามความต้องการ
+    cehiRecords = records.map((r) => ({
+      uid: 'c_' + r.id,
+      component: r.component,
+      testCategory: '',
+      testItems: '',
+      si: '',
+      smax: '',
+      wi: ''
+    }));
   }
 
   const savedTheme = localStorage.getItem('rcm_theme_mode');
@@ -607,11 +615,10 @@ function initApp() {
 }
 
 function addCehiRow(compName) {
-  const targetComp = compName || (categories.length > 0 ? categories[0] + '_General' : 'General');
   const newUid = 'c_' + Date.now() + Math.random().toString(36).substring(2, 7);
   cehiRecords.push({
     uid: newUid,
-    component: targetComp,
+    component: compName,
     testCategory: '',
     testItems: '',
     si: '',
@@ -813,21 +820,6 @@ function renderTable(){
       if (q && !item.component.toLowerCase().includes(q) && !item.testCategory.toLowerCase().includes(q) && !item.testItems.toLowerCase().includes(q)) return false;
       return true;
     });
-
-    if (filteredCehi.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="9" style="text-align:center; padding:40px; color:var(--muted);">
-            ⚠️ ยังไม่มีรายการทดสอบ CEHI <br><br>
-            <button class="action-btn" onclick="addCehiRow()">➕ เพิ่มรายการทดสอบใหม่</button>
-          </td>
-        </tr>
-      `;
-      tfoot.innerHTML = '';
-      visibleCountEl.textContent = 0;
-      emptyState.style.display = 'none';
-      return;
-    }
 
     const grouped = {};
     filteredCehi.forEach(r => {
@@ -1062,8 +1054,8 @@ function importFromCSV(event) {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v25', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v25', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v24', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v24', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลทั้งหมดลง LocalStorage เรียบร้อยแล้ว!');
 }
 
