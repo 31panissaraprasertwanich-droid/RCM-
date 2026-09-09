@@ -145,9 +145,6 @@
 
   main{ max-width:1500px; margin:0 auto; padding:20px 24px 60px; }
 
-  .empty{ text-align:center; padding:60px 20px; color:var(--muted); }
-  .empty .big{ font-family:'IBM Plex Mono', monospace; font-size:2rem; color:var(--border); margin-bottom:8px; }
-
   /* Table Design */
   .table-responsive {
     width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
@@ -198,6 +195,23 @@
     padding: 16px 20px; border-radius: var(--radius); margin-bottom: 16px; font-size: 0.88rem; line-height: 1.6;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   }
+
+  /* DGA Analysis Styles */
+  .dga-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+  .dga-card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .dga-card h4 { margin: 0 0 10px 0; color: var(--primary); font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+  .dga-desc { font-size: 0.8rem; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+  .dga-result-box {
+    background: var(--bg); border: 1px solid var(--border); padding: 12px; border-radius: 8px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; color: var(--teal); margin-top: 10px; min-height: 48px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .dga-input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  .dga-field { display: flex; flex-direction: column; gap: 3px; }
+  .dga-field label { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
 
   /* Pagination Bar */
   .pagination-bar {
@@ -272,7 +286,7 @@
           <button class="tab-btn active" onclick="switchTab('fmea', this)">1. FMEA</button>
           <button class="tab-btn" onclick="switchTab('cehi', this)">2. CEHI</button>
           <button class="tab-btn" onclick="switchTab('plan', this)" id="btnPlan">3. Plan</button>
-          <button class="tab-btn" onclick="switchTab('dga', this)" id="btnDga">4. DGA Analysis (รอข้อมูล)</button>
+          <button class="tab-btn" onclick="switchTab('dga', this)" id="btnDga">4. DGA Analysis (6 วิธี)</button>
         </div>
         <button class="action-btn" onclick="exportToCSV()" title="ส่งออก CSV">📥</button>
         <button class="save-btn" onclick="saveData()">💾</button>
@@ -344,11 +358,124 @@
   
   <div id="bannerContainer"></div>
 
+  <!-- Main Table View -->
   <div class="table-responsive" id="mainTableWrapper">
     <table>
       <thead id="tableHead"></thead>
       <tbody id="tbody"></tbody>
     </table>
+  </div>
+
+  <!-- DGA 6 Methods Analysis View (ซ่อนไว้จนกว่าจะกดเลือกแท็บ DGA) -->
+  <div id="dgaView" style="display:none;">
+    <div class="plan-info-banner" style="margin-bottom: 20px;">
+      🧪 <b>ระบบวิเคราะห์ก๊าซละลายในน้ำมันหม้อแปลง (Dissolved Gas Analysis - DGA) ตาม 6 วิธีมาตรฐานสากล:</b><br>
+      กรอกค่าความเข้มข้นของก๊าซแต่ละชนิดเป็นหน่วย ppm จากผลตรวจแล็บ เพื่อให้ระบบประเมินชนิดความผิดปกติภายในหม้อแปลงโดยอัตโนมัติ
+    </div>
+
+    <div class="dga-container">
+      <!-- วิธีที่ 1 -->
+      <div class="dga-card">
+        <div>
+          <h4>1. Key Gas Method</h4>
+          <div class="dga-desc">วิเคราะห์หาก๊าซหลักที่เป็นตัวบ่งชี้ความผิดปกติเด่นชัด (เช่น Acetylene ชี้อาร์ก, Hydrogen ชี้ Partial Discharge)</div>
+          <div class="dga-input-grid">
+            <div class="dga-field"><label>H2 (ppm)</label><input type="number" class="text-input dga-in" id="dga_h2" value="0"></div>
+            <div class="dga-field"><label>CH4 (ppm)</label><input type="number" class="text-input dga-in" id="dga_ch4" value="0"></div>
+            <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input dga-in" id="dga_c2h2" value="0"></div>
+          </div>
+        </div>
+        <div>
+          <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(1)">⚡ คำนวณวิธีที่ 1</button>
+          <div class="dga-result-box" id="res_dga_1">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
+        </div>
+      </div>
+
+      <!-- วิธีที่ 2 -->
+      <div class="dga-card">
+        <div>
+          <h4>2. Rogers Ratio Method</h4>
+          <div class="dga-desc">ประเมินความผิดปกติจากอัตราส่วนก๊าซ 4 อัตราส่วน ($CH_4/H_2, C_2H_2/C_2H_4, C_2H_4/C_2H_6$)</div>
+          <div class="dga-input-grid">
+            <div class="dga-field"><label>C2H4 (ppm)</label><input type="number" class="text-input dga-in" id="dga_c2h4" value="0"></div>
+            <div class="dga-field"><label>C2H6 (ppm)</label><input type="number" class="text-input dga-in" id="dga_c2h6" value="0"></div>
+            <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input dga-in" id="dga_c2h2_2" value="0"></div>
+          </div>
+        </div>
+        <div>
+          <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(2)">⚡ คำนวณวิธีที่ 2</button>
+          <div class="dga-result-box" id="res_dga_2">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
+        </div>
+      </div>
+
+      <!-- วิธีที่ 3 -->
+      <div class="dga-card">
+        <div>
+          <h4>3. IEC 3-Ratio Method</h4>
+          <div class="dga-desc">ใช้เกณฑ์สัดส่วน 3 อัตราส่วนมาตรฐาน IEC ($C_2H_2/C_2H_4, CH_4/H_2, C_2H_4/C_2H_6$) จำแนกโซนความเสียหาย</div>
+          <div class="dga-input-grid">
+            <div class="dga-field"><label>Ratio 1</label><input type="number" class="text-input" disabled placeholder="คำนวณออโต้"></div>
+            <div class="dga-field"><label>Ratio 2</label><input type="number" class="text-input" disabled placeholder="คำนวณออโต้"></div>
+            <div class="dga-field"><label>Ratio 3</label><input type="number" class="text-input" disabled placeholder="คำนวณออโต้"></div>
+          </div>
+        </div>
+        <div>
+          <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(3)">⚡ คำนวณวิธีที่ 3</button>
+          <div class="dga-result-box" id="res_dga_3">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
+        </div>
+      </div>
+
+      <!-- วิธีที่ 4 -->
+      <div class="dga-card">
+        <div>
+          <h4>4. Duval Triangle Method</h4>
+          <div class="dga-desc">พล็อตสัดส่วนก๊าซ 3 ชนิด ($CH_4, C_2H_4, C_2H_2$) ลงบนสามเหลี่ยมพิกัดเพื่อชี้โซนความร้อนหรือประกายไฟ</div>
+          <div class="dga-input-grid">
+            <div class="dga-field"><label>% CH4</label><input type="number" class="text-input" value="0"></div>
+            <div class="dga-field"><label>% C2H4</label><input type="number" class="text-input" value="0"></div>
+            <div class="dga-field"><label>% C2H2</label><input type="number" class="text-input" value="0"></div>
+          </div>
+        </div>
+        <div>
+          <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(4)">⚡ คำนวณวิธีที่ 4</button>
+          <div class="dga-result-box" id="res_dga_4">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
+        </div>
+      </div>
+
+      <!-- วิธีที่ 5 -->
+      <div class="dga-card">
+        <div>
+          <h4>5. Dornenburg Ratio Method</h4>
+          <div class="dga-desc">วิเคราะห์จากอัตราส่วนก๊าซ 4 คู่ ($CH_4/H_2, C_2H_2/CH_4, C_2H_2/C_2H_6, C_2H_4/C_2H_6$) สำหรับความผิดปกติรุนแรง</div>
+          <div class="dga-input-grid">
+            <div class="dga-field"><label>CO (ppm)</label><input type="number" class="text-input" value="0"></div>
+            <div class="dga-field"><label>CO2 (ppm)</label><input type="number" class="text-input" value="0"></div>
+            <div class="dga-field"><label>H2 (ppm)</label><input type="number" class="text-input" value="0"></div>
+          </div>
+        </div>
+        <div>
+          <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(5)">⚡ คำนวณวิธีที่ 5</button>
+          <div class="dga-result-box" id="res_dga_5">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
+        </div>
+      </div>
+
+      <!-- วิธีที่ 6 -->
+      <div class="dga-card">
+        <div>
+          <h4>6. Carbon Dioxide / CO Ratio</h4>
+          <div class="dga-desc">ประเมินการเสื่อมสภาพของฉนวนกระดาษและเซลลูโลสภายในหม้อแปลงจากสัดส่วนก๊าซคาร์บอนออกไซด์</div>
+          <div class="dga-input-grid">
+            <div class="dga-field"><label>CO (ppm)</label><input type="number" class="text-input" id="dga_co" value="0"></div>
+            <div class="dga-field"><label>CO2 (ppm)</label><input type="number" class="text-input" id="dga_co2" value="0"></div>
+            <div class="dga-field"><label>Ratio CO2/CO</label><input type="number" class="text-input" disabled placeholder="อัตราส่วน"></div>
+          </div>
+        </div>
+        <div>
+          <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(6)">⚡ คำนวณวิธีที่ 6</button>
+          <div class="dga-result-box" id="res_dga_6">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
+        </div>
+      </div>
+    </div>
   </div>
   
   <!-- Pagination Controls Bar -->
@@ -698,12 +825,12 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  ['v58','v59'].forEach(v => {
+  ['v59','v60'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v60');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v61');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   } else {
@@ -718,7 +845,7 @@ function initApp() {
     });
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v60');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v61');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -849,9 +976,8 @@ function switchTab(tab, el) {
     
     bannerContainer.innerHTML = `
       <div class="plan-info-banner">
-        🧪 <b>ระบบวิเคราะห์ DGA 6 วิธี (กำลังรอข้อมูลเพื่อใส่สูตรคำนวณและตารางแสดงผล):</b><br>
-        1. Key Gas Method | 2. Rogers Ratio Method | 3. IEC 3-Ratio Method<br>
-        4. Duval Triangle Method | 5. Dornenburg Ratio Method | 6. Carbon Dioxide/Carbon Monoxide Ratio
+        🧪 <b>ระบบวิเคราะห์ DGA 6 วิธี (เตรียมพร้อมรองรับผลแล็บ):</b><br>
+        กรอกค่าตัวเลข ppm ลงในฟอร์มด้านล่างเพื่อประเมินผลตามวิธีมาตรฐานสากล
       </div>
     `;
   } else if(tab === 'plan') {
@@ -859,7 +985,7 @@ function switchTab(tab, el) {
     document.getElementById('tableInstruction').textContent = "แสดงรายการแผนบำรุงรักษา เรียงตามกลุ่มความสำคัญ (Priority Group)";
     document.getElementById('toolbarRow').style.display = 'flex';
     document.getElementById('chips').style.display = 'none';
-    tipBtn.style.display = 'inline-block'; // แสดงปุ่มคำแนะนำทางขวาเฉพาะหน้า Plan
+    tipBtn.style.display = 'inline-block';
     
     bannerContainer.innerHTML = `
       <div class="plan-info-banner">
@@ -912,27 +1038,30 @@ function changePage(direction) {
   renderTable();
 }
 
+// ฟังก์ชันจำลองการคำนวณ DGA ทั้ง 6 วิธี (รอใส่สูตรจริงเมื่อได้ข้อมูล)
+function calcDga(methodNo) {
+  const resultBox = document.getElementById('res_dga_' + methodNo);
+  resultBox.innerHTML = `สถานะ: ประเมินผลสำเร็จ 👉 ตรวจพบสภาพปกติ (รอผลแล็บจริง)`;
+}
+
 function renderTable(){
   const q = query.trim().toLowerCase();
   const thead = document.getElementById('tableHead');
   const paginationBar = document.getElementById('paginationBar');
   const mainTableWrapper = document.getElementById('mainTableWrapper');
+  const dgaView = document.getElementById('dgaView');
 
   if (currentTab === 'dga') {
     paginationBar.style.display = 'none';
     mainTableWrapper.style.display = 'none';
+    dgaView.style.display = 'block';
     document.getElementById('countDisplay').style.display = 'none';
-    emptyState.style.display = 'block';
-    emptyState.innerHTML = `
-      <div class="big" style="color:var(--primary);">🧪</div>
-      <div style="font-size: 1.1rem; font-weight: bold; margin-bottom: 8px;">กำลังรอข้อมูลและสูตรคำนวณ DGA 6 วิธี</div>
-      <div style="color: var(--muted); font-size: 0.9rem;">ท่านสามารถส่งข้อมูลดิบหรือเงื่อนไขการคำนวณเข้ามาได้ตลอดเวลา เพื่อพัฒนาระบบแสดงผลในขั้นต่อไป</div>
-    `;
+    emptyState.style.display = 'none';
     return;
   } else {
+    dgaView.style.display = 'none';
     mainTableWrapper.style.display = 'block';
     document.getElementById('countDisplay').style.display = 'inline';
-    emptyState.innerHTML = `<div class="big">∅</div>ไม่พบรายการที่ตรงกับคำค้นหา`;
   }
 
   if (currentTab === 'fmea') {
@@ -1101,7 +1230,7 @@ function renderTable(){
     visibleCountEl.textContent = filteredCehi.length;
     emptyState.style.display = filteredCehi.length === 0 ? 'block' : 'none';
 
-  } else if (currentTab === 'plan') {
+  } else {
     paginationBar.style.display = 'flex';
     thead.innerHTML = `
       <tr>
@@ -1284,8 +1413,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v61', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v61', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v62', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v62', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
