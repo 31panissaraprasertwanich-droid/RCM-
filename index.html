@@ -101,7 +101,7 @@
   .stat-critical { color: var(--danger); }
   .stat-cehi { color: #60a5fa; }
 
-  /* Charts Container - แสดงตลอดทุกหน้า */
+  /* Charts */
   .charts-container {
     display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 16px;
   }
@@ -212,13 +212,6 @@
   .modal h3{ margin:0 0 16px 0; font-size:1.2rem; color:var(--primary); display:flex; justify-content:space-between; align-items:center; gap: 10px; }
   .modal-close{ background:none; border:none; color:var(--muted); font-size:1.4rem; cursor:pointer; }
   
-  .back-btn {
-    background: var(--panel-2); border: 1px solid var(--border); color: var(--text);
-    padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: 600;
-    display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s; font-family: inherit;
-  }
-  .back-btn:hover { border-color: var(--primary); color: var(--primary); }
-
   .guideline-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-bottom: 16px; }
   .guideline-table th, .guideline-table td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
   .guideline-table th { background: var(--panel-2); color: var(--primary); font-weight: 700; }
@@ -289,7 +282,7 @@
       </div>
     </div>
 
-    <!-- Charts (แสดงผลถาวรทุกหน้า) -->
+    <!-- Charts -->
     <div class="charts-container" id="analyticsCharts">
       <div class="chart-card">
         <div class="chart-title">🎯 สัดส่วนความเสี่ยง (Risk Options Ring)</div>
@@ -347,14 +340,11 @@
   ฐานข้อมูล RCM ตามเกณฑ์มาตรฐาน MIL-STD-1629A — ระบบบันทึกอัตโนมัติผ่าน LocalStorage
 </footer>
 
-<!-- Modal ดูเกณฑ์มาตรฐาน (คลิกข้างนอกเพื่อปิดได้ + มีปุ่มย้อนกลับ) -->
+<!-- Modal ดูเกณฑ์มาตรฐาน (คลิกข้างนอกเพื่อปิดได้) -->
 <div class="modal-overlay" id="guidelineModal" onclick="handleOutsideClick(event, 'guidelineModal')">
   <div class="modal">
     <h3>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <button class="back-btn" onclick="closeGuidelineModal()">⬅️ ย้อนกลับ</button>
-        <span>📘 เกณฑ์มาตรฐาน MIL-STD-1629A</span>
-      </div>
+      <span>📘 เกณฑ์มาตรฐาน MIL-STD-1629A</span>
       <button class="modal-close" onclick="closeGuidelineModal()">&times;</button>
     </h3>
     
@@ -390,14 +380,11 @@
   </div>
 </div>
 
-<!-- Modal รายละเอียดอุปกรณ์ (คลิกข้างนอกเพื่อปิดได้ + มีปุ่มย้อนกลับ) -->
+<!-- Modal รายละเอียดอุปกรณ์ (คลิกข้างนอกเพื่อปิดได้) -->
 <div class="modal-overlay" id="drilldownModal" onclick="handleOutsideClick(event, 'drilldownModal')">
   <div class="modal">
     <h3>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <button class="back-btn" onclick="closeModal()">⬅️ ย้อนกลับ</button>
-        <span>รายละเอียดอุปกรณ์</span>
-      </div>
+      <span>รายละเอียดอุปกรณ์</span>
       <button class="modal-close" onclick="closeModal()">&times;</button>
     </h3>
     <div class="modal-grid">
@@ -658,17 +645,17 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  ['v47','v48','v49'].forEach(v => {
+  ['v50'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v50');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v51');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v50');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v51');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -685,7 +672,7 @@ function initApp() {
 
   categories = [...new Set(records.map(r => r.component ? r.component.split('_')[0] : 'OTHER'))];
   
-  // บังคับเรนเดอร์กราฟและสถิติให้แสดงผลทันทีเมื่อเปิดเว็บ
+  // เรียกคำนวณและวาดกราฟทันทีเมื่อเปิดเว็บ
   initCharts();
   updateDashboardStats();
   renderChips();
@@ -1173,8 +1160,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v51', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v51', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v52', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v52', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
@@ -1257,7 +1244,7 @@ document.getElementById('search').addEventListener('input', (e) => {
   renderTable();
 });
 
-// เริ่มต้นแอปพลิเคชันและเรนเดอร์กราฟทันทีเมื่อโหลดหน้าเว็บ
+// เริ่มต้นแอปพลิเคชันและวาดกราฟทันทีเมื่อโหลดหน้าเว็บ
 initApp();
 </script>
 
