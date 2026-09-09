@@ -520,7 +520,7 @@ let doughnutChartInstance = null;
 let barChartInstance = null;
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v28');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v29');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) { records = defaultRecords; }
   } else {
@@ -532,7 +532,7 @@ function initApp() {
   });
   categories = [...new Set(records.map(r => r.cat))];
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v28');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v29');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -961,8 +961,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v28', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v28', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v29', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v29', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลทั้งหมดลง LocalStorage เรียบร้อยแล้ว!');
 }
 
