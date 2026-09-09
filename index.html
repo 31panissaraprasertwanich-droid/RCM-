@@ -5,31 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ระบบ RCM และตารางรหัสความเสียหายสถานีไฟฟ้า — RCM & Failure Code Master</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <!-- โหลดไลบรารี Chart.js สำหรับวาดกราฟ -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
   :root {
-    --bg: #0b0f14;
-    --panel: #141b22;
-    --panel-2: #1c2530;
-    --border: #2d3846;
-    --text: #f0f4f8;
+    --bg: #090d16;
+    --panel: #111827;
+    --panel-2: #1f293d;
+    --border: #334155;
+    --text: #f8fafc;
     --muted: #94a3b8;
     
     --primary: #f59e0b;
-    --primary-dim: #3f2c0a;
+    --primary-dim: rgba(245, 158, 11, 0.15);
     
     --teal: #14b8a6;
-    --teal-dim: #042f2e;
+    --teal-dim: rgba(20, 184, 166, 0.15);
     --danger: #ef4444;
+    --danger-dim: rgba(239, 68, 68, 0.15);
+    
+    --radius: 12px;
   }
 
   body.light-mode {
     --bg: #f8fafc;
     --panel: #ffffff;
     --panel-2: #f1f5f9;
-    --border: #cbd5e1;
+    --border: #e2e8f0;
     --text: #0f172a;
     --muted: #64748b;
   }
@@ -39,7 +42,7 @@
   body{
     background: var(--bg);
     color: var(--text);
-    font-family:'Noto Sans Thai', system-ui, sans-serif;
+    font-family:'Noto Sans Thai', 'Plus Jakarta Sans', system-ui, sans-serif;
     min-height:100vh;
     transition: background 0.2s, color 0.2s;
   }
@@ -48,122 +51,125 @@
   header{
     background: var(--panel);
     border-bottom: 1px solid var(--border);
-    padding: 18px 24px;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    padding: 20px 28px;
+    box-shadow: 0 4px 20px -2px rgba(0,0,0,0.2);
   }
   .header-inner{ max-width:1500px; margin:0 auto; }
-  .title-row{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:16px; }
-  h1{ font-size:1.2rem; font-weight:700; margin:0; letter-spacing: -0.02em; }
+  .title-row{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+  h1{ font-size:1.25rem; font-weight:700; margin:0; letter-spacing: -0.02em; }
   h1 .accent{color: var(--primary);}
-  .subtitle{ color:var(--muted); font-size:0.78rem; margin-top:2px; }
+  .subtitle{ color:var(--muted); font-size:0.8rem; margin-top:3px; }
   
-  .header-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .header-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
   .mode-toggle-btn {
     background: var(--panel-2); border: 1px solid var(--border); cursor: pointer; color: var(--text);
-    font-size: 0.85rem; padding: 6px 12px; border-radius: 8px; transition: all 0.15s;
+    font-size: 0.9rem; padding: 7px 14px; border-radius: var(--radius); transition: all 0.15s;
   }
   .mode-toggle-btn:hover { border-color: var(--primary); }
 
-  .nav-tabs{display:flex; gap:6px; flex-wrap:wrap;}
+  .nav-tabs{display:flex; gap:8px;}
   .tab-btn{
     background:var(--panel-2); border:1px solid var(--border); color:var(--muted);
-    padding:7px 14px; border-radius:8px; cursor:pointer; font-family:inherit; font-size:0.8rem; transition:all .15s;
+    padding:8px 16px; border-radius: var(--radius); cursor:pointer; font-family:inherit; font-size:0.82rem; font-weight: 500; transition:all .15s;
   }
   .tab-btn:hover{border-color:var(--primary); color:var(--text);}
-  .tab-btn.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight:600; }
+  .tab-btn.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight:700; }
 
   .action-btn, .save-btn, .guideline-btn {
     background: var(--teal-dim); border: 1px solid var(--teal); color: var(--teal);
-    padding: 7px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 600; font-family: inherit;
+    padding: 8px 14px; border-radius: var(--radius); cursor: pointer; font-size: 0.82rem; font-weight: 600; font-family: inherit; transition: all 0.15s;
   }
   .guideline-btn { background: rgba(59, 130, 246, 0.15); border-color: #3b82f6; color: #60a5fa; }
-  .guideline-btn:hover { background: rgba(59, 130, 246, 0.25); }
-  .action-btn:hover, .save-btn:hover { opacity: 0.9; }
+  .guideline-btn:hover { background: rgba(59, 130, 246, 0.3); }
+  .action-btn:hover, .save-btn:hover { opacity: 0.85; }
 
+  /* Modern KPI Cards */
   .dashboard-stats {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 16px;
   }
   .stat-card {
-    background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px;
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px;
     display: flex; flex-direction: column; justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.15s;
   }
-  .stat-title { font-size: 0.72rem; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
-  .stat-value { font-family: 'IBM Plex Mono', monospace; font-size: 1.35rem; font-weight: 700; }
+  .stat-card:hover { transform: translateY(-2px); }
+  .stat-title { font-size: 0.75rem; color: var(--muted); font-weight: 600; margin-bottom: 8px; display:flex; align-items:center; gap:6px; }
+  .stat-value { font-family: 'IBM Plex Mono', monospace; font-size: 1.5rem; font-weight: 700; }
   .stat-total { color: var(--primary); }
   .stat-normal { color: var(--teal); }
   .stat-warning { color: var(--primary); }
   .stat-critical { color: var(--danger); }
   .stat-cehi { color: #60a5fa; }
 
+  /* Modern Charts Section */
   .charts-container {
     display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 16px;
   }
-  @media(max-width: 900px) { .charts-container { grid-template-columns: 1fr; } }
+  @media(max-width: 950px) { .charts-container { grid-template-columns: 1fr; } }
   .chart-card {
-    background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
-  .chart-title { font-size: 0.82rem; font-weight: 600; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-  .chart-box { position: relative; height: 190px; width: 100%; display: flex; align-items: center; justify-content: center; }
+  .chart-title { font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .chart-box { position: relative; height: 200px; width: 100%; display: flex; align-items: center; justify-content: center; }
 
-  .search-wrap{ position:relative; margin-bottom:12px; flex: 1; min-width: 240px; }
+  /* Search & Filters */
+  .toolbar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+  .search-wrap{ position:relative; flex: 1; min-width: 260px; }
   #search{
     width:100%; background:var(--panel-2); border:1px solid var(--border); color:var(--text);
-    font-family:inherit; font-size:0.85rem; padding:10px 14px 10px 40px; border-radius:8px; outline:none;
+    font-family:inherit; font-size:0.9rem; padding:11px 16px 11px 42px; border-radius: var(--radius); outline:none; transition: border-color 0.15s;
   }
   #search:focus{ border-color: var(--primary); }
-  .search-wrap svg{ position:absolute; left:13px; top:50%; transform:translateY(-50%); width:16px; height:16px; stroke:var(--muted); }
+  .search-wrap svg{ position:absolute; left:14px; top:50%; transform:translateY(-50%); width:18px; height:18px; stroke:var(--muted); }
 
-  .toolbar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
-  .risk-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+  .risk-filters { display: flex; gap: 8px; flex-wrap: wrap; }
   .filter-chip {
-    font-size: 0.75rem; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border);
-    background: var(--panel-2); color: var(--muted); cursor: pointer; user-select: none;
+    font-size: 0.78rem; padding: 8px 14px; border-radius: var(--radius); border: 1px solid var(--border);
+    background: var(--panel-2); color: var(--muted); cursor: pointer; user-select: none; font-weight: 600; transition: all 0.15s;
   }
-  .filter-chip.active { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight: 600; }
+  .filter-chip.active { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); }
 
-  .chips{ display:flex; flex-wrap:wrap; gap:6px; max-height:80px; overflow-y:auto; padding-bottom:2px; }
+  .chips{ display:flex; flex-wrap:wrap; gap:6px; max-height:85px; overflow-y:auto; padding-bottom:4px; }
   .chip{
-    font-size:0.75rem; padding:5px 12px; border-radius:100px; border:1px solid var(--border);
+    font-size:0.75rem; padding:6px 12px; border-radius:100px; border:1px solid var(--border);
     background:var(--panel-2); color:var(--muted); cursor:pointer; user-select:none; transition:all .12s ease; white-space:nowrap;
   }
   .chip:hover{border-color:var(--primary); color:var(--text);}
-  .chip.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); }
+  .chip.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight:600; }
 
   main{ max-width:1500px; margin:0 auto; padding:20px 24px 60px; }
 
-  .empty{ text-align:center; padding:50px 20px; color:var(--muted); }
-  .empty .big{ font-family:'IBM Plex Mono', monospace; font-size:1.8rem; color:var(--border); margin-bottom:8px; }
+  .empty{ text-align:center; padding:60px 20px; color:var(--muted); }
+  .empty .big{ font-family:'IBM Plex Mono', monospace; font-size:2rem; color:var(--border); margin-bottom:8px; }
 
+  /* Table Design */
   .table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--panel);
+    width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   }
-  table{ width: 100%; min-width: 1100px; border-collapse: collapse; font-size: 0.85rem; }
+  table{ width: 100%; min-width: 1100px; border-collapse: collapse; font-size: 0.88rem; }
   thead th{
-    text-align: left; font-size: 0.75rem; color: var(--muted); font-weight: 600;
-    padding: 12px 14px; border-bottom: 1px solid var(--border); background: var(--panel-2);
-    white-space: nowrap;
+    text-align: left; font-size: 0.75rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 14px 16px; border-bottom: 1px solid var(--border); background: var(--panel-2); white-space: nowrap;
   }
   
   tbody tr{ border-bottom: 1px solid var(--border); transition: background .1s ease; cursor: pointer; }
   tbody tr:hover{ background: var(--panel-2); }
-  tbody td{ padding: 10px 14px; vertical-align: middle; }
-  td.num{ color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; }
+  tbody td{ padding: 12px 16px; vertical-align: middle; }
+  td.num{ color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; }
+  
   .code-pill{
     display: inline-block; font-family: 'IBM Plex Mono', monospace; font-weight: 600;
-    font-size: 0.8rem; color: var(--primary); background: var(--primary-dim);
-    border-left: 3px solid var(--primary); padding: 2px 8px; border-radius: 4px;
-    white-space: nowrap;
+    font-size: 0.82rem; color: var(--primary); background: var(--primary-dim);
+    border-left: 3px solid var(--primary); padding: 3px 8px; border-radius: 4px; white-space: nowrap;
   }
   
   input.score-input {
     width: 52px; background: var(--bg); border: 1px solid var(--border); color: var(--text);
-    padding: 6px; text-align: center; border-radius: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem;
+    padding: 6px; text-align: center; border-radius: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 0.88rem;
   }
   input.score-input:focus { border-color: var(--primary); outline: none; }
   
@@ -175,51 +181,58 @@
 
   /* Priority Flag Badges */
   .flag-badge {
-    font-size: 0.75rem; font-weight: 600; padding: 5px 10px; border-radius: 6px; display: inline-block; white-space: nowrap;
+    font-size: 0.78rem; font-weight: 700; padding: 5px 10px; border-radius: 6px; display: inline-block; white-space: nowrap;
   }
-  .flag-red { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
-  .flag-orange { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-  .flag-green { background: rgba(20, 184, 166, 0.15); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.3); }
+  .flag-red { background: var(--danger-dim); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+  .flag-orange { background: var(--primary-dim); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+  .flag-green { background: var(--teal-dim); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.3); }
 
   .note-input { min-width: 220px; }
 
-  .plan-info-banner {
-    background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--primary);
-    padding: 14px 18px; border-radius: 8px; margin-bottom: 16px; font-size: 0.85rem; line-height: 1.6;
+  /* Info Banners */
+  .info-note-box {
+    background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--teal);
+    padding: 14px 18px; border-radius: var(--radius); margin-bottom: 16px; font-size: 0.85rem; line-height: 1.6;
   }
 
+  .plan-info-banner {
+    background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--primary);
+    padding: 14px 18px; border-radius: var(--radius); margin-bottom: 16px; font-size: 0.85rem; line-height: 1.6;
+  }
+
+  /* Modals */
   .modal-overlay{
-    position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(10,14,18,0.85);
-    backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center;
+    position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(9, 13, 22, 0.85);
+    backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center;
     z-index:100; padding:16px; opacity:0; pointer-events:none; transition:opacity .2s ease;
   }
   .modal-overlay.open{ opacity:1; pointer-events:auto; }
   .modal{
-    background:var(--panel); border:1px solid var(--border); border-radius:12px;
-    width:100%; max-width:750px; padding:28px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.6);
+    background:var(--panel); border:1px solid var(--border); border-radius:16px;
+    width:100%; max-width:750px; padding:30px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.7);
     max-height: 90vh; overflow-y: auto;
   }
-  .modal h3{ margin:0 0 16px 0; font-size:1.15rem; color:var(--primary); display:flex; justify-content:space-between; align-items:center; }
-  .modal-close{ background:none; border:none; color:var(--muted); font-size:1.3rem; cursor:pointer; }
+  .modal h3{ margin:0 0 16px 0; font-size:1.2rem; color:var(--primary); display:flex; justify-content:space-between; align-items:center; }
+  .modal-close{ background:none; border:none; color:var(--muted); font-size:1.4rem; cursor:pointer; }
   
   .guideline-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-bottom: 16px; }
-  .guideline-table th, .guideline-table td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; }
-  .guideline-table th { background: var(--panel-2); color: var(--primary); }
+  .guideline-table th, .guideline-table td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
+  .guideline-table th { background: var(--panel-2); color: var(--primary); font-weight: 700; }
 
-  .modal-grid{ display:grid; grid-template-columns:130px 1fr; gap:10px 16px; font-size:0.88rem; margin-bottom:16px; }
+  .modal-grid{ display:grid; grid-template-columns:130px 1fr; gap:10px 16px; font-size:0.9rem; margin-bottom:16px; }
   .modal-grid .label{ color:var(--muted); font-weight:500; }
   .modal-grid .val{ color:var(--text); word-break: break-all; }
 
   .section-label{
-    font-size:0.78rem; color:var(--muted); margin:0 0 10px 2px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
+    font-size:0.8rem; color:var(--muted); margin:0 0 10px 2px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
   }
 
-  footer{ max-width:1500px; margin:0 auto; padding:0 24px 40px; color:var(--muted); font-size:0.75rem; text-align: center; }
+  footer{ max-width:1500px; margin:0 auto; padding:0 24px 40px; color:var(--muted); font-size:0.78rem; text-align: center; }
 
   @media (max-width: 600px) {
-    header { padding: 12px 16px; }
+    header { padding: 14px 18px; }
     main { padding: 16px; }
-    h1 { font-size: 1.05rem; }
+    h1 { font-size: 1.1rem; }
     .subtitle { display: none; }
   }
 </style>
@@ -307,10 +320,10 @@
 <main>
   <div class="section-label">
     <span id="tableInstruction">คลิกแถวเพื่อดูรายละเอียด หรือคลิกช่องคะแนนเพื่อประเมิน</span>
-    <span style="font-family:'IBM Plex Mono', monospace; font-size:0.75rem; color:var(--teal);">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</span>
+    <span style="font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--teal);">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</span>
   </div>
   
-  <div id="planBannerContainer"></div>
+  <div id="bannerContainer"></div>
 
   <div class="table-responsive">
     <table>
@@ -335,7 +348,7 @@
   <div class="modal">
     <h3>📘 เกณฑ์มาตรฐาน MIL-STD-1629A / Detect-ability <button class="modal-close" onclick="closeGuidelineModal()">&times;</button></h3>
     
-    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">1. ตารางเกณฑ์ความรุนแรง (Severity: S)</div>
+    <div style="font-size: 0.88rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">1. ตารางเกณฑ์ความรุนแรง (Severity: S)</div>
     <table class="guideline-table">
       <tr><th style="width: 60px; text-align:center;">Rank</th><th>Severity Criteria</th></tr>
       <tr><td style="text-align:center;">1</td><td>ไม่มีผลกระทบ (Minor)</td></tr>
@@ -345,7 +358,7 @@
       <tr><td style="text-align:center;">5</td><td>ความเสียหายระดับหายนะ, สูญเสียชีวิตได้ (Catastrophic)</td></tr>
     </table>
 
-    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">2. ตารางเกณฑ์ความถี่ (Occurrence: O)</div>
+    <div style="font-size: 0.88rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">2. ตารางเกณฑ์ความถี่ (Occurrence: O)</div>
     <table class="guideline-table">
       <tr><th style="width: 60px; text-align:center;">Rank</th><th>Occurrence Criteria</th><th>Occurrence Rates</th></tr>
       <tr><td style="text-align:center;">1</td><td>ไม่น่าเกิด (Extremely Unlikely)</td><td>-</td></tr>
@@ -355,7 +368,7 @@
       <tr><td style="text-align:center;">5</td><td>เกิดขึ้นบ่อย (Frequent)</td><td>1/10</td></tr>
     </table>
 
-    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">3. ตารางเกณฑ์โอกาสตรวจพบ (Detection: D)</div>
+    <div style="font-size: 0.88rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">3. ตารางเกณฑ์โอกาสตรวจพบ (Detection: D)</div>
     <table class="guideline-table">
       <tr><th style="width: 60px; text-align:center;">Rank</th><th>Detection Criteria</th><th>Probability</th></tr>
       <tr><td style="text-align:center;">1</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าสูงมาก</td><td>80% - 100%</td></tr>
@@ -385,7 +398,7 @@
       <div class="label">หมายเหตุ (Note):</div>
       <div class="val" id="modalNote">-</div>
     </div>
-    <div style="background:var(--panel-2); padding:10px; border-radius:6px; font-size:0.8rem; color:var(--muted);">
+    <div style="background:var(--panel-2); padding:12px; border-radius:8px; font-size:0.82rem; color:var(--muted);">
       💡 <b>เกณฑ์ MIL-STD-1629A:</b> ตรวจสอบค่า Severity และ Priority Flag ควบคู่กับ RPN เสมอ
     </div>
   </div>
@@ -629,18 +642,18 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  // ล้าง LocalStorage เก่าเวอร์ชันที่มีปัญหา
-  ['v30','v31','v32','v33','v34','v35','v36','v37','v38'].forEach(v => {
+  // ล้างเวอร์ชันเก่า
+  ['v39','v40'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v39');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v42');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v39');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v42');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -655,13 +668,8 @@ function initApp() {
     }));
   }
 
-  records.forEach(r => {
-    if(!r.cat) r.cat = r.component ? r.component.split('_')[0] : 'OTHER';
-  });
-
-  categories = [...new Set(records.map(r => r.cat))];
+  categories = [...new Set(records.map(r => r.component ? r.component.split('_')[0] : 'OTHER'))];
   
-  // อัปเดตสถิติ กราฟ และตาราง
   updateDashboardStats();
   renderChips();
   renderTable();
@@ -747,7 +755,7 @@ function switchTab(tab, el) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
   
-  const bannerContainer = document.getElementById('planBannerContainer');
+  const bannerContainer = document.getElementById('bannerContainer');
   bannerContainer.innerHTML = '';
   
   if(tab === 'fmea') {
@@ -782,7 +790,7 @@ function renderChips(){
   chipsWrap.innerHTML = '';
   chipsWrap.appendChild(makeChip('ทั้งหมด (' + records.length + ')', 'ALL'));
   categories.forEach(c => {
-    const count = records.filter(r => r.cat === c).length;
+    const count = records.filter(r => (r.component ? r.component.split('_')[0] : 'OTHER') === c).length;
     chipsWrap.appendChild(makeChip(c + ' (' + count + ')', c));
   });
 }
@@ -836,7 +844,8 @@ function renderTable(){
     `;
 
     const filtered = records.filter(r => {
-      if(activeCat !== 'ALL' && r.cat !== activeCat) return false;
+      const catPrefix = r.component ? r.component.split('_')[0] : 'OTHER';
+      if(activeCat !== 'ALL' && catPrefix !== activeCat) return false;
       const s = Number(r.s) || 0;
       if (riskFilter === 'CRITICAL' && s !== 5) return false;
       if (riskFilter === 'WARNING' && s !== 4) return false;
@@ -1005,7 +1014,6 @@ function renderTable(){
       </tr>
     `;
 
-    // จัดเรียงตามหลัก RCM: Priority 1 (S=5) ขึ้นก่อนเสมอ ตามด้วย RPN จากมากไปน้อย
     const filteredPlan = records.filter(r => {
       const s = Number(r.s) || 0;
       const o = Number(r.o) || 0;
@@ -1016,10 +1024,10 @@ function renderTable(){
       const sB = Number(b.s) || 0;
       const p1A = sA === 5 ? 1 : 0;
       const p1B = sB === 5 ? 1 : 0;
-      if (p1A !== p1B) return p1B - p1A; // Priority 1 ขึ้นก่อน
+      if (p1A !== p1B) return p1B - p1A;
       const rpnA = sA * (Number(a.o)||0) * (Number(a.d||0));
       const rpnB = sB * (Number(b.o)||0) * (Number(b.d||0));
-      return rpnB - rpnA; // RPN มากไปน้อย
+      return rpnB - rpnA;
     });
 
     if (filteredPlan.length === 0) {
@@ -1075,11 +1083,8 @@ function updateFmea(id, field, val) {
   if (item) {
     item[field] = val;
     if (['s', 'o', 'd'].includes(field)) {
-      const s = Number(item.s) || 0;
-      item.priorityFlag = s === 5 ? 'วิกฤตสูงสุด (Priority 1)' : (s === 4 ? 'เฝ้าระวัง' : 'ปานกลาง/ต่ำ');
       updateDashboardStats();
     }
-    // สั่งวาดตารางและอัปเดตผลรวม RPN ทันทีแบบเรียลไทม์
     renderTable();
   }
 }
@@ -1123,7 +1128,7 @@ function exportToCSV() {
   let csvContent = "\uFEFFID,Component,Code,Failure Mode,Failure Cause,Severity,Occurrence,Detection,RPN,Priority Flag,Note\n";
   records.forEach(r => {
     const rpn = (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0);
-    csvContent += `"${r.id}","${r.component}","${r.code}","${r.desc}","${r.cause || ''}","${r.s || ''}","${r.o || ''}","${r.d || ''}","${rpn}","${r.priorityFlag}","${r.note || ''}"\n`;
+    csvContent += `"${r.id}","${r.component}","${r.code}","${r.desc}","${r.cause || ''}","${r.s || ''}","${r.o || ''}","${r.d || ''}","${rpn}","${r.priorityFlag || ''}","${r.note || ''}"\n`;
   });
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -1136,8 +1141,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v39', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v39', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v42', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v42', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
@@ -1155,7 +1160,7 @@ function initCharts() {
         data: [0, 0, 0],
         backgroundColor: ['#14b8a6', '#f59e0b', '#ef4444'],
         borderWidth: 0,
-        hoverOffset: 4
+        hoverOffset: 6
       }]
     },
     options: {
@@ -1185,7 +1190,7 @@ function initCharts() {
       maintainAspectRatio: false,
       scales: {
         x: { ticks: { color: textColor, font: { family: 'Noto Sans Thai', size: 10 } }, grid: { display: false } },
-        y: { ticks: { color: textColor }, grid: { color: isLight ? '#cbd5e1' : '#2d3846' } }
+        y: { ticks: { color: textColor }, grid: { color: isLight ? '#e2e8f0' : '#2d3846' } }
       },
       plugins: { legend: { display: false } }
     }
@@ -1215,7 +1220,7 @@ document.getElementById('search').addEventListener('input', (e) => {
   renderTable();
 });
 
-// เริ่มต้นรันแอปพลิเคชัน
+// เริ่มต้นแอปพลิเคชัน
 initApp();
 </script>
 
