@@ -101,7 +101,7 @@
   .stat-critical { color: var(--danger); }
   .stat-cehi { color: #60a5fa; }
 
-  /* Infographic Ring & Bar Chart Section */
+  /* Charts Container */
   .charts-container {
     display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 16px;
   }
@@ -282,7 +282,7 @@
       </div>
     </div>
 
-    <!-- Charts (Infographic Ring & Modern Bar) -->
+    <!-- Charts -->
     <div class="charts-container" id="analyticsCharts">
       <div class="chart-card">
         <div class="chart-title">🎯 สัดส่วนความเสี่ยง (Risk Options Ring)</div>
@@ -291,7 +291,7 @@
         </div>
       </div>
       <div class="chart-card">
-        <div class="chart-title">📊 Top 5 คะแนน RPN สูงสุด</div>
+        <div class="chart-title">📊 Top 5 คะแนน RPN สูงสุด (Modern Bar)</div>
         <div class="chart-box">
           <canvas id="topRiskBarChart"></canvas>
         </div>
@@ -644,12 +644,12 @@ function initApp() {
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v44');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v46');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v44');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v46');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -766,7 +766,7 @@ function switchTab(tab, el) {
     document.getElementById('chips').style.display = 'flex';
   } else if(tab === 'plan') {
     document.getElementById('modeTitle').textContent = "PM/CBM Action Plan Table";
-    document.getElementById('tableInstruction').textContent = "แสดงรายการแผนบำรุงรักษา เรียงตามกลุ่มความสำคัญ (Priority Group)";
+    document.getElementById('tableInstruction').textContent = "แสดงรายการแผนบำรุงรักษา เรียงตามกลุ่มความสำคัญ (Priority Group) และคะแนน RPN";
     document.getElementById('toolbarRow').style.display = 'none';
     document.getElementById('chips').style.display = 'none';
     
@@ -774,7 +774,7 @@ function switchTab(tab, el) {
       <div class="plan-info-banner">
         📋 <b>หลักการจัดลำดับตาราง Action Plan (ตามเกณฑ์มาตรฐาน RCM / MIL-STD-1629A):</b><br>
         1. <b>กลุ่มวิกฤตสูงสุด (Priority 1 | S=5):</b> แสดงไว้บนสุดของตารางเสมอเพื่อความเร่งด่วนสูงสุด<br>
-        2. <b>กลุ่มเฝ้าระวัง (Priority 2 | S=4):</b> แสดงถัดลงมา เรียงตามคะแนน RPN จากมากไปน้อย<br>
+        2. <b>กลุ่มเฝ้าระวัง (Priority 2 | S=4):</b> แสดงถัดลงมา เรียงตามคะแนน RPN จากมากไปน้อยอย่างแม่นยำ<br>
         3. <b>กลุ่มปานกลาง/ต่ำ (S &le; 3):</b> แสดงไว้ส่วนล่างสุดของตาราง เรียงตามคะแนน RPN จากมากไปน้อย
       </div>
     `;
@@ -1011,10 +1011,10 @@ function renderTable(){
       </tr>
     `;
 
-    // จัดเรียงลำดับตามหลัก RCM สากลแบบแบ่งกลุ่มเด็ดขาด:
-    // 1. วิกฤตสูงสุด (Priority 1 | S = 5) อยู่บนสุด
-    // 2. เฝ้าระวัง (Priority 2 | S = 4) อยู่ตรงกลาง เรียงตาม RPN มากไปน้อย
-    // 3. ปานกลาง/ต่ำ (S <= 3) อยู่ล่างสุด เรียงตาม RPN มากไปน้อย
+    // จัดเรียงลำดับตามกลุ่มความสำคัญอย่างเคร่งครัด:
+    // กลุ่ม 3: วิกฤตสูงสุด (S = 5) อยู่บนสุดเสมอ
+    // กลุ่ม 2: เฝ้าระวัง (S = 4) อยู่ตรงกลาง เรียงตาม RPN จากมากไปน้อย
+    // กลุ่ม 1: ปานกลาง/ต่ำ (S <= 3) อยู่ล่างสุด เรียงตาม RPN จากมากไปน้อย
     const filteredPlan = records.filter(r => {
       const s = Number(r.s) || 0;
       const o = Number(r.o) || 0;
@@ -1028,7 +1028,7 @@ function renderTable(){
       const groupB = sB === 5 ? 3 : (sB === 4 ? 2 : 1);
       
       if (groupA !== groupB) {
-        return groupB - groupA; // กลุ่มความสำคัญสูงกว่าอยู่บนสุด
+        return groupB - groupA; // กลุ่มความสำคัญสูงกว่าอยู่บน
       }
       
       // ถ้าอยู่กลุ่มเดียวกัน เรียงตามคะแนน RPN จากมากไปน้อย
@@ -1150,8 +1150,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v45', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v45', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v47', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v47', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
@@ -1159,6 +1159,7 @@ function initCharts() {
   const isLight = document.body.classList.contains('light-mode');
   const textColor = isLight ? '#0f172a' : '#f0f4f8';
 
+  // Infographic Ring Chart (Doughnut สไตล์อินโฟกราฟิกโมเดิร์น)
   const ctxDoughnut = document.getElementById('riskDoughnutChart').getContext('2d');
   if (doughnutChartInstance) doughnutChartInstance.destroy();
   doughnutChartInstance = new Chart(ctxDoughnut, {
@@ -1176,13 +1177,14 @@ function initCharts() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '65%',
+      cutout: '70%',
       plugins: {
-        legend: { position: 'bottom', labels: { color: textColor, font: { family: 'Noto Sans Thai', size: 11 } } }
+        legend: { position: 'bottom', labels: { color: textColor, font: { family: 'Noto Sans Thai', size: 11 }, padding: 15 } }
       }
     }
   });
 
+  // Modern Bar Chart (กราฟแท่งสไตล์พรีเมียม โค้งมน)
   const ctxBar = document.getElementById('topRiskBarChart').getContext('2d');
   if (barChartInstance) barChartInstance.destroy();
   barChartInstance = new Chart(ctxBar, {
@@ -1192,8 +1194,11 @@ function initCharts() {
       datasets: [{
         label: 'คะแนน RPN',
         data: [0, 0, 0, 0, 0],
-        backgroundColor: '#f59e0b',
-        borderRadius: 6
+        backgroundColor: 'rgba(245, 158, 11, 0.85)',
+        borderColor: '#f59e0b',
+        borderWidth: 1,
+        borderRadius: 8,
+        barThickness: 24
       }]
     },
     options: {
@@ -1231,7 +1236,7 @@ document.getElementById('search').addEventListener('input', (e) => {
   renderTable();
 });
 
-// เริ่มต้นแอปพลิเคชัน
+// รันระบบและแสดงกราฟทันทีเมื่อเปิดหน้าเว็บ
 initApp();
 </script>
 
