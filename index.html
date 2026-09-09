@@ -140,7 +140,6 @@
   .empty{ text-align:center; padding:50px 20px; color:var(--muted); }
   .empty .big{ font-family:'IBM Plex Mono', monospace; font-size:1.8rem; color:var(--border); margin-bottom:8px; }
 
-  /* Responsive Table Wrapper ให้เลื่อนซ้าย-ขวาได้นิ่มนวลบนมือถือ */
   .table-responsive {
     width: 100%;
     overflow-x: auto;
@@ -239,7 +238,6 @@
       </div>
       
       <div class="header-controls">
-        <!-- ปุ่มอัปโหลดไฟล์ Excel เพิ่มเติมตรงนี้ -->
         <input type="file" id="excelFileinput" accept=".xlsx, .xls" style="display:none;" onchange="handleExcelUpload(event)">
         <label for="excelFileinput" class="upload-btn" title="อัปโหลดไฟล์ Excel (.xlsx)">📂 อัปโหลด Excel</label>
 
@@ -370,12 +368,12 @@ let query = "";
 let currentTab = 'fmea';
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v24');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v26');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v24');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v26');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   }
@@ -397,7 +395,6 @@ function initApp() {
   initCharts();
 }
 
-// ฟังชันก์อัปโหลดไฟล์ Excel ผ่านหน้าเว็บ
 function handleExcelUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -408,15 +405,26 @@ function handleExcelUpload(event) {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, {type: 'array'});
       
-      // 1. อ่านชีต FMEA (ชีตแรก)
       const fmeaSheetName = workbook.SheetNames[0];
       const fmeaSheet = workbook.Sheets[fmeaSheetName];
-      const fmeaRows = XLSX.utils.sheet_to_json(fmeaSheet);
+      let fmeaRows = XLSX.utils.sheet_to_json(fmeaSheet);
+
+      // กรองเฉพาะแถวที่มี Component และรหัส/Failure Mode จริง (ตัดแถวสรุปออก)
+      fmeaRows = fmeaRows.filter(row => row['Component'] && row['Failure Code & Failure Mode']);
 
       records = fmeaRows.map((row, index) => {
         let codeDesc = String(row['Failure Code & Failure Mode'] || '');
         let parts = codeDesc.split(' ', 1);
         let comp = String(row['Component'] || '');
+        
+        let sVal = row['S (Severity)'] ?? '';
+        let oVal = row['O (Occurrence)'] ?? '';
+        let dVal = row['D (Detection)'] ?? '';
+        let excelRpn = row['RPN'];
+        let priorityFlag = String(row['Priority Flag '] || row['Priority Flag'] || '');
+
+        let finalRpn = (excelRpn !== undefined && !isNaN(excelRpn)) ? Number(excelRpn) : ((Number(sVal)||0) * (Number(oVal)||0) * (Number(dVal)||0));
+
         return {
           id: index + 1,
           component: comp,
@@ -424,20 +432,22 @@ function handleExcelUpload(event) {
           code: parts[0] || '',
           desc: parts[1] || codeDesc,
           cause: String(row['Failure Cause'] || ''),
-          s: row['S (Severity)'] ?? '',
-          o: row['O (Occurrence)'] ?? '',
-          d: row['D (Detection)'] ?? '',
+          s: sVal,
+          o: oVal,
+          d: dVal,
+          rpn: finalRpn,
+          priorityFlag: priorityFlag,
           actionType: "PM",
           actionPlan: "",
           status: "รอแผนงาน"
         };
       });
 
-      // 2. อ่านชีต CEHI (ชีตที่สอง ถ้ามี)
       if (workbook.SheetNames.length > 1) {
         const cehiSheetName = workbook.SheetNames[1];
         const cehiSheet = workbook.Sheets[cehiSheetName];
-        const cehiRows = XLSX.utils.sheet_to_json(cehiSheet);
+        let cehiRows = XLSX.utils.sheet_to_json(cehiSheet);
+        cehiRows = cehiRows.filter(row => row['Component']);
 
         cehiRecords = cehiRows.map((row, index) => {
           return {
@@ -451,7 +461,6 @@ function handleExcelUpload(event) {
           };
         });
       } else {
-        // หากไม่มีชีตที่ 2 ให้สร้างโครงสร้าง CEHI จาก records อัตโนมัติ
         cehiRecords = records.map((r) => ({
           uid: 'c_' + r.id + '_' + Math.random().toString(36).substring(2, 7),
           component: r.component,
@@ -503,10 +512,20 @@ function updateDashboardStats() {
   let totalSi = 0, totalSmax = 0;
 
   records.forEach(r => {
-    const rpn = (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0);
-    if (rpn === 0) normal++;
-    else if (rpn >= 100) critical++;
-    else warning++;
+    // ตรวจสอบจาก priorityFlag ที่อ่านมาจาก Excel หรือคำนวณจาก RPN
+    const isCritical = r.priorityFlag && r.priorityFlag.includes('วิกฤต');
+    const isWarning = r.priorityFlag && r.priorityFlag.includes('สูง');
+    const rpn = r.rpn !== undefined ? r.rpn : ((Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0));
+
+    if (isCritical || rpn >= 100) {
+      critical++;
+    } else if (isWarning || (rpn >= 20 && rpn < 100)) {
+      warning++;
+    } else if (rpn > 0) {
+      warning++; // จัดกลุ่มความเสี่ยงปานกลางเป็นเฝ้าระวัง
+    } else {
+      normal++;
+    }
   });
 
   cehiRecords.forEach(c => {
@@ -625,18 +644,23 @@ function renderTable(){
 
     const filtered = records.filter(r => {
       if(activeCat !== 'ALL' && r.cat !== activeCat) return false;
-      const rpn = (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0);
-      if (riskFilter === 'CRITICAL' && rpn < 100) return false;
-      if (riskFilter === 'WARNING' && (rpn === 0 || rpn >= 100)) return false;
+      const rpn = r.rpn !== undefined ? r.rpn : ((Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0));
+      const isCrit = (r.priorityFlag && r.priorityFlag.includes('วิกฤต')) || rpn >= 100;
+      const isWarn = (r.priorityFlag && r.priorityFlag.includes('สูง')) || (rpn >= 20 && rpn < 100);
+
+      if (riskFilter === 'CRITICAL' && !isCrit) return false;
+      if (riskFilter === 'WARNING' && !isWarn) return false;
       if(!q) return true;
       return (r.code?.toLowerCase().includes(q) || r.desc?.toLowerCase().includes(q) || r.cause?.toLowerCase().includes(q) || r.component?.toLowerCase().includes(q));
     });
 
     let totalRpnSum = 0;
     tbody.innerHTML = filtered.map(r => {
-      const rpn = (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0);
+      const rpn = r.rpn !== undefined ? r.rpn : ((Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0));
       totalRpnSum += rpn;
-      let badgeClass = rpn >= 100 ? 'rpn-high' : (rpn >= 40 ? 'rpn-mid' : 'rpn-low');
+      const isCrit = (r.priorityFlag && r.priorityFlag.includes('วิกฤต')) || rpn >= 100;
+      const isWarn = (r.priorityFlag && r.priorityFlag.includes('สูง')) || rpn >= 20;
+      let badgeClass = isCrit ? 'rpn-high' : (isWarn ? 'rpn-mid' : 'rpn-low');
 
       return `
         <tr onclick="openDrilldown(${r.id})">
@@ -648,7 +672,7 @@ function renderTable(){
           <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.s ?? ''}" oninput="updateFmea(${r.id}, 's', this.value)"></td>
           <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.o ?? ''}" oninput="updateFmea(${r.id}, 'o', this.value)"></td>
           <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.d ?? ''}" oninput="updateFmea(${r.id}, 'd', this.value)"></td>
-          <td style="text-align:center;"><span class="rpn-badge ${rpn > 0 ? badgeClass : ''}">${rpn > 0 ? rpn : '-'}</span></td>
+          <td style="text-align:center;"><span class="rpn-badge ${badgeClass}">${rpn}</span></td>
         </tr>
       `;
     }).join('');
@@ -778,18 +802,18 @@ function renderTable(){
     `;
 
     const filteredPlan = records.filter(r => {
-      const s = Number(r.s) || 0;
-      const o = Number(r.o) || 0;
-      const d = Number(r.d) || 0;
-      return (s * o * d) > 0;
-    }).sort((a, b) => ((Number(b.s||0)*Number(b.o||0)*Number(b.d||0)) - (Number(a.s||0)*Number(a.o||0)*Number(a.d||0))));
+      const rpn = r.rpn !== undefined ? r.rpn : ((Number(r.s||0) * Number(r.o||0) * Number(r.d||0)));
+      return rpn > 0;
+    }).sort((a, b) => ((b.rpn || 0) - (a.rpn || 0)));
 
     if (filteredPlan.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:40px; color:var(--muted);">⚠️ ยังไม่มีข้อมูลแผนงาน เนื่องจากยังไม่ได้ประเมินคะแนนในหน้า FMEA หรือยังไม่ได้อัปโหลดไฟล์ Excel</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:40px; color:var(--muted);">⚠️ ยังไม่มีข้อมูลแผนงาน เนื่องจากยังไม่ได้อัปโหลดไฟล์ Excel</td></tr>`;
     } else {
       tbody.innerHTML = filteredPlan.map((r, index) => {
-        const rpn = (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0);
-        let badgeClass = rpn >= 100 ? 'rpn-high' : (rpn >= 40 ? 'rpn-mid' : 'rpn-low');
+        const rpn = r.rpn !== undefined ? r.rpn : ((Number(r.s||0) * Number(r.o)||0) * Number(r.d||0));
+        const isCrit = (r.priorityFlag && r.priorityFlag.includes('วิกฤต')) || rpn >= 100;
+        const isWarn = (r.priorityFlag && r.priorityFlag.includes('สูง')) || rpn >= 20;
+        let badgeClass = isCrit ? 'rpn-high' : (isWarn ? 'rpn-mid' : 'rpn-low');
 
         return `
           <tr onclick="openDrilldown(${r.id})">
@@ -826,6 +850,7 @@ function updateFmea(id, field, val) {
   if (item) {
     item[field] = val;
     if (['s', 'o', 'd'].includes(field)) {
+      item.rpn = (Number(item.s)||0) * (Number(item.o)||0) * (Number(item.d)||0);
       updateDashboardStats();
     }
   }
@@ -842,7 +867,7 @@ function updateCehi(uid, field, val) {
 function openDrilldown(id) {
   const r = records.find(item => item.id === id);
   if (!r) return;
-  const rpn = (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0);
+  const rpn = r.rpn !== undefined ? r.rpn : ((Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0));
 
   document.getElementById('modalComp').textContent = r.component;
   document.getElementById('modalCode').textContent = r.code;
@@ -858,10 +883,10 @@ function closeModal() {
 }
 
 function exportToCSV() {
-  let csvContent = "\uFEFFID,Component,Code,Failure Mode,Failure Cause,Severity,Occurrence,Detection,RPN\n";
+  let csvContent = "\uFEFFID,Component,Code,Failure Mode,Failure Cause,Severity,Occurrence,Detection,RPN,Priority Flag\n";
   records.forEach(r => {
-    const rpn = (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0);
-    csvContent += `"${r.id}","${r.component}","${r.code}","${r.desc}","${r.cause || ''}","${r.s || ''}","${r.o || ''}","${r.d || ''}","${rpn}"\n`;
+    const rpn = r.rpn !== undefined ? r.rpn : ((Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0));
+    csvContent += `"${r.id}","${r.component}","${r.code}","${r.desc}","${r.cause || ''}","${r.s || ''}","${r.o || ''}","${r.d || ''}","${rpn}","${r.priorityFlag || ''}"\n`;
   });
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -874,8 +899,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v24', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v24', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v26', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v26', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลลงในหน่วยความจำเบราว์เซอร์เรียบร้อยแล้ว!');
 }
 
@@ -938,7 +963,7 @@ function updateCharts(normal, warning, critical) {
   if (barChartInstance) {
     let sortedRecords = [...records].map(r => ({
       name: r.code + ' (' + r.component + ')',
-      rpn: (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0)
+      rpn: r.rpn !== undefined ? r.rpn : ((Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0))
     })).sort((a, b) => b.rpn - a.rpn).slice(0, 5);
 
     barChartInstance.data.labels = sortedRecords.map(item => item.name);
