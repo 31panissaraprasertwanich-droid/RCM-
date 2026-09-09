@@ -366,11 +366,11 @@
     </table>
   </div>
 
-  <!-- DGA 6 Methods Analysis View (ซ่อนไว้จนกว่าจะกดเลือกแท็บ DGA) -->
+  <!-- DGA 6 Methods Analysis View -->
   <div id="dgaView" style="display:none;">
     <div class="plan-info-banner" style="margin-bottom: 20px;">
       🧪 <b>ระบบวิเคราะห์ก๊าซละลายในน้ำมันหม้อแปลง (Dissolved Gas Analysis - DGA) ตาม 6 วิธีมาตรฐานสากล:</b><br>
-      กรอกค่าความเข้มข้นของก๊าซแต่ละชนิดเป็นหน่วย ppm จากผลตรวจแล็บ เพื่อให้ระบบประเมินชนิดความผิดปกติภายในหม้อแปลงโดยอัตโนมัติ
+      กรอกค่าความเข้มข้นของก๊าซแต่ละชนิดเป็นหน่วย ppm เพื่อประเมินผลตามสูตรและเกณฑ์มาตรฐาน
     </div>
 
     <div class="dga-container">
@@ -380,9 +380,9 @@
           <h4>1. Key Gas Method</h4>
           <div class="dga-desc">วิเคราะห์หาก๊าซหลักที่เป็นตัวบ่งชี้ความผิดปกติเด่นชัด (เช่น Acetylene ชี้อาร์ก, Hydrogen ชี้ Partial Discharge)</div>
           <div class="dga-input-grid">
-            <div class="dga-field"><label>H2 (ppm)</label><input type="number" class="text-input dga-in" id="dga_h2" value="0"></div>
-            <div class="dga-field"><label>CH4 (ppm)</label><input type="number" class="text-input dga-in" id="dga_ch4" value="0"></div>
-            <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input dga-in" id="dga_c2h2" value="0"></div>
+            <div class="dga-field"><label>H2 (ppm)</label><input type="number" class="text-input" id="dga_h2" value="0"></div>
+            <div class="dga-field"><label>CH4 (ppm)</label><input type="number" class="text-input" id="dga_ch4" value="0"></div>
+            <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input" id="dga_c2h2" value="0"></div>
           </div>
         </div>
         <div>
@@ -395,11 +395,11 @@
       <div class="dga-card">
         <div>
           <h4>2. Rogers Ratio Method</h4>
-          <div class="dga-desc">ประเมินความผิดปกติจากอัตราส่วนก๊าซ 4 อัตราส่วน ($CH_4/H_2, C_2H_2/C_2H_4, C_2H_4/C_2H_6$)</div>
+          <div class="dga-desc">ประเมินความผิดปกติจากอัตราส่วนก๊าซ (CH4/H2, C2H2/C2H4, C2H4/C2H6)</div>
           <div class="dga-input-grid">
-            <div class="dga-field"><label>C2H4 (ppm)</label><input type="number" class="text-input dga-in" id="dga_c2h4" value="0"></div>
-            <div class="dga-field"><label>C2H6 (ppm)</label><input type="number" class="text-input dga-in" id="dga_c2h6" value="0"></div>
-            <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input dga-in" id="dga_c2h2_2" value="0"></div>
+            <div class="dga-field"><label>C2H4 (ppm)</label><input type="number" class="text-input" id="dga_c2h4" value="0"></div>
+            <div class="dga-field"><label>C2H6 (ppm)</label><input type="number" class="text-input" id="dga_c2h6" value="0"></div>
+            <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input" id="dga_c2h2_2" value="0"></div>
           </div>
         </div>
         <div>
@@ -412,7 +412,7 @@
       <div class="dga-card">
         <div>
           <h4>3. IEC 3-Ratio Method</h4>
-          <div class="dga-desc">ใช้เกณฑ์สัดส่วน 3 อัตราส่วนมาตรฐาน IEC ($C_2H_2/C_2H_4, CH_4/H_2, C_2H_4/C_2H_6$) จำแนกโซนความเสียหาย</div>
+          <div class="dga-desc">ใช้เกณฑ์สัดส่วน 3 อัตราส่วนมาตรฐาน IEC (C2H2/C2H4, CH4/H2, C2H4/C2H6)</div>
           <div class="dga-input-grid">
             <div class="dga-field"><label>Ratio 1</label><input type="number" class="text-input" disabled placeholder="คำนวณออโต้"></div>
             <div class="dga-field"><label>Ratio 2</label><input type="number" class="text-input" disabled placeholder="คำนวณออโต้"></div>
@@ -429,7 +429,7 @@
       <div class="dga-card">
         <div>
           <h4>4. Duval Triangle Method</h4>
-          <div class="dga-desc">พล็อตสัดส่วนก๊าซ 3 ชนิด ($CH_4, C_2H_4, C_2H_2$) ลงบนสามเหลี่ยมพิกัดเพื่อชี้โซนความร้อนหรือประกายไฟ</div>
+          <div class="dga-desc">พล็อตสัดส่วนก๊าซ 3 ชนิด (CH4, C2H4, C2H2) ลงบนสามเหลี่ยมพิกัด</div>
           <div class="dga-input-grid">
             <div class="dga-field"><label>% CH4</label><input type="number" class="text-input" value="0"></div>
             <div class="dga-field"><label>% C2H4</label><input type="number" class="text-input" value="0"></div>
@@ -446,7 +446,7 @@
       <div class="dga-card">
         <div>
           <h4>5. Dornenburg Ratio Method</h4>
-          <div class="dga-desc">วิเคราะห์จากอัตราส่วนก๊าซ 4 คู่ ($CH_4/H_2, C_2H_2/CH_4, C_2H_2/C_2H_6, C_2H_4/C_2H_6$) สำหรับความผิดปกติรุนแรง</div>
+          <div class="dga-desc">วิเคราะห์จากอัตราส่วนก๊าซ 4 คู่ สำหรับความผิดปกติรุนแรงในหม้อแปลง</div>
           <div class="dga-input-grid">
             <div class="dga-field"><label>CO (ppm)</label><input type="number" class="text-input" value="0"></div>
             <div class="dga-field"><label>CO2 (ppm)</label><input type="number" class="text-input" value="0"></div>
@@ -463,7 +463,7 @@
       <div class="dga-card">
         <div>
           <h4>6. Carbon Dioxide / CO Ratio</h4>
-          <div class="dga-desc">ประเมินการเสื่อมสภาพของฉนวนกระดาษและเซลลูโลสภายในหม้อแปลงจากสัดส่วนก๊าซคาร์บอนออกไซด์</div>
+          <div class="dga-desc">ประเมินการเสื่อมสภาพของฉนวนกระดาษและเซลลูโลสจากสัดส่วน CO2 ต่อ CO</div>
           <div class="dga-input-grid">
             <div class="dga-field"><label>CO (ppm)</label><input type="number" class="text-input" id="dga_co" value="0"></div>
             <div class="dga-field"><label>CO2 (ppm)</label><input type="number" class="text-input" id="dga_co2" value="0"></div>
@@ -825,12 +825,12 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  ['v59','v60'].forEach(v => {
+  ['v60','v61'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v61');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v62');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   } else {
@@ -845,7 +845,7 @@ function initApp() {
     });
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v61');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v62');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -977,7 +977,7 @@ function switchTab(tab, el) {
     bannerContainer.innerHTML = `
       <div class="plan-info-banner">
         🧪 <b>ระบบวิเคราะห์ DGA 6 วิธี (เตรียมพร้อมรองรับผลแล็บ):</b><br>
-        กรอกค่าตัวเลข ppm ลงในฟอร์มด้านล่างเพื่อประเมินผลตามวิธีมาตรฐานสากล
+        กรอกค่าตัวเลข ppm ลงในฟอร์มด้านล่างเพื่อประเมินผลตามสูตรและเกณฑ์มาตรฐาน
       </div>
     `;
   } else if(tab === 'plan') {
@@ -990,7 +990,7 @@ function switchTab(tab, el) {
     bannerContainer.innerHTML = `
       <div class="plan-info-banner">
         📋 <b>หลักการจัดลำดับ Action Plan (ตามเกณฑ์ RCM / MIL-STD-1629A):</b><br>
-        1. <b>กลุ่มวิกฤตสูงสุด (Priority 1 | S=5):</b> บนสุดเสมอ | 2. <b>กลุ่มเฝ้าระวัง (Priority 2 | S=4):</b> เรียงตาม RPN | 3. <b>กลุ่มปานกลาง/ต่ำ (S &le; 3):</b> เรียงตาม RPN
+        1. <b>กลุ่มวิกฤตสูงสุด (Priority 1 | S=5):</b> บนสุดเสมอ | 2. <b>กลุ่มเฝ้าระวัง (Priority 2 | S=4):</b> เรียงตาม RPN | 3. <b>กลุ่มปานกลาง/ต่ำ (S <= 3):</b> เรียงตาม RPN
       </div>
     `;
   }
@@ -1036,12 +1036,6 @@ function highlight(text, q){
 function changePage(direction) {
   currentPage += direction;
   renderTable();
-}
-
-// ฟังก์ชันจำลองการคำนวณ DGA ทั้ง 6 วิธี (รอใส่สูตรจริงเมื่อได้ข้อมูล)
-function calcDga(methodNo) {
-  const resultBox = document.getElementById('res_dga_' + methodNo);
-  resultBox.innerHTML = `สถานะ: ประเมินผลสำเร็จ 👉 ตรวจพบสภาพปกติ (รอผลแล็บจริง)`;
 }
 
 function renderTable(){
@@ -1413,8 +1407,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v62', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v62', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v63', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v63', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
