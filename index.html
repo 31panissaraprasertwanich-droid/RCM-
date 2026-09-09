@@ -262,7 +262,7 @@
       </div>
       <div class="stat-card">
         <div class="stat-title">📊 สุขภาพเฉลี่ย</div>
-        <div class="stat-value stat-cehi" id="statCehiAvg">100%</div>
+        <div class="stat-value stat-cehi" id="statCehiAvg">100.00%</div>
       </div>
     </div>
 
@@ -590,7 +590,7 @@ function initApp() {
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
-    // ปล่อยช่องข้อมูล CEHI ไว้ว่างตามความต้องการ
+    // ปล่อยช่องข้อมูล CEHI ไว้ว่างทั้งหมดตามความต้องการ
     cehiRecords = records.map((r) => ({
       uid: 'c_' + r.id,
       component: r.component,
