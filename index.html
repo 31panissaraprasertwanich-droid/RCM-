@@ -101,7 +101,7 @@
   .stat-critical { color: var(--danger); }
   .stat-cehi { color: #60a5fa; }
 
-  /* Charts Container */
+  /* Charts */
   .charts-container {
     display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 16px;
   }
@@ -639,17 +639,17 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  ['v43'].forEach(v => {
+  ['v44','v45','v46'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v46');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v47');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v46');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v47');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -666,10 +666,10 @@ function initApp() {
 
   categories = [...new Set(records.map(r => r.component ? r.component.split('_')[0] : 'OTHER'))];
   
+  // คำนวณสถิติและวาดกราฟทันทีเมื่อเปิดหน้าเว็บ
   updateDashboardStats();
   renderChips();
   renderTable();
-  initCharts();
 }
 
 function addCehiRow(compName) {
@@ -1011,10 +1011,7 @@ function renderTable(){
       </tr>
     `;
 
-    // จัดเรียงลำดับตามกลุ่มความสำคัญอย่างเคร่งครัด:
-    // กลุ่ม 3: วิกฤตสูงสุด (S = 5) อยู่บนสุดเสมอ
-    // กลุ่ม 2: เฝ้าระวัง (S = 4) อยู่ตรงกลาง เรียงตาม RPN จากมากไปน้อย
-    // กลุ่ม 1: ปานกลาง/ต่ำ (S <= 3) อยู่ล่างสุด เรียงตาม RPN จากมากไปน้อย
+    // จัดเรียงลำดับตามกลุ่มความสำคัญอย่างเคร่งครัดตามหลัก RCM สากล
     const filteredPlan = records.filter(r => {
       const s = Number(r.s) || 0;
       const o = Number(r.o) || 0;
@@ -1028,10 +1025,9 @@ function renderTable(){
       const groupB = sB === 5 ? 3 : (sB === 4 ? 2 : 1);
       
       if (groupA !== groupB) {
-        return groupB - groupA; // กลุ่มความสำคัญสูงกว่าอยู่บน
+        return groupB - groupA;
       }
       
-      // ถ้าอยู่กลุ่มเดียวกัน เรียงตามคะแนน RPN จากมากไปน้อย
       const rpnA = sA * (Number(a.o)||0) * (Number(a.d||0));
       const rpnB = sB * (Number(b.o)||0) * (Number(b.d||0));
       return rpnB - rpnA;
@@ -1150,8 +1146,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v47', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v47', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v48', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v48', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
@@ -1159,7 +1155,6 @@ function initCharts() {
   const isLight = document.body.classList.contains('light-mode');
   const textColor = isLight ? '#0f172a' : '#f0f4f8';
 
-  // Infographic Ring Chart (Doughnut สไตล์อินโฟกราฟิกโมเดิร์น)
   const ctxDoughnut = document.getElementById('riskDoughnutChart').getContext('2d');
   if (doughnutChartInstance) doughnutChartInstance.destroy();
   doughnutChartInstance = new Chart(ctxDoughnut, {
@@ -1171,7 +1166,7 @@ function initCharts() {
         backgroundColor: ['#14b8a6', '#f59e0b', '#ef4444'],
         borderWidth: 4,
         borderColor: isLight ? '#ffffff' : '#111827',
-        hoverOffset: 8
+        hoverOffset: 6
       }]
     },
     options: {
@@ -1184,7 +1179,6 @@ function initCharts() {
     }
   });
 
-  // Modern Bar Chart (กราฟแท่งสไตล์พรีเมียม โค้งมน)
   const ctxBar = document.getElementById('topRiskBarChart').getContext('2d');
   if (barChartInstance) barChartInstance.destroy();
   barChartInstance = new Chart(ctxBar, {
@@ -1236,7 +1230,7 @@ document.getElementById('search').addEventListener('input', (e) => {
   renderTable();
 });
 
-// รันระบบและแสดงกราฟทันทีเมื่อเปิดหน้าเว็บ
+// เริ่มต้นแอปพลิเคชันและวาดกราฟทันทีเมื่อโหลดหน้าเว็บ
 initApp();
 </script>
 
