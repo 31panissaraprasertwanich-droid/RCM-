@@ -288,7 +288,7 @@
 </div>
 
 <script>
-let records = [
+let defaultRecords = [
   {id:1, component:"TR_Counter L/A", code:"T001", desc:"Counter Lightning Arrester ชำรุด", cause:"โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", s:"2", o:"2", d:"2", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:2, component:"TR_OLevelGauge", code:"T002", desc:"Oil level gauge ชำรุด", cause:"โครงแตก, กลไกชำรุด", s:"3", o:"2", d:"1", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:3, component:"TR_OtempGauge", code:"T003", desc:"Oil temp ชำรุด", cause:"โครงแตก, เสื่อมสภาพ, กลไกชำรุด", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
@@ -514,15 +514,18 @@ let records = [
   {id:223, component:"เสา/สาย", code:"SM35", desc:"อื่นๆ เพิ่มเติม", cause:"อื่นๆ", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"}
 ];
 
+let records = [];
 let cehiRecords = [];
 let categories = [];
 let doughnutChartInstance = null;
 let barChartInstance = null;
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v25');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v26');
   if (savedFmea) {
-    try { records = JSON.parse(savedFmea); } catch(e) {}
+    try { records = JSON.parse(savedFmea); } catch(e) { records = defaultRecords; }
+  } else {
+    records = JSON.parse(JSON.stringify(defaultRecords));
   }
 
   records.forEach(r => {
@@ -530,7 +533,7 @@ function initApp() {
   });
   categories = [...new Set(records.map(r => r.cat))];
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v25');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v26');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -959,8 +962,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v25', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v25', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v26', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v26', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลทั้งหมดลง LocalStorage เรียบร้อยแล้ว!');
 }
 
