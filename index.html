@@ -76,12 +76,14 @@
   .tab-btn:hover{border-color:var(--primary); color:var(--text);}
   .tab-btn.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight:700; }
 
-  .action-btn, .save-btn, .guideline-btn {
+  .action-btn, .save-btn, .guideline-btn, .tip-btn {
     background: var(--teal-dim); border: 1px solid var(--teal); color: var(--teal);
     padding: 8px 14px; border-radius: var(--radius); cursor: pointer; font-size: 0.82rem; font-weight: 600; font-family: inherit; transition: all 0.15s;
   }
   .guideline-btn { background: rgba(59, 130, 246, 0.15); border-color: #3b82f6; color: #60a5fa; }
   .guideline-btn:hover { background: rgba(59, 130, 246, 0.3); }
+  .tip-btn { background: rgba(245, 158, 11, 0.15); border-color: var(--primary); color: var(--primary); }
+  .tip-btn:hover { background: rgba(245, 158, 11, 0.3); }
   .action-btn:hover, .save-btn:hover { opacity: 0.85; }
 
   .dashboard-stats {
@@ -117,7 +119,7 @@
   .chart-title { font-size: 0.88rem; font-weight: 700; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
   .chart-box { position: relative; height: 210px; width: 100%; display: flex; align-items: center; justify-content: center; }
 
-  .toolbar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+  .toolbar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; justify-content: space-between; }
   .search-wrap{ position:relative; flex: 1; min-width: 260px; }
   #search{
     width:100%; background:var(--panel-2); border:1px solid var(--border); color:var(--text);
@@ -126,7 +128,7 @@
   #search:focus{ border-color: var(--primary); }
   .search-wrap svg{ position:absolute; left:14px; top:50%; transform:translateY(-50%); width:18px; height:18px; stroke:var(--muted); }
 
-  .risk-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+  .risk-filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .filter-chip {
     font-size: 0.78rem; padding: 8px 14px; border-radius: var(--radius); border: 1px solid var(--border);
     background: var(--panel-2); color: var(--muted); cursor: pointer; user-select: none; font-weight: 600; transition: all 0.15s;
@@ -196,8 +198,6 @@
     padding: 16px 20px; border-radius: var(--radius); margin-bottom: 16px; font-size: 0.88rem; line-height: 1.6;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   }
-  .plan-info-banner ul { margin: 6px 0 0 20px; padding: 0; }
-  .plan-info-banner li { margin-bottom: 4px; }
 
   /* Pagination Bar */
   .pagination-bar {
@@ -327,6 +327,8 @@
         <div class="filter-chip active" onclick="setRiskFilter('ALL', this)">ทั้งหมด</div>
         <div class="filter-chip" onclick="setRiskFilter('CRITICAL', this)">🚨 วิกฤตสูงสุด (P1)</div>
         <div class="filter-chip" onclick="setRiskFilter('WARNING', this)">⚠️ เฝ้าระวัง</div>
+        <!-- ย้ายปุ่มคำแนะนำ PM/CBM มาไว้ทางขวาตรงนี้ -->
+        <button class="tip-btn" id="tipButton" onclick="openTipModal()" style="display:none;">💡 คำแนะนำ PM/CBM</button>
       </div>
     </div>
 
@@ -406,6 +408,25 @@
       <tr><td style="text-align:center;">4</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าต่ำ</td><td>20% - 40%</td></tr>
       <tr><td style="text-align:center;">5</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าน้อยมาก</td><td>0% - 20%</td></tr>
     </table>
+  </div>
+</div>
+
+<!-- Modal คำแนะนำการเลือก PM / CBM -->
+<div class="modal-overlay" id="tipModal" onclick="handleOutsideClick(event, 'tipModal')">
+  <div class="modal">
+    <h3>
+      <span>💡 คำแนะนำการเลือกประเภท (PM vs CBM)</span>
+      <button class="modal-close" onclick="closeTipModal()">&times;</button>
+    </h3>
+    <div style="font-size: 0.88rem; line-height: 1.6; color: var(--text);">
+      <p><b>🛡️ PM (Preventive Maintenance - การบำรุงรักษาเชิงป้องกันตามรอบเวลา):</b><br>
+      • เหมาะสำหรับอุปกรณ์หรือชิ้นส่วนที่มีอัตราการเสื่อมสภาพตามอายุการใช้งานที่แน่นอน (Wear-out failure)<br>
+      • เช่น การเปลี่ยนถ่ายน้ำมัน, การเปลี่ยนซีลยางกันรั่วซึม, การทำความสะอาดและหล่อลื่นตามรอบปี</p>
+      
+      <p><b>🔍 CBM (Condition-Based Maintenance - การบำรุงรักษาตามสภาพ):</b><br>
+      • เหมาะสำหรับอุปกรณ์หลักที่มีราคาสูง ซึ่งสามารถตรวจวัด "อาการเตือนล่วงหน้า" ได้ก่อนเสียหายจริง<br>
+      • เช่น การตรวจวัดอุณหภูมิจุดต่อด้วย Thermography, การวิเคราะห์สภาพน้ำมันหม้อแปลง, การวัดค่าความเป็นฉนวน</p>
+    </div>
   </div>
 </div>
 
@@ -677,12 +698,12 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  ['v55','v56'].forEach(v => {
+  ['v56','v57'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v57');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v58');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   } else {
@@ -697,7 +718,7 @@ function initApp() {
     });
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v57');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v58');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -803,32 +824,31 @@ function switchTab(tab, el) {
   
   const bannerContainer = document.getElementById('bannerContainer');
   bannerContainer.innerHTML = '';
+  const tipBtn = document.getElementById('tipButton');
   
   if(tab === 'fmea') {
     document.getElementById('modeTitle').textContent = "FMEA & RPN Assessment";
     document.getElementById('tableInstruction').textContent = "คลิกแถวเพื่อดูรายละเอียด หรือคลิกช่องคะแนนเพื่อประเมิน";
     document.getElementById('toolbarRow').style.display = 'flex';
     document.getElementById('chips').style.display = 'flex';
+    tipBtn.style.display = 'none';
   } else if(tab === 'cehi') {
     document.getElementById('modeTitle').textContent = "ตารางโครงสร้าง CEHI (222 รายการ)";
     document.getElementById('tableInstruction').textContent = "กรอก Test Category, Parameters และคะแนน";
     document.getElementById('toolbarRow').style.display = 'flex';
     document.getElementById('chips').style.display = 'flex';
+    tipBtn.style.display = 'none';
   } else if(tab === 'plan') {
     document.getElementById('modeTitle').textContent = "PM/CBM Action Plan Table";
     document.getElementById('tableInstruction').textContent = "แสดงรายการแผนบำรุงรักษา เรียงตามกลุ่มความสำคัญ (Priority Group)";
-    document.getElementById('toolbarRow').style.display = 'none';
+    document.getElementById('toolbarRow').style.display = 'flex';
     document.getElementById('chips').style.display = 'none';
+    tipBtn.style.display = 'inline-block'; // แสดงปุ่มคำแนะนำทางขวาเฉพาะหน้า Plan
     
     bannerContainer.innerHTML = `
       <div class="plan-info-banner">
-        <div>
-          📋 <b>หลักการจัดลำดับ Action Plan (ตามเกณฑ์ RCM / MIL-STD-1629A):</b><br>
-          1. <b>กลุ่มวิกฤตสูงสุด (Priority 1 | S=5):</b> บนสุดเสมอ<br>
-          2. <b>กลุ่มเฝ้าระวัง (Priority 2 | S=4):</b> เรียงตาม RPN จากมากไปน้อย<br>
-          3. <b>กลุ่มปานกลาง/ต่ำ (S &le; 3):</b> เรียงตาม RPN จากมากไปน้อย
-        </div>
-        <button class="tip-btn" onclick="openTipModal()">💡 คำแนะนำการเลือก PM/CBM</button>
+        📋 <b>หลักการจัดลำดับ Action Plan (ตามเกณฑ์ RCM / MIL-STD-1629A):</b><br>
+        1. <b>กลุ่มวิกฤตสูงสุด (Priority 1 | S=5):</b> บนสุดเสมอ | 2. <b>กลุ่มเฝ้าระวัง (Priority 2 | S=4):</b> เรียงตาม RPN | 3. <b>กลุ่มปานกลาง/ต่ำ (S &le; 3):</b> เรียงตาม RPN
       </div>
     `;
   }
@@ -1049,7 +1069,6 @@ function renderTable(){
 
   } else {
     paginationBar.style.display = 'flex';
-    // คอลัมน์ Priority Group กลับมาแสดงผลครบถ้วน
     thead.innerHTML = `
       <tr>
         <th style="width:40px; text-align:center;">#</th>
@@ -1231,8 +1250,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v58', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v58', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v59', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v59', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
