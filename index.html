@@ -408,7 +408,7 @@
 </div>
 
 <script>
-// ชุดข้อมูลเริ่มต้นตรงเป๊ะกับไฟล์ RCM.xlsx (ผลรวม RPN = 3032)
+// ชุดข้อมูลเริ่มต้นตรงเป๊ะกับไฟล์ RCM.xlsx (ผลรวม RPN = 3032, สลับหมายเหตุ SM19 ไปไว้ที่ SM21)
 let records = [
   {"id": 1, "component": "TR_Counter L/A", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cause": "โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", "s": 2, "o": 2, "d": 2, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 2, "component": "TR_OLevelGauge", "code": "T002", "desc": "Oil level gauge ชำรุด", "cause": "โครงแตก, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -616,9 +616,9 @@ let records = [
   {"id": 204, "component": "เสา/สาย", "code": "SM16", "desc": "ไฟฟ้าเขตทำงาน", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 205, "component": "เสา/สาย", "code": "SM17", "desc": "สายป้อนสวิตซ์ตก", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 206, "component": "เสา/สาย", "code": "SM18", "desc": "เกิดไฟไหม้ใต้แนวสายส่ง", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 207, "component": "เสา/สาย", "code": "SM19", "desc": "ไม่ทราบสาเหตุ", "cause": "ไม่ทราบสาเหตุ", "s": 3, "o": 2, "d": 4, "note": "ความเสี่ยงจากบุคคลที่ 3 (Third-party) ไม่ใช่ความล้มเหลวของอุปกรณ์ — ต้องมีมาตรการป้องกันแยกต่างหาก (safety fencing, การแจ้งเตือนก่อนขุด, ประสานผู้รับเหมา) ไม่ใช่แผนบำรุงรักษาอุปกรณ์ตามปกติ", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 207, "component": "เสา/สาย", "code": "SM19", "desc": "ไม่ทราบสาเหตุ", "cause": "ไม่ทราบสาเหตุ", "s": 3, "o": 2, "d": 4, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 208, "component": "เสา/สาย", "code": "SM20", "desc": "อื่นๆ", "cause": "อื่นๆ", "s": 3, "o": 2, "d": 4, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 209, "component": "เสา/สาย", "code": "SM21", "desc": "รถชนเสา", "cause": "จากอุบัติเหตุ", "s": 5, "o": 2, "d": 1, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 209, "component": "เสา/สาย", "code": "SM21", "desc": "รถชนเสา", "cause": "จากอุบัติเหตุ", "s": 5, "o": 2, "d": 1, "note": "ความเสี่ยงจากบุคคลที่ 3 (Third-party) ไม่ใช่ความล้มเหลวของอุปกรณ์ — ต้องมีมาตรการป้องกันแยกต่างหาก (safety fencing, การแจ้งเตือนก่อนขุด, ประสานผู้รับเหมา) ไม่ใช่แผนบำรุงรักษาอุปกรณ์ตามปกติ", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 210, "component": "เสา/สาย", "code": "SM22", "desc": "Cable ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 211, "component": "เสา/สาย", "code": "SM23", "desc": "Terminator ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 212, "component": "เสา/สาย", "code": "SM24", "desc": "Lightning ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -645,17 +645,17 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  ['v50'].forEach(v => {
+  ['v51','v52'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v51');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v53');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v51');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v53');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -672,7 +672,7 @@ function initApp() {
 
   categories = [...new Set(records.map(r => r.component ? r.component.split('_')[0] : 'OTHER'))];
   
-  // เรียกคำนวณและวาดกราฟทันทีเมื่อเปิดเว็บ
+  // บังคับวาดกราฟทันทีเมื่อเปิดหน้าเว็บ
   initCharts();
   updateDashboardStats();
   renderChips();
@@ -1160,8 +1160,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v52', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v52', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v54', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v54', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
@@ -1244,7 +1244,7 @@ document.getElementById('search').addEventListener('input', (e) => {
   renderTable();
 });
 
-// เริ่มต้นแอปพลิเคชันและวาดกราฟทันทีเมื่อโหลดหน้าเว็บ
+// รันแอปพลิเคชันและวาดกราฟทันทีเมื่อโหลดหน้าเว็บ
 initApp();
 </script>
 
