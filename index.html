@@ -6,7 +6,6 @@
 <title>ระบบ RCM และตารางรหัสความเสียหายสถานีไฟฟ้า — RCM & Failure Code Master</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<!-- โหลดไลบรารี Chart.js สำหรับวาดกราฟ -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
   :root {
@@ -16,15 +15,12 @@
     --border: #2a333c;
     --text: #e7ecf0;
     --muted: #8b98a3;
-    
     --primary: #e8a33d;
     --primary-dim: #4a3a20;
-    
     --teal: #4fb8a6;
     --teal-dim: #1c3a37;
     --danger: #d9694f;
   }
-
   body.light-mode {
     --bg: #f4f7f9;
     --panel: #ffffff;
@@ -33,56 +29,42 @@
     --text: #1e293b;
     --muted: #64748b;
   }
-
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0; width:100%; overflow-x:hidden;}
   body{
-    background:
-      radial-gradient(1200px 600px at 85% -10%, var(--panel-2) 0%, transparent 60%),
-      var(--bg);
+    background: radial-gradient(1200px 600px at 85% -10%, var(--panel-2) 0%, transparent 60%), var(--bg);
     color: var(--text);
     font-family:'Noto Sans Thai', system-ui, sans-serif;
     min-height:100vh;
     transition: background 0.2s, color 0.2s;
   }
   .mono{font-family:'IBM Plex Mono', monospace;}
-
   header{
     background:var(--panel);
     border-bottom:1px solid var(--border);
     padding:16px 20px;
-    transition: background 0.2s, border-color 0.2s;
   }
   .header-inner{ max-width:1350px; margin:0 auto; }
   .title-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
   h1{ font-size:1.15rem; font-weight:700; margin:0; }
   h1 .accent{color: var(--primary);}
   .subtitle{ color:var(--muted); font-size:0.75rem; margin-top:2px; }
-  
   .header-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-
   .mode-toggle-btn {
     background: var(--panel-2); border: 1px solid var(--border); cursor: pointer; color: var(--text);
-    font-size: 0.85rem; padding: 6px 10px; border-radius: 6px; transition: all 0.15s;
+    font-size: 0.85rem; padding: 6px 10px; border-radius: 6px;
   }
-  .mode-toggle-btn:hover { border-color: var(--primary); }
-
   .nav-tabs{display:flex; gap:6px; flex-wrap:wrap;}
   .tab-btn{
     background:var(--panel-2); border:1px solid var(--border); color:var(--muted);
     padding:6px 12px; border-radius:6px; cursor:pointer; font-family:inherit; font-size:0.78rem; transition:all .15s;
   }
-  .tab-btn:hover{border-color:var(--primary); color:var(--text);}
   .tab-btn.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight:600; }
-
   .action-btn, .save-btn {
     background: var(--teal-dim); border: 1px solid var(--teal); color: var(--teal);
     padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: 600; font-family: inherit;
     display: inline-flex; align-items: center; gap: 4px;
   }
-  .action-btn:hover, .save-btn:hover { background: #264d47; }
-
-  /* KPI Summary Cards Responsive */
   .dashboard-stats {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 12px;
   }
@@ -97,8 +79,6 @@
   .stat-warning { color: var(--primary); }
   .stat-critical { color: var(--danger); }
   .stat-cehi { color: #60a5fa; }
-
-  /* Charts Container Responsive */
   .charts-container {
     display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-bottom: 12px;
   }
@@ -108,15 +88,12 @@
   }
   .chart-title { font-size: 0.8rem; font-weight: 600; color: var(--muted); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
   .chart-box { position: relative; height: 180px; width: 100%; display: flex; align-items: center; justify-content: center; }
-
   .search-wrap{ position:relative; margin-bottom:10px; flex: 1; min-width: 220px; }
   #search{
     width:100%; background:var(--panel-2); border:1px solid var(--border); color:var(--text);
     font-family:inherit; font-size:0.85rem; padding:9px 12px 9px 38px; border-radius:6px; outline:none;
   }
-  #search:focus{ border-color: var(--primary); }
   .search-wrap svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; stroke:var(--muted); }
-
   .toolbar-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
   .risk-filters { display: flex; gap: 6px; flex-wrap: wrap; }
   .filter-chip {
@@ -124,27 +101,18 @@
     background: var(--panel-2); color: var(--muted); cursor: pointer; user-select: none;
   }
   .filter-chip.active { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight: 600; }
-
   .chips{ display:flex; flex-wrap:wrap; gap:6px; max-height:75px; overflow-y:auto; padding-bottom:2px; }
   .chip{
     font-size:0.72rem; padding:4px 10px; border-radius:100px; border:1px solid var(--border);
-    background:var(--panel-2); color:var(--muted); cursor:pointer; user-select:none; transition:all .12s ease; white-space:nowrap;
+    background:var(--panel-2); color:var(--muted); cursor:pointer; user-select:none; white-space:nowrap;
   }
-  .chip:hover{border-color:var(--primary); color:var(--text);}
   .chip.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); }
-
   main{ max-width:1350px; margin:0 auto; padding:16px 20px 40px; }
-
   .empty{ text-align:center; padding:50px 20px; color:var(--muted); }
   .empty .big{ font-family:'IBM Plex Mono', monospace; font-size:1.8rem; color:var(--border); margin-bottom:8px; }
-
   .table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--panel);
+    width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border); border-radius: 8px; background: var(--panel);
   }
   table{ width: 100%; min-width: 750px; border-collapse: collapse; font-size: 0.82rem; }
   thead th{
@@ -152,7 +120,6 @@
     padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--panel-2);
     white-space: nowrap;
   }
-  
   tbody tr{ border-bottom: 1px solid var(--border); transition: background .1s ease; cursor: pointer; }
   tbody tr:hover{ background: var(--panel-2); }
   tbody td{ padding: 9px 12px; vertical-align: middle; }
@@ -163,19 +130,14 @@
     border-left: 3px solid var(--primary); padding: 2px 6px; border-radius: 3px;
     white-space: nowrap;
   }
-  
   input.score-input {
     width: 55px; background: var(--bg); border: 1px solid var(--border); color: var(--text);
     padding: 5px; text-align: center; border-radius: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem;
   }
-  input.score-input:focus { border-color: var(--primary); outline: none; }
-  
   input.text-input, select.text-input {
     width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
     padding: 7px 10px; border-radius: 5px; font-family: inherit; font-size: 0.82rem;
   }
-  input.text-input:focus, select.text-input:focus { border-color: var(--primary); outline: none; }
-
   .rpn-badge {
     font-family: 'IBM Plex Mono', monospace; font-weight: 700; padding: 3px 7px;
     border-radius: 4px; display: inline-block; text-align: center; min-width: 40px; font-size: 0.8rem;
@@ -183,7 +145,6 @@
   .rpn-low { background: #1c3a37; color: var(--teal); }
   .rpn-mid { background: #4a3a20; color: #e8a33d; }
   .rpn-high { background: #4a2720; color: var(--danger); }
-
   .modal-overlay{
     position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(10,14,18,0.8);
     backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center;
@@ -199,22 +160,11 @@
   .modal-grid{ display:grid; grid-template-columns:110px 1fr; gap:8px 14px; font-size:0.85rem; margin-bottom:14px; }
   .modal-grid .label{ color:var(--muted); font-weight:500; }
   .modal-grid .val{ color:var(--text); word-break: break-all; }
-
   mark{ background: var(--primary-dim); color:inherit; border-radius:2px; padding:0 1px; }
-
   .section-label{
     font-size:0.75rem; color:var(--muted); margin:0 0 8px 2px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
   }
-
   footer{ max-width:1350px; margin:0 auto; padding:0 20px 30px; color:var(--muted); font-size:0.72rem; text-align: center; }
-
-  @media (max-width: 600px) {
-    header { padding: 12px 14px; }
-    main { padding: 12px 14px; }
-    h1 { font-size: 1rem; }
-    .subtitle { display: none; }
-    .stat-value { font-size: 1.1rem; }
-  }
 </style>
 </head>
 <body>
@@ -224,19 +174,16 @@
     <div class="title-row">
       <div>
         <h1>ระบบ RCM สถานีไฟฟ้า: <span class="accent" id="modeTitle">FMEA & RPN Assessment</span></h1>
-        <div class="subtitle">จัดการข้อมูลความเสียหายและจัดลำดับแผนงานซ่อมบำรุงอัตโนมัติ</div>
+        <div class="subtitle">อิงข้อมูลครบถ้วนทั้ง 223 รายการจาก RCM.xlsx</div>
       </div>
       
       <div class="header-controls">
         <button class="mode-toggle-btn" id="modeToggleBtn" onclick="toggleLightDarkMode()" title="สลับโหมด">🌙</button>
-
         <div class="nav-tabs">
           <button class="tab-btn active" onclick="switchTab('fmea', this)">1. FMEA</button>
           <button class="tab-btn" onclick="switchTab('cehi', this)">2. CEHI</button>
           <button class="tab-btn" onclick="switchTab('plan', this)" id="btnPlan">3. Plan</button>
         </div>
-        <button class="action-btn" onclick="document.getElementById('csvFileInput').click()" title="นำเข้า CSV">📤 นำเข้า</button>
-        <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="importFromCSV(event)">
         <button class="action-btn" onclick="exportToCSV()" title="ส่งออก CSV">📥 ส่งออก</button>
         <button class="save-btn" onclick="saveData()">💾 บันทึก</button>
       </div>
@@ -246,11 +193,11 @@
     <div class="dashboard-stats">
       <div class="stat-card">
         <div class="stat-title">📦 อุปกรณ์ทั้งหมด</div>
-        <div class="stat-value stat-total" id="statTotal">222</div>
+        <div class="stat-value stat-total" id="statTotal">223</div>
       </div>
       <div class="stat-card">
         <div class="stat-title">✅ สถานะปกติ</div>
-        <div class="stat-value stat-normal" id="statNormal">222</div>
+        <div class="stat-value stat-normal" id="statNormal">223</div>
       </div>
       <div class="stat-card">
         <div class="stat-title">⚠️ เฝ้าระวัง</div>
@@ -270,15 +217,11 @@
     <div class="charts-container" id="analyticsCharts">
       <div class="chart-card">
         <div class="chart-title">🍩 สัดส่วนความเสี่ยง</div>
-        <div class="chart-box">
-          <canvas id="riskDoughnutChart"></canvas>
-        </div>
+        <div class="chart-box"><canvas id="riskDoughnutChart"></canvas></div>
       </div>
       <div class="chart-card">
         <div class="chart-title">📊 Top 5 ความเสี่ยงสูงสุด</div>
-        <div class="chart-box">
-          <canvas id="topRiskBarChart"></canvas>
-        </div>
+        <div class="chart-box"><canvas id="topRiskBarChart"></canvas></div>
       </div>
     </div>
 
@@ -319,7 +262,7 @@
 </main>
 
 <footer>
-  ฐานข้อมูล RCM จากไฟล์ RCM.xlsx (222 รายการ) — ระบบบันทึกอัตโนมัติผ่าน LocalStorage และรองรับการจัดการแผนงาน
+  ฐานข้อมูล RCM ดึงตรงจาก RCM.xlsx (223 รายการ) — ระบบบันทึกอัตโนมัติผ่าน LocalStorage
 </footer>
 
 <!-- Modal -->
@@ -338,16 +281,16 @@
       <div class="label">ค่าความเสี่ยง (RPN):</div>
       <div class="val" id="modalRpn">-</div>
     </div>
-    <div style="background:var(--panel-2); padding:10px; border-radius:6px; font-size:0.8rem; color:var(--muted);">
-      💡 <b>คำแนะนำเชิงวิศวกรรม RCM:</b> อุปกรณ์ชิ้นนี้ควรได้รับการตรวจสอบตามรอบแผนงาน PM หรือ CBM ตามระดับความรุนแรง
+    <div style="background:var(--panel-2); padding:10px; border-radius:6px; font-size:0.80rem; color:var(--muted);">
+      💡 <b>คำแนะนำเชิงวิศวกรรม RCM:</b> อุปกรณ์ชิ้นนี้ควรได้รับการตรวจสอบตามรอบแผนงาน PM หรือ CBM
     </div>
   </div>
 </div>
 
 <script>
 let records = [
-  {id:1, component:"TR_Counter L/A", code:"T001", desc:"Counter Lightning Arrester ชำรุด", cause:"โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
-  {id:2, component:"TR_OLevelGauge", code:"T002", desc:"Oil level gauge ชำรุด", cause:"โครงแตก, กลไกชำรุด", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
+  {id:1, component:"TR_Counter L/A", code:"T001", desc:"Counter Lightning Arrester ชำรุด", cause:"โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", s:"2", o:"2", d:"2", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
+  {id:2, component:"TR_OLevelGauge", code:"T002", desc:"Oil level gauge ชำรุด", cause:"โครงแตก, กลไกชำรุด", s:"3", o:"2", d:"1", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:3, component:"TR_OtempGauge", code:"T003", desc:"Oil temp ชำรุด", cause:"โครงแตก, เสื่อมสภาพ, กลไกชำรุด", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:4, component:"TR_Sgel/ABreather", code:"T004", desc:"Silicagel เปลี่ยนสี / Air Breather ชำรุด", cause:"Silicagel เสื่อมสภาพ, การอุดตัน / ฝุ่นละออง", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:5, component:"TR_WTempGauge", code:"T005", desc:"Winding temp ชำรุด", cause:"โครงแตก, เสื่อมสภาพ, กลไกชำรุด", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
@@ -560,14 +503,15 @@ let records = [
   {id:212, component:"เสา/สาย", code:"SM24", desc:"Lightning ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:213, component:"เสา/สาย", code:"SM25", desc:"switch ปลดทาง Remote", cause:"Technical Error", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:214, component:"เสา/สาย", code:"SM26", desc:"ชุด Interrupter ไม่ทำงาน", cause:"Technical Error", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
-  {id:215, component:"เสา/สาย", code:"SM27", desc:"switching ปลดสวิตซ์ในสายส่ง", category:"SM", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
+  {id:215, component:"เสา/สาย", code:"SM27", desc:"switching ปลดสวิตซ์ในสายส่ง", cause:"Technical Error", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:216, component:"เสา/สาย", code:"SM28", desc:"ปลดสวิตซ์ผิดตัว", cause:"Technical Error", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:217, component:"เสา/สาย", code:"SM29", desc:"อุปกรณ์ชำรุดภายในสถานี กฟน.", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:218, component:"เสา/สาย", code:"SM30", desc:"ต้นไม้ (โดนอุปกรณ์สถานี กฟน.)", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:219, component:"เสา/สาย", code:"SM31", desc:"อุปกรณ์ชำรุดภายในสถานี กฟผ./กฟภ.", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:220, component:"เสา/สาย", code:"SM32", desc:"อุปกรณ์ชำรุดภายในสถานี ลูกค้า", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:221, component:"เสา/สาย", code:"SM33", desc:"สายส่งไม่มีไฟ", cause:"อื่นๆ", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
-  {id:222, component:"เสา/สาย", code:"SM34", desc:"Charge Line", cause:"อื่นๆ", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"}
+  {id:222, component:"เสา/สาย", code:"SM34", desc:"Charge Line", cause:"อื่นๆ", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
+  {id:223, component:"เสา/สาย", code:"SM35", desc:"อื่นๆ เพิ่มเติม", cause:"อื่นๆ", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"}
 ];
 
 let cehiRecords = [];
@@ -576,7 +520,7 @@ let doughnutChartInstance = null;
 let barChartInstance = null;
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v24');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v25');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
@@ -586,20 +530,21 @@ function initApp() {
   });
   categories = [...new Set(records.map(r => r.cat))];
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v24');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v25');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
-    // ปล่อยช่องข้อมูล CEHI ไว้ว่างทั้งหมดตามความต้องการ
-    cehiRecords = records.map((r) => ({
-      uid: 'c_' + r.id,
-      component: r.component,
-      testCategory: '',
-      testItems: '',
-      si: '',
-      smax: '',
-      wi: ''
-    }));
+    cehiRecords = records.map((r) => {
+      return {
+        uid: 'c_' + r.id,
+        component: r.component,
+        testCategory: '',
+        testItems: '',
+        si: '',
+        smax: '',
+        wi: ''
+      };
+    });
   }
 
   const savedTheme = localStorage.getItem('rcm_theme_mode');
@@ -672,13 +617,6 @@ function toggleLightDarkMode() {
   initCharts();
 }
 
-function setRiskFilter(filter, el) {
-  riskFilter = filter;
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  renderTable();
-}
-
 let activeCat = "ALL";
 let riskFilter = "ALL";
 let query = "";
@@ -694,7 +632,7 @@ function switchTab(tab, el) {
     document.getElementById('tableInstruction').textContent = "คลิกแถวเพื่อดูรายละเอียด หรือคลิกช่องคะแนนเพื่อประเมิน";
   } else if(tab === 'cehi') {
     document.getElementById('modeTitle').textContent = "ตารางโครงสร้าง CEHI (Condition Evaluation)";
-    document.getElementById('tableInstruction').textContent = "กรอก Test Category, Parameters และคะแนนสุขภาพอุปกรณ์";
+    document.getElementById('tableInstruction').textContent = "กรอก Test Category, Parameters และคะแนนสภาพอุปกรณ์";
   } else if(tab === 'plan') {
     document.getElementById('modeTitle').textContent = "PM/CBM Action Plan & Tracking";
     document.getElementById('tableInstruction').textContent = "แสดงรายการที่ผ่านการประเมินคะแนน พร้อมระบุผู้รับผิดชอบและกำหนดเสร็จ";
@@ -736,6 +674,13 @@ function highlight(text, q){
     const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
     return esc.replace(re, '<mark>$1</mark>');
   }catch(e){ return esc; }
+}
+
+function setRiskFilter(filter, el) {
+  riskFilter = filter;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
 }
 
 function renderTable(){
@@ -1013,49 +958,9 @@ function exportToCSV() {
   document.body.removeChild(a);
 }
 
-function importFromCSV(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const text = e.target.result;
-    const lines = text.split('\n');
-    if (lines.length < 2) {
-      alert('❌ รูปแบบไฟล์ CSV ไม่ถูกต้อง');
-      return;
-    }
-    let count = 0;
-    for (let i = 1; i < lines.length; i++) {
-      let line = lines[i].trim();
-      if (!line) continue;
-      let row = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(',');
-      if (row.length >= 8) {
-        let id = Number(row[0].replace(/"/g, '')) || (i);
-        let item = records.find(r => r.id === id);
-        if (item) {
-          item.s = row[5] ? row[5].replace(/"/g, '') : item.s;
-          item.o = row[6] ? row[6].replace(/"/g, '') : item.o;
-          item.d = row[7] ? row[7].replace(/"/g, '') : item.d;
-          if(row[9]) item.actionType = row[9].replace(/"/g, '');
-          if(row[10]) item.actionPlan = row[10].replace(/"/g, '');
-          if(row[11]) item.responsible = row[11].replace(/"/g, '');
-          if(row[12]) item.dueDate = row[12].replace(/"/g, '');
-          if(row[13]) item.status = row[13].replace(/"/g, '');
-          count++;
-        }
-      }
-    }
-    updateDashboardStats();
-    renderTable();
-    alert(`✨ นำเข้าข้อมูลสำเร็จ ${count} รายการ!`);
-    event.target.value = '';
-  };
-  reader.readAsText(file, 'UTF-8');
-}
-
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v24', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v24', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v25', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v25', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลทั้งหมดลง LocalStorage เรียบร้อยแล้ว!');
 }
 
@@ -1070,7 +975,7 @@ function initCharts() {
     data: {
       labels: ['ปกติ', 'เฝ้าระวัง', 'วิกฤต'],
       datasets: [{
-        data: [222, 0, 0],
+        data: [223, 0, 0],
         backgroundColor: ['#4fb8a6', '#e8a33d', '#d9694f'],
         borderWidth: 0
       }]
@@ -1116,10 +1021,12 @@ function updateCharts(normal, warning, critical) {
   }
 
   if (barChartInstance) {
-    let sortedRecords = [...records].map(r => ({
-      name: r.code + ' (' + r.component + ')',
-      rpn: (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0)
-    })).sort((a, b) => b.rpn - a.rpn).slice(0, 5);
+    let sortedRecords = [...records].map(r => {
+      return {
+        name: r.code + ' (' + r.component + ')',
+        rpn: (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0)
+      };
+    }).sort((a, b) => b.rpn - a.rpn).slice(0, 5);
 
     barChartInstance.data.labels = sortedRecords.map(item => item.name);
     barChartInstance.data.datasets[0].data = sortedRecords.map(item => item.rpn);
