@@ -76,14 +76,12 @@
   .tab-btn:hover{border-color:var(--primary); color:var(--text);}
   .tab-btn.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight:700; }
 
-  .action-btn, .save-btn, .guideline-btn, .tip-btn {
+  .action-btn, .save-btn, .guideline-btn {
     background: var(--teal-dim); border: 1px solid var(--teal); color: var(--teal);
     padding: 8px 14px; border-radius: var(--radius); cursor: pointer; font-size: 0.82rem; font-weight: 600; font-family: inherit; transition: all 0.15s;
   }
   .guideline-btn { background: rgba(59, 130, 246, 0.15); border-color: #3b82f6; color: #60a5fa; }
   .guideline-btn:hover { background: rgba(59, 130, 246, 0.3); }
-  .tip-btn { background: rgba(245, 158, 11, 0.15); border-color: var(--primary); color: var(--primary); }
-  .tip-btn:hover { background: rgba(245, 158, 11, 0.3); }
   .action-btn:hover, .save-btn:hover { opacity: 0.85; }
 
   .dashboard-stats {
@@ -197,8 +195,9 @@
     background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--primary);
     padding: 16px 20px; border-radius: var(--radius); margin-bottom: 16px; font-size: 0.88rem; line-height: 1.6;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
   }
+  .plan-info-banner ul { margin: 6px 0 0 20px; padding: 0; }
+  .plan-info-banner li { margin-bottom: 4px; }
 
   /* Pagination Bar */
   .pagination-bar {
@@ -267,7 +266,6 @@
       
       <div class="header-controls">
         <button class="guideline-btn" onclick="openGuidelineModal()">📘 ดูเกณฑ์มาตรฐาน (MIL-STD-1629A)</button>
-        <button class="zag-btn tip-btn" onclick="openTipModal()">💡 คำแนะนำ PM/CBM</button>
         <button class="mode-toggle-btn" id="modeToggleBtn" onclick="toggleLightDarkMode()" title="สลับโหมด">🌙</button>
 
         <div class="nav-tabs">
@@ -408,25 +406,6 @@
       <tr><td style="text-align:center;">4</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าต่ำ</td><td>20% - 40%</td></tr>
       <tr><td style="text-align:center;">5</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าน้อยมาก</td><td>0% - 20%</td></tr>
     </table>
-  </div>
-</div>
-
-<!-- Modal คำแนะนำการเลือก PM / CBM -->
-<div class="modal-overlay" id="tipModal" onclick="handleOutsideClick(event, 'tipModal')">
-  <div class="modal">
-    <h3>
-      <span>💡 คำแนะนำการเลือกประเภท (PM vs CBM)</span>
-      <button class="modal-close" onclick="closeTipModal()">&times;</button>
-    </h3>
-    <div style="font-size: 0.88rem; line-height: 1.6; color: var(--text);">
-      <p><b>🛡️ PM (Preventive Maintenance - การบำรุงรักษาเชิงป้องกันตามรอบเวลา):</b><br>
-      • เหมาะสำหรับอุปกรณ์หรือชิ้นส่วนที่มีอัตราการเสื่อมสภาพตามอายุการใช้งานที่แน่นอน (Wear-out failure)<br>
-      • เช่น การเปลี่ยนถ่ายน้ำมัน, การเปลี่ยนซีลยางกันรั่วซึม, การทำความสะอาดและหล่อลื่นตามรอบปี</p>
-      
-      <p><b>🔍 CBM (Condition-Based Maintenance - การบำรุงรักษาตามสภาพ):</b><br>
-      • เหมาะสำหรับอุปกรณ์หลักที่มีราคาสูง ซึ่งสามารถตรวจวัด "อาการเตือนล่วงหน้า" ได้ก่อนเสียหายจริง<br>
-      • เช่น การตรวจวัดอุณหภูมิจุดต่อด้วย Thermography, การวิเคราะห์สภาพน้ำมันหม้อแปลง, การวัดค่าความเป็นฉนวน</p>
-    </div>
   </div>
 </div>
 
@@ -698,12 +677,12 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  ['v54'].forEach(v => {
+  ['v55','v56'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v56');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v57');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   } else {
@@ -718,7 +697,7 @@ function initApp() {
     });
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v56');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v57');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -849,7 +828,7 @@ function switchTab(tab, el) {
           2. <b>กลุ่มเฝ้าระวัง (Priority 2 | S=4):</b> เรียงตาม RPN จากมากไปน้อย<br>
           3. <b>กลุ่มปานกลาง/ต่ำ (S &le; 3):</b> เรียงตาม RPN จากมากไปน้อย
         </div>
-        <button class="tip-btn" onclick="openTipModal()">💡 วิธีเลือก PM/CBM</button>
+        <button class="tip-btn" onclick="openTipModal()">💡 คำแนะนำการเลือก PM/CBM</button>
       </div>
     `;
   }
@@ -1070,7 +1049,7 @@ function renderTable(){
 
   } else {
     paginationBar.style.display = 'flex';
-    // ใส่คอลัมน์ Priority Group กลับเข้ามาให้ครบถ้วนตามต้องการ
+    // คอลัมน์ Priority Group กลับมาแสดงผลครบถ้วน
     thead.innerHTML = `
       <tr>
         <th style="width:40px; text-align:center;">#</th>
@@ -1252,8 +1231,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v57', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v57', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v58', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v58', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
