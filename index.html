@@ -68,7 +68,7 @@
   }
   .mode-toggle-btn:hover { border-color: var(--primary); }
 
-  .nav-tabs{display:flex; gap:8px;}
+  .nav-tabs{display:flex; gap:8px; flex-wrap:wrap;}
   .tab-btn{
     background:var(--panel-2); border:1px solid var(--border); color:var(--muted);
     padding:8px 16px; border-radius: var(--radius); cursor:pointer; font-family:inherit; font-size:0.82rem; font-weight: 500; transition:all .15s;
@@ -272,6 +272,7 @@
           <button class="tab-btn active" onclick="switchTab('fmea', this)">1. FMEA</button>
           <button class="tab-btn" onclick="switchTab('cehi', this)">2. CEHI</button>
           <button class="tab-btn" onclick="switchTab('plan', this)" id="btnPlan">3. Plan</button>
+          <button class="tab-btn" onclick="switchTab('dga', this)" id="btnDga">4. DGA Analysis (รอข้อมูล)</button>
         </div>
         <button class="action-btn" onclick="exportToCSV()" title="ส่งออก CSV">📥</button>
         <button class="save-btn" onclick="saveData()">💾</button>
@@ -327,7 +328,6 @@
         <div class="filter-chip active" onclick="setRiskFilter('ALL', this)">ทั้งหมด</div>
         <div class="filter-chip" onclick="setRiskFilter('CRITICAL', this)">🚨 วิกฤตสูงสุด (P1)</div>
         <div class="filter-chip" onclick="setRiskFilter('WARNING', this)">⚠️ เฝ้าระวัง</div>
-        <!-- ปุ่มคำแนะนำ PM/CBM อยู่ทางขวา แสดงเฉพาะหน้า Plan -->
         <button class="tip-btn" id="tipButton" onclick="openTipModal()" style="display:none;">💡 คำแนะนำ PM/CBM</button>
       </div>
     </div>
@@ -339,12 +339,12 @@
 <main>
   <div class="section-label">
     <span id="tableInstruction">คลิกแถวเพื่อดูรายละเอียด หรือคลิกช่องคะแนนเพื่อประเมิน</span>
-    <span style="font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--teal);">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</span>
+    <span style="font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--teal);" id="countDisplay">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</span>
   </div>
   
   <div id="bannerContainer"></div>
 
-  <div class="table-responsive">
+  <div class="table-responsive" id="mainTableWrapper">
     <table>
       <thead id="tableHead"></thead>
       <tbody id="tbody"></tbody>
@@ -698,12 +698,12 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  ['v57','v58'].forEach(v => {
+  ['v58','v59'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v59');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v60');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   } else {
@@ -718,7 +718,7 @@ function initApp() {
     });
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v59');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v60');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -801,7 +801,6 @@ function toggleLightDarkMode() {
   document.getElementById('modeToggleBtn').textContent = isLight ? '☀️' : '🌙';
   localStorage.setItem('rcm_theme_mode', isLight ? 'light' : 'dark');
   
-  // บังคับรีเฟรชกราฟทันทีเมื่อเปลี่ยนโหมด พร้อมทั้งอัปเดตข้อมูลสีตัวอักษร
   initCharts();
   updateDashboardStats();
 }
@@ -841,6 +840,20 @@ function switchTab(tab, el) {
     document.getElementById('toolbarRow').style.display = 'flex';
     document.getElementById('chips').style.display = 'flex';
     tipBtn.style.display = 'none';
+  } else if(tab === 'dga') {
+    document.getElementById('modeTitle').textContent = "DGA Analysis (Dissolved Gas Analysis)";
+    document.getElementById('tableInstruction').textContent = "แสดงผลการคำนวณและวิเคราะห์ก๊าซในน้ำมันหม้อแปลง (6 วิธี)";
+    document.getElementById('toolbarRow').style.display = 'none';
+    document.getElementById('chips').style.display = 'none';
+    tipBtn.style.display = 'none';
+    
+    bannerContainer.innerHTML = `
+      <div class="plan-info-banner">
+        🧪 <b>ระบบวิเคราะห์ DGA 6 วิธี (กำลังรอข้อมูลเพื่อใส่สูตรคำนวณและตารางแสดงผล):</b><br>
+        1. Key Gas Method | 2. Rogers Ratio Method | 3. IEC 3-Ratio Method<br>
+        4. Duval Triangle Method | 5. Dornenburg Ratio Method | 6. Carbon Dioxide/Carbon Monoxide Ratio
+      </div>
+    `;
   } else if(tab === 'plan') {
     document.getElementById('modeTitle').textContent = "PM/CBM Action Plan Table";
     document.getElementById('tableInstruction').textContent = "แสดงรายการแผนบำรุงรักษา เรียงตามกลุ่มความสำคัญ (Priority Group)";
@@ -903,6 +916,24 @@ function renderTable(){
   const q = query.trim().toLowerCase();
   const thead = document.getElementById('tableHead');
   const paginationBar = document.getElementById('paginationBar');
+  const mainTableWrapper = document.getElementById('mainTableWrapper');
+
+  if (currentTab === 'dga') {
+    paginationBar.style.display = 'none';
+    mainTableWrapper.style.display = 'none';
+    document.getElementById('countDisplay').style.display = 'none';
+    emptyState.style.display = 'block';
+    emptyState.innerHTML = `
+      <div class="big" style="color:var(--primary);">🧪</div>
+      <div style="font-size: 1.1rem; font-weight: bold; margin-bottom: 8px;">กำลังรอข้อมูลและสูตรคำนวณ DGA 6 วิธี</div>
+      <div style="color: var(--muted); font-size: 0.9rem;">ท่านสามารถส่งข้อมูลดิบหรือเงื่อนไขการคำนวณเข้ามาได้ตลอดเวลา เพื่อพัฒนาระบบแสดงผลในขั้นต่อไป</div>
+    `;
+    return;
+  } else {
+    mainTableWrapper.style.display = 'block';
+    document.getElementById('countDisplay').style.display = 'inline';
+    emptyState.innerHTML = `<div class="big">∅</div>ไม่พบรายการที่ตรงกับคำค้นหา`;
+  }
 
   if (currentTab === 'fmea') {
     paginationBar.style.display = 'flex';
@@ -1070,7 +1101,7 @@ function renderTable(){
     visibleCountEl.textContent = filteredCehi.length;
     emptyState.style.display = filteredCehi.length === 0 ? 'block' : 'none';
 
-  } else {
+  } else if (currentTab === 'plan') {
     paginationBar.style.display = 'flex';
     thead.innerHTML = `
       <tr>
@@ -1253,8 +1284,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v60', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v60', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v61', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v61', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
