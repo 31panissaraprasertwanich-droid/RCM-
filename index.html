@@ -101,7 +101,7 @@
   .stat-critical { color: var(--danger); }
   .stat-cehi { color: #60a5fa; }
 
-  /* Charts */
+  /* Charts Container - แสดงตลอดทุกหน้า */
   .charts-container {
     display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 16px;
   }
@@ -289,7 +289,7 @@
       </div>
     </div>
 
-    <!-- Charts -->
+    <!-- Charts (แสดงผลถาวรทุกหน้า) -->
     <div class="charts-container" id="analyticsCharts">
       <div class="chart-card">
         <div class="chart-title">🎯 สัดส่วนความเสี่ยง (Risk Options Ring)</div>
@@ -347,7 +347,7 @@
   ฐานข้อมูล RCM ตามเกณฑ์มาตรฐาน MIL-STD-1629A — ระบบบันทึกอัตโนมัติผ่าน LocalStorage
 </footer>
 
-<!-- Modal ดูเกณฑ์มาตรฐาน S, O, D (คลิกข้างนอกเพื่อปิดได้ + มีปุ่มย้อนกลับ) -->
+<!-- Modal ดูเกณฑ์มาตรฐาน (คลิกข้างนอกเพื่อปิดได้ + มีปุ่มย้อนกลับ) -->
 <div class="modal-overlay" id="guidelineModal" onclick="handleOutsideClick(event, 'guidelineModal')">
   <div class="modal">
     <h3>
@@ -658,17 +658,17 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  ['v47'].forEach(v => {
+  ['v47','v48','v49'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v48');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v50');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v48');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v50');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -685,11 +685,11 @@ function initApp() {
 
   categories = [...new Set(records.map(r => r.component ? r.component.split('_')[0] : 'OTHER'))];
   
-  // เรียกอัปเดตสถิติ กราฟ และแสดงผลหน้าตารางทันทีตั้งแต่โหลดเว็บ
+  // บังคับเรนเดอร์กราฟและสถิติให้แสดงผลทันทีเมื่อเปิดเว็บ
+  initCharts();
   updateDashboardStats();
   renderChips();
   renderTable();
-  initCharts();
 }
 
 function addCehiRow(compName) {
@@ -1031,7 +1031,6 @@ function renderTable(){
       </tr>
     `;
 
-    // จัดเรียงลำดับตามกลุ่มความสำคัญอย่างเคร่งครัดตามหลัก RCM สากล
     const filteredPlan = records.filter(r => {
       const s = Number(r.s) || 0;
       const o = Number(r.o) || 0;
@@ -1147,7 +1146,6 @@ function closeGuidelineModal() {
   document.getElementById('guidelineModal').classList.remove('open');
 }
 
-// ฟังก์ชันสำหรับคลิกพื้นที่ว่างรอบ Modal เพื่อปิดหน้าต่าง
 function handleOutsideClick(event, modalId) {
   const modal = document.getElementById(modalId);
   if (event.target === modal) {
@@ -1175,8 +1173,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v49', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v49', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v51', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v51', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
@@ -1259,7 +1257,7 @@ document.getElementById('search').addEventListener('input', (e) => {
   renderTable();
 });
 
-// เริ่มต้นแอปพลิเคชันและเรนเดอร์กราฟทันที
+// เริ่มต้นแอปพลิเคชันและเรนเดอร์กราฟทันทีเมื่อโหลดหน้าเว็บ
 initApp();
 </script>
 
