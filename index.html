@@ -84,7 +84,6 @@
   .guideline-btn:hover { background: rgba(59, 130, 246, 0.3); }
   .action-btn:hover, .save-btn:hover { opacity: 0.85; }
 
-  /* Modern KPI Cards */
   .dashboard-stats {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 16px;
   }
@@ -102,7 +101,6 @@
   .stat-critical { color: var(--danger); }
   .stat-cehi { color: #60a5fa; }
 
-  /* Modern Charts Section */
   .charts-container {
     display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 16px;
   }
@@ -114,7 +112,6 @@
   .chart-title { font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
   .chart-box { position: relative; height: 200px; width: 100%; display: flex; align-items: center; justify-content: center; }
 
-  /* Search & Filters */
   .toolbar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
   .search-wrap{ position:relative; flex: 1; min-width: 260px; }
   #search{
@@ -144,7 +141,6 @@
   .empty{ text-align:center; padding:60px 20px; color:var(--muted); }
   .empty .big{ font-family:'IBM Plex Mono', monospace; font-size:2rem; color:var(--border); margin-bottom:8px; }
 
-  /* Table Design */
   .table-responsive {
     width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
     border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel);
@@ -189,15 +185,10 @@
 
   .note-input { min-width: 220px; }
 
-  /* Info Banners */
-  .info-note-box {
-    background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--teal);
-    padding: 14px 18px; border-radius: var(--radius); margin-bottom: 16px; font-size: 0.85rem; line-height: 1.6;
-  }
-
   .plan-info-banner {
     background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--primary);
-    padding: 14px 18px; border-radius: var(--radius); margin-bottom: 16px; font-size: 0.85rem; line-height: 1.6;
+    padding: 16px 20px; border-radius: var(--radius); margin-bottom: 16px; font-size: 0.88rem; line-height: 1.6;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   }
 
   /* Modals */
@@ -642,18 +633,18 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  // ล้างเวอร์ชันเก่า
-  ['v39','v40'].forEach(v => {
+  // ล้างค่าเวอร์ชันเก่าทั้งหมด
+  ['v30','v31','v32','v33','v34','v35','v36','v37','v38','v39','v40','v41'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v42');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v43');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v42');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v43');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -770,15 +761,15 @@ function switchTab(tab, el) {
     document.getElementById('chips').style.display = 'flex';
   } else if(tab === 'plan') {
     document.getElementById('modeTitle').textContent = "PM/CBM Action Plan Table";
-    document.getElementById('tableInstruction').textContent = "แสดงรายการที่ผ่านการประเมินคะแนน (RPN > 0) เรียงตามหลัก RCM (Priority 1 ขึ้นก่อน ตามด้วย RPN)";
+    document.getElementById('tableInstruction').textContent = "แสดงรายการแผนบำรุงรักษา เรียงตามเกณฑ์มาตรฐาน RCM";
     document.getElementById('toolbarRow').style.display = 'none';
     document.getElementById('chips').style.display = 'none';
     
     bannerContainer.innerHTML = `
       <div class="plan-info-banner">
-        📋 <b>หลักการพิจารณาจัดทำแผน PM / CBM (ตามเกณฑ์มาตรฐาน RCM):</b><br>
-        • <b>วิกฤตสูงสุด (Priority 1 | S=5):</b> ระบบจัดลำดับความสำคัญขึ้นก่อนเสมอเพื่อความปลอดภัยสูงสุด ต้องกำหนดมาตรการป้องกันเด็ดขาดทันที<br>
-        • <b>เฝ้าระวัง (S=4) และความเสี่ยงทั่วไป:</b> จัดลำดับรองลงมาเรียงตามคะแนน RPN จากมากไปน้อย เพื่อวางแผนทำ PM (ตามรอบเวลา) หรือ CBM (ตามสภาพ)
+        📋 <b>หลักการจัดลำดับตาราง Action Plan (ตามเกณฑ์มาตรฐาน RCM / MIL-STD-1629A):</b><br>
+        1. <b>วิกฤตสูงสุด (Priority 1 | S=5):</b> จัดเรียงไว้บนสุดของตารางเสมอเพื่อความปลอดภัยสูงสุด ไม่ขึ้นกับคะแนน RPN<br>
+        2. <b>เฝ้าระวัง (S=4) และ ปานกลาง/ต่ำ (S &le; 3):</b> จัดเรียงถัดลงมาโดยอิงจาก <b>คะแนน RPN (Risk Priority Number) จากมากไปน้อย</b> เพื่อให้ความสำคัญกับความเสี่ยงที่สูงกว่าก่อน
       </div>
     `;
   }
@@ -1014,6 +1005,9 @@ function renderTable(){
       </tr>
     `;
 
+    // จัดเรียงตามเกณฑ์มาตรฐาน RCM: 
+    // 1. วิกฤตสูงสุด (Priority 1 | S=5) ขึ้นก่อนเสมอ
+    // 2. เรียงตามคะแนน RPN จากมากไปน้อย
     const filteredPlan = records.filter(r => {
       const s = Number(r.s) || 0;
       const o = Number(r.o) || 0;
@@ -1024,10 +1018,10 @@ function renderTable(){
       const sB = Number(b.s) || 0;
       const p1A = sA === 5 ? 1 : 0;
       const p1B = sB === 5 ? 1 : 0;
-      if (p1A !== p1B) return p1B - p1A;
+      if (p1A !== p1B) return p1B - p1A; // Priority 1 ขึ้นก่อน
       const rpnA = sA * (Number(a.o)||0) * (Number(a.d||0));
       const rpnB = sB * (Number(b.o)||0) * (Number(b.d||0));
-      return rpnB - rpnA;
+      return rpnB - rpnA; // RPN จากมากไปน้อย
     });
 
     if (filteredPlan.length === 0) {
@@ -1127,8 +1121,10 @@ function closeGuidelineModal() {
 function exportToCSV() {
   let csvContent = "\uFEFFID,Component,Code,Failure Mode,Failure Cause,Severity,Occurrence,Detection,RPN,Priority Flag,Note\n";
   records.forEach(r => {
-    const rpn = (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0);
-    csvContent += `"${r.id}","${r.component}","${r.code}","${r.desc}","${r.cause || ''}","${r.s || ''}","${r.o || ''}","${r.d || ''}","${rpn}","${r.priorityFlag || ''}","${r.note || ''}"\n`;
+    const s = Number(r.s) || 0;
+    const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
+    let pf = s === 5 ? 'วิกฤตสูงสุด (Priority 1)' : (s === 4 ? 'เฝ้าระวัง' : 'ปานกลาง/ต่ำ');
+    csvContent += `"${r.id}","${r.component}","${r.code}","${r.desc}","${r.cause || ''}","${r.s || ''}","${r.o || ''}","${r.d || ''}","${rpn}","${pf}","${r.note || ''}"\n`;
   });
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -1141,8 +1137,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v42', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v42', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v43', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v43', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
