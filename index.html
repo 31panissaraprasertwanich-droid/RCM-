@@ -642,20 +642,18 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  // ล้างค่า LocalStorage เกอร์ชันเก่าเพื่อให้โหลดข้อมูลจริงจาก RCM.xlsx (รวมผลรวม RPN = 3032) เสมอ
-  localStorage.removeItem('rcm_excel_data_v30');
-  localStorage.removeItem('rcm_excel_data_v31');
-  localStorage.removeItem('rcm_excel_data_v32');
-  localStorage.removeItem('rcm_excel_data_v33');
-  localStorage.removeItem('rcm_excel_data_v34');
-  localStorage.removeItem('rcm_excel_data_v35');
+  // ล้าง LocalStorage เวอร์ชันเก่าทั้งหมด เพื่อบังคับโหลดข้อมูลถูกต้อง
+  ['v30','v31','v32','v33','v34','v35','v36','v37'].forEach(v => {
+    localStorage.removeItem('rcm_excel_data_' + v);
+    localStorage.removeItem('rcm_cehi_data_' + v);
+  });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v37');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v38');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v37');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v38');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -678,7 +676,7 @@ function initApp() {
 
   categories = [...new Set(records.map(r => r.cat))];
   
-  // สั่งวาดกราฟและอัปเดตสถิติทันที
+  // สร้างกราฟและคำนวณข้อมูลทันที
   initCharts();
   updateDashboardStats();
   renderChips();
@@ -865,11 +863,9 @@ function renderTable(){
       return (r.code?.toLowerCase().includes(q) || r.desc?.toLowerCase().includes(q) || r.cause?.toLowerCase().includes(q) || r.component?.toLowerCase().includes(q) || (r.note && r.note.toLowerCase().includes(q)));
     });
 
-    let totalRpnSum = 0;
     tbody.innerHTML = filtered.map(r => {
       const s = Number(r.s) || 0;
       const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
-      totalRpnSum += rpn;
       
       let flagClass = 'flag-green';
       let flagText = 'ปานกลาง/ต่ำ';
@@ -1143,8 +1139,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v37', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v37', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v38', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v38', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
@@ -1221,7 +1217,7 @@ document.getElementById('search').addEventListener('input', (e) => {
   renderTable();
 });
 
-// โหลดระบบทันที
+// เริ่มต้นระบบและคำนวณกราฟทันที
 initApp();
 </script>
 
