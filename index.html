@@ -84,6 +84,7 @@
   .guideline-btn:hover { background: rgba(59, 130, 246, 0.3); }
   .action-btn:hover, .save-btn:hover { opacity: 0.85; }
 
+  /* Modern KPI Cards */
   .dashboard-stats {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 16px;
   }
@@ -101,6 +102,7 @@
   .stat-critical { color: var(--danger); }
   .stat-cehi { color: #60a5fa; }
 
+  /* Modern Charts Section */
   .charts-container {
     display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 16px;
   }
@@ -112,6 +114,7 @@
   .chart-title { font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
   .chart-box { position: relative; height: 200px; width: 100%; display: flex; align-items: center; justify-content: center; }
 
+  /* Search & Filters */
   .toolbar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
   .search-wrap{ position:relative; flex: 1; min-width: 260px; }
   #search{
@@ -141,6 +144,7 @@
   .empty{ text-align:center; padding:60px 20px; color:var(--muted); }
   .empty .big{ font-family:'IBM Plex Mono', monospace; font-size:2rem; color:var(--border); margin-bottom:8px; }
 
+  /* Table Design */
   .table-responsive {
     width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
     border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel);
@@ -633,8 +637,7 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  // ล้างค่าเวอร์ชันเก่าทั้งหมด
-  ['v30','v31','v32','v33','v34','v35','v36','v37','v38','v39','v40','v41'].forEach(v => {
+  ['v42'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
@@ -761,15 +764,16 @@ function switchTab(tab, el) {
     document.getElementById('chips').style.display = 'flex';
   } else if(tab === 'plan') {
     document.getElementById('modeTitle').textContent = "PM/CBM Action Plan Table";
-    document.getElementById('tableInstruction').textContent = "แสดงรายการแผนบำรุงรักษา เรียงตามเกณฑ์มาตรฐาน RCM";
+    document.getElementById('tableInstruction').textContent = "แสดงรายการแผนบำรุงรักษา เรียงตามกลุ่มความสำคัญ (Priority Group)";
     document.getElementById('toolbarRow').style.display = 'none';
     document.getElementById('chips').style.display = 'none';
     
     bannerContainer.innerHTML = `
       <div class="plan-info-banner">
         📋 <b>หลักการจัดลำดับตาราง Action Plan (ตามเกณฑ์มาตรฐาน RCM / MIL-STD-1629A):</b><br>
-        1. <b>วิกฤตสูงสุด (Priority 1 | S=5):</b> จัดเรียงไว้บนสุดของตารางเสมอเพื่อความปลอดภัยสูงสุด ไม่ขึ้นกับคะแนน RPN<br>
-        2. <b>เฝ้าระวัง (S=4) และ ปานกลาง/ต่ำ (S &le; 3):</b> จัดเรียงถัดลงมาโดยอิงจาก <b>คะแนน RPN (Risk Priority Number) จากมากไปน้อย</b> เพื่อให้ความสำคัญกับความเสี่ยงที่สูงกว่าก่อน
+        1. <b>กลุ่มวิกฤตสูงสุด (Priority 1 | S=5):</b> แสดงไว้บนสุดของตารางเสมอเพื่อความเร่งด่วนสูงสุด<br>
+        2. <b>กลุ่มเฝ้าระวัง (Priority 2 | S=4):</b> แสดงถัดลงมา เรียงตามคะแนน RPN จากมากไปน้อย<br>
+        3. <b>กลุ่มปานกลาง/ต่ำ (S &le; 3):</b> แสดงไว้ส่วนล่างสุดของตาราง เรียงตามคะแนน RPN จากมากไปน้อย
       </div>
     `;
   }
@@ -998,16 +1002,17 @@ function renderTable(){
         <th style="width:70px;">รหัส</th>
         <th>Failure Mode / อาการความเสียหาย</th>
         <th style="width:60px; text-align:center;">RPN</th>
-        <th style="width:130px; text-align:center;">Priority Flag</th>
+        <th style="width:130px; text-align:center;">Priority Group</th>
         <th style="width:90px; text-align:center;">ประเภท (PM/CBM)</th>
         <th style="width:180px;">รายละเอียดแผนซ่อมบำรุง</th>
         <th style="width:90px; text-align:center;">สถานะ</th>
       </tr>
     `;
 
-    // จัดเรียงตามเกณฑ์มาตรฐาน RCM: 
-    // 1. วิกฤตสูงสุด (Priority 1 | S=5) ขึ้นก่อนเสมอ
-    // 2. เรียงตามคะแนน RPN จากมากไปน้อย
+    // จัดเรียงลำดับตามหลัก RCM สากลแบบแบ่งกลุ่มชัดเจน:
+    // 1. วิกฤตสูงสุด (S = 5) มาก่อนเสมอ
+    // 2. เฝ้าระวัง (S = 4) เรียงตาม RPN มากไปน้อย
+    // 3. ปานกลาง/ต่ำ (S <= 3) เรียงตาม RPN มากไปน้อย
     const filteredPlan = records.filter(r => {
       const s = Number(r.s) || 0;
       const o = Number(r.o) || 0;
@@ -1016,12 +1021,19 @@ function renderTable(){
     }).sort((a, b) => {
       const sA = Number(a.s) || 0;
       const sB = Number(b.s) || 0;
-      const p1A = sA === 5 ? 1 : 0;
-      const p1B = sB === 5 ? 1 : 0;
-      if (p1A !== p1B) return p1B - p1A; // Priority 1 ขึ้นก่อน
+      
+      // จัดลำดับ Group: S=5 (Priority 1) -> S=4 (เฝ้าระวัง) -> S<=3 (ปานกลาง/ต่ำ)
+      const groupA = sA === 5 ? 3 : (sA === 4 ? 2 : 1);
+      const groupB = sB === 5 ? 3 : (sB === 4 ? 2 : 1);
+      
+      if (groupA !== groupB) {
+        return groupB - groupA; // กลุ่มความสำคัญสูงกว่าอยู่บน
+      }
+      
+      // ถ้าอยู่กลุ่มเดียวกัน เรียงตามคะแนน RPN จากมากไปน้อย
       const rpnA = sA * (Number(a.o)||0) * (Number(a.d||0));
       const rpnB = sB * (Number(b.o)||0) * (Number(b.d||0));
-      return rpnB - rpnA; // RPN จากมากไปน้อย
+      return rpnB - rpnA;
     });
 
     if (filteredPlan.length === 0) {
@@ -1137,8 +1149,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v43', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v43', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v44', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v44', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
