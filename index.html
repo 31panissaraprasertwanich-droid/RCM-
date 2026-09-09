@@ -84,7 +84,6 @@
   .guideline-btn:hover { background: rgba(59, 130, 246, 0.3); }
   .action-btn:hover, .save-btn:hover { opacity: 0.85; }
 
-  /* Modern KPI Cards */
   .dashboard-stats {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 16px;
   }
@@ -102,19 +101,22 @@
   .stat-critical { color: var(--danger); }
   .stat-cehi { color: #60a5fa; }
 
-  /* Modern Charts Section */
+  /* Infographic Ring & Bar Chart Section */
   .charts-container {
     display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 16px;
   }
   @media(max-width: 950px) { .charts-container { grid-template-columns: 1fr; } }
   .chart-card {
     background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); position: relative; overflow: hidden;
   }
-  .chart-title { font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-  .chart-box { position: relative; height: 200px; width: 100%; display: flex; align-items: center; justify-content: center; }
+  .chart-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, #14b8a6, #f59e0b, #ef4444);
+  }
+  .chart-title { font-size: 0.88rem; font-weight: 700; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .chart-box { position: relative; height: 210px; width: 100%; display: flex; align-items: center; justify-content: center; }
 
-  /* Search & Filters */
   .toolbar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
   .search-wrap{ position:relative; flex: 1; min-width: 260px; }
   #search{
@@ -280,10 +282,10 @@
       </div>
     </div>
 
-    <!-- Charts -->
+    <!-- Charts (Infographic Ring & Modern Bar) -->
     <div class="charts-container" id="analyticsCharts">
       <div class="chart-card">
-        <div class="chart-title">🍩 สัดส่วนระดับความสำคัญ (Priority Flag)</div>
+        <div class="chart-title">🎯 สัดส่วนความเสี่ยง (Risk Options Ring)</div>
         <div class="chart-box">
           <canvas id="riskDoughnutChart"></canvas>
         </div>
@@ -637,17 +639,17 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  ['v42'].forEach(v => {
+  ['v43'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v43');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v44');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v43');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v44');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -1009,10 +1011,10 @@ function renderTable(){
       </tr>
     `;
 
-    // จัดเรียงลำดับตามหลัก RCM สากลแบบแบ่งกลุ่มชัดเจน:
-    // 1. วิกฤตสูงสุด (S = 5) มาก่อนเสมอ
-    // 2. เฝ้าระวัง (S = 4) เรียงตาม RPN มากไปน้อย
-    // 3. ปานกลาง/ต่ำ (S <= 3) เรียงตาม RPN มากไปน้อย
+    // จัดเรียงลำดับตามหลัก RCM สากลแบบแบ่งกลุ่มเด็ดขาด:
+    // 1. วิกฤตสูงสุด (Priority 1 | S = 5) อยู่บนสุด
+    // 2. เฝ้าระวัง (Priority 2 | S = 4) อยู่ตรงกลาง เรียงตาม RPN มากไปน้อย
+    // 3. ปานกลาง/ต่ำ (S <= 3) อยู่ล่างสุด เรียงตาม RPN มากไปน้อย
     const filteredPlan = records.filter(r => {
       const s = Number(r.s) || 0;
       const o = Number(r.o) || 0;
@@ -1022,12 +1024,11 @@ function renderTable(){
       const sA = Number(a.s) || 0;
       const sB = Number(b.s) || 0;
       
-      // จัดลำดับ Group: S=5 (Priority 1) -> S=4 (เฝ้าระวัง) -> S<=3 (ปานกลาง/ต่ำ)
       const groupA = sA === 5 ? 3 : (sA === 4 ? 2 : 1);
       const groupB = sB === 5 ? 3 : (sB === 4 ? 2 : 1);
       
       if (groupA !== groupB) {
-        return groupB - groupA; // กลุ่มความสำคัญสูงกว่าอยู่บน
+        return groupB - groupA; // กลุ่มความสำคัญสูงกว่าอยู่บนสุด
       }
       
       // ถ้าอยู่กลุ่มเดียวกัน เรียงตามคะแนน RPN จากมากไปน้อย
@@ -1149,8 +1150,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v44', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v44', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v45', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v45', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
@@ -1167,13 +1168,15 @@ function initCharts() {
       datasets: [{
         data: [0, 0, 0],
         backgroundColor: ['#14b8a6', '#f59e0b', '#ef4444'],
-        borderWidth: 0,
-        hoverOffset: 6
+        borderWidth: 4,
+        borderColor: isLight ? '#ffffff' : '#111827',
+        hoverOffset: 8
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      cutout: '65%',
       plugins: {
         legend: { position: 'bottom', labels: { color: textColor, font: { family: 'Noto Sans Thai', size: 11 } } }
       }
