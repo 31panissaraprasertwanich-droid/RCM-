@@ -409,7 +409,7 @@ let records = [
   {id:61, component:"HV_GIS_CB_ES/DS_Mechanism", code:"H020", desc:"DS/ES Mechanism ชำรุด", cause:"กลไกติดขัด", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:62, component:"HV_GIS_CB", code:"H021", desc:"Trip coil ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน, ปัญหาจากการป้องกันไฟกระชาก, ความชื้นหรือสิ่งสกปรก, การทำงานผิดพลาดในระบบควบคุม", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:63, component:"HV_GIS_CB", code:"H022", desc:"แก๊ส SF6 รั่ว", cause:"รั่ว (Gas Leakage)", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
-  {id:64, component:"HV_GIS_CB", code:"H023", desc:"แก๊ส SF6 เสื่อมสภาพ", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", actionType:"PM", actionPlan:"", status:"รอแผนงาน"},
+  {id:64, component:"HV_GIS_CB", code:"H023", desc:"แก๊ส SF6 เสื่อมสภาพ", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:65, component:"HV_GIS_CB_SF6PressGage", code:"H024", desc:"SF6 Pressure gage ชำรุด", cause:"รั่ว (Gas Leakage), การปนเปื้อนหรือฝุ่นใน Pressure Gauge, การผิดพลาดจากกระบวนการติดตั้ง, อุณหภูมิหรือการเปลี่ยนแปลงของอุณหภูมิ, การสึกหรอจากการใช้งาน", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:66, component:"HV_HVSW_CTPT", code:"H101", desc:"SW ไม่สามารถ Control ทางไฟฟ้าได้", cause:"Control Circuit Fault", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
   {id:67, component:"HV_HVSW_CTPT", code:"H102", desc:"CT, PT ชำรุด", cause:"เสื่อมสภาพจากอายุใช้งาน", s:"", o:"", d:"", actionType:"PM", actionPlan:"", responsible:"", dueDate:"", status:"รอแผนงาน"},
@@ -576,7 +576,7 @@ let doughnutChartInstance = null;
 let barChartInstance = null;
 
 function initApp() {
-  const savedFmea = localStorage.getItem('rcm_excel_data_v24');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v25');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
@@ -586,20 +586,12 @@ function initApp() {
   });
   categories = [...new Set(records.map(r => r.cat))];
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v24');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v25');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
-    // สร้างข้อมูล CEHI ตัวอย่างเบื้องต้น
-    cehiRecords = records.map((r, idx) => ({
-      uid: 'c_' + r.id,
-      component: r.component,
-      testCategory: idx % 2 === 0 ? 'Insulation Test' : 'Visual Inspection',
-      testItems: idx % 2 === 0 ? 'Megger Test 2.5kV' : 'General Check',
-      si: idx % 2 === 0 ? '90' : '95',
-      smax: '100',
-      wi: '5'
-    }));
+    // ปล่อยว่างไว้ตามความต้องการ
+    cehiRecords = [];
   }
 
   const savedTheme = localStorage.getItem('rcm_theme_mode');
@@ -615,10 +607,11 @@ function initApp() {
 }
 
 function addCehiRow(compName) {
+  const targetComp = compName || (categories.length > 0 ? categories[0] + '_General' : 'General');
   const newUid = 'c_' + Date.now() + Math.random().toString(36).substring(2, 7);
   cehiRecords.push({
     uid: newUid,
-    component: compName,
+    component: targetComp,
     testCategory: '',
     testItems: '',
     si: '',
@@ -820,6 +813,21 @@ function renderTable(){
       if (q && !item.component.toLowerCase().includes(q) && !item.testCategory.toLowerCase().includes(q) && !item.testItems.toLowerCase().includes(q)) return false;
       return true;
     });
+
+    if (filteredCehi.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="9" style="text-align:center; padding:40px; color:var(--muted);">
+            ⚠️ ยังไม่มีรายการทดสอบ CEHI <br><br>
+            <button class="action-btn" onclick="addCehiRow()">➕ เพิ่มรายการทดสอบใหม่</button>
+          </td>
+        </tr>
+      `;
+      tfoot.innerHTML = '';
+      visibleCountEl.textContent = 0;
+      emptyState.style.display = 'none';
+      return;
+    }
 
     const grouped = {};
     filteredCehi.forEach(r => {
@@ -1028,7 +1036,6 @@ function importFromCSV(event) {
     for (let i = 1; i < lines.length; i++) {
       let line = lines[i].trim();
       if (!line) continue;
-      // แยก CSV แบบอย่างง่าย (รองรับเครื่องหมายคำพูดคร่าวๆ)
       let row = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(',');
       if (row.length >= 8) {
         let id = Number(row[0].replace(/"/g, '')) || (i);
@@ -1055,8 +1062,8 @@ function importFromCSV(event) {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v24', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v24', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v25', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v25', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลทั้งหมดลง LocalStorage เรียบร้อยแล้ว!');
 }
 
