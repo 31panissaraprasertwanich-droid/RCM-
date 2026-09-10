@@ -101,7 +101,7 @@
   .stat-normal { color: var(--teal); }
   .stat-warning { color: var(--primary); }
   .stat-critical { color: var(--danger); }
-  .stat-cehi { color: #60a5fa; }
+  .stat-hi { color: #60a5fa; }
 
   /* Charts */
   .charts-container {
@@ -294,7 +294,7 @@
 
         <div class="nav-tabs">
           <button class="tab-btn active" onclick="switchTab('fmea', this)">1. FMEA</button>
-          <button class="tab-btn" onclick="switchTab('cehi', this)">2. CEHI</button>
+          <button class="tab-btn" onclick="switchTab('hi', this)" id="btnHi">2. HI</button>
           <button class="tab-btn" onclick="switchTab('plan', this)" id="btnPlan">3. Plan</button>
           <button class="tab-btn" onclick="switchTab('dga', this)" id="btnDga">4. DGA Analysis (6 วิธี)</button>
         </div>
@@ -322,8 +322,8 @@
         <div class="stat-value stat-critical" id="statCritical">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-title">📊 สุขภาพเฉลี่ย</div>
-        <div class="stat-value stat-cehi" id="statCehiAvg">100%</div>
+        <div class="stat-title">📊 สุขภาพเฉลี่ย (HI)</div>
+        <div class="stat-value stat-hi" id="statHiAvg">100%</div>
       </div>
     </div>
 
@@ -378,7 +378,6 @@
 
   <!-- DGA 6 Methods Analysis View -->
   <div id="dgaView" style="display:none;">
-    <!-- DGA Toolbar: เลือกอุปกรณ์และค้นหา -->
     <div class="dga-toolbar">
       <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 280px;">
         <label style="font-size: 0.85rem; font-weight: 600; color: var(--muted); white-space: nowrap;">เลือกอุปกรณ์:</label>
@@ -833,7 +832,7 @@ let records = [
   {"id": 222, "component": "เสา/สาย", "code": "SM34", "desc": "Charge Line", "cause": "อื่นๆ", "s": 3, "o": 2, "d": 4, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"}
 ];
 
-let cehiRecords = [];
+let hiRecords = [];
 let doughnutChartInstance = null;
 let barChartInstance = null;
 
@@ -847,12 +846,13 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  ['v62','v63'].forEach(v => {
+  ['v63','v64'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
+    localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v64');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v65');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   } else {
@@ -867,11 +867,11 @@ function initApp() {
     });
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v64');
-  if (savedCehi) {
-    try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
+  const savedHi = localStorage.getItem('rcm_hi_data_v65');
+  if (savedHi) {
+    try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
-    cehiRecords = records.map((r, idx) => ({
+    hiRecords = records.map((r, idx) => ({
       uid: 'c_' + r.id,
       component: r.component,
       testCategory: '',
@@ -894,7 +894,6 @@ function initApp() {
 function populateDgaAssetDropdown() {
   const select = document.getElementById('dgaAssetSelect');
   if (!select) return;
-  // ดึงรายชื่อ Component ที่ขึ้นต้นด้วย TR หรือ หม้อแปลง/อุปกรณ์หลัก
   const uniqueComps = [...new Set(records.map(r => r.component))];
   select.innerHTML = `<option value="">-- เลือกอุปกรณ์หม้อแปลงในระบบ (${uniqueComps.length} รายการ) --</option>`;
   uniqueComps.forEach(comp => {
@@ -917,9 +916,9 @@ function onDgaAssetChange() {
   }
 }
 
-function addCehiRow(compName) {
+function addHiRow(compName) {
   const newUid = 'c_' + Date.now() + Math.random().toString(36).substring(2, 7);
-  cehiRecords.push({
+  hiRecords.push({
     uid: newUid,
     component: compName,
     testCategory: '',
@@ -931,8 +930,8 @@ function addCehiRow(compName) {
   renderTable();
 }
 
-function deleteCehiRow(uid) {
-  cehiRecords = cehiRecords.filter(item => item.uid !== uid);
+function deleteHiRow(uid) {
+  hiRecords = hiRecords.filter(item => item.uid !== uid);
   renderTable();
 }
 
@@ -952,7 +951,7 @@ function updateDashboardStats() {
     }
   });
 
-  cehiRecords.forEach(c => {
+  hiRecords.forEach(c => {
     const si = Number(c.si) || 0;
     const smax = Number(c.smax) || 0;
     const wi = Number(c.wi) || 0;
@@ -960,13 +959,13 @@ function updateDashboardStats() {
     if (smax > 0 && wi > 0) totalSmax += smax * wi;
   });
 
-  const avgCehi = totalSmax > 0 ? ((totalSi / totalSmax) * 100).toFixed(2) : '100.00';
+  const avgHi = totalSmax > 0 ? ((totalSi / totalSmax) * 100).toFixed(2) : '100.00';
 
   document.getElementById('statTotal').textContent = total;
   document.getElementById('statNormal').textContent = normal;
   document.getElementById('statWarning').textContent = warning;
   document.getElementById('statCritical').textContent = critical;
-  document.getElementById('statCehiAvg').textContent = avgCehi + '%';
+  document.getElementById('statHiAvg').textContent = avgHi + '%';
 
   updateCharts(normal, warning, critical);
 }
@@ -1013,9 +1012,9 @@ function switchTab(tab, el) {
     document.getElementById('toolbarRow').style.display = 'flex';
     document.getElementById('chips').style.display = 'flex';
     tipBtn.style.display = 'none';
-  } else if(tab === 'cehi') {
-    document.getElementById('modeTitle').textContent = "ตารางโครงสร้าง CEHI (222 รายการ)";
-    document.getElementById('tableInstruction').textContent = "กรอก Test Category, Parameters และคะแนน";
+  } else if(tab === 'hi') {
+    document.getElementById('modeTitle').textContent = "ตารางโครงสร้าง Health Index (HI - 222 รายการ)";
+    document.getElementById('tableInstruction').textContent = "กรอก Test Category, Parameters และคะแนนสุขภาพ";
     document.getElementById('toolbarRow').style.display = 'flex';
     document.getElementById('chips').style.display = 'flex';
     tipBtn.style.display = 'none';
@@ -1262,7 +1261,7 @@ function renderTable(){
     visibleCountEl.textContent = totalFiltered;
     emptyState.style.display = totalFiltered === 0 ? 'block' : 'none';
 
-  } else if (currentTab === 'cehi') {
+  } else if (currentTab === 'hi') {
     paginationBar.style.display = 'none';
     thead.innerHTML = `
       <tr>
@@ -1278,7 +1277,7 @@ function renderTable(){
       </tr>
     `;
 
-    const filteredCehi = cehiRecords.filter(item => {
+    const filteredHi = hiRecords.filter(item => {
       if (activeCat !== 'ALL') {
         let catPrefix = item.component ? item.component.split('_')[0] : '';
         if (catPrefix !== activeCat) return false;
@@ -1288,7 +1287,7 @@ function renderTable(){
     });
 
     const grouped = {};
-    filteredCehi.forEach(r => {
+    filteredHi.forEach(r => {
       if (!grouped[r.component]) grouped[r.component] = [];
       grouped[r.component].push(r);
     });
@@ -1316,20 +1315,20 @@ function renderTable(){
           <tr>
             <td class="num">${rowIdx++}</td>
             <td><b>${escapeHtml(r.component)}</b></td>
-            <td><input type="text" class="text-input" value="${escapeHtml(r.testCategory || '')}" placeholder="ระบุหมวด..." oninput="updateCehi('${r.uid}', 'testCategory', this.value)"></td>
-            <td><input type="text" class="text-input" value="${escapeHtml(r.testItems || '')}" placeholder="ระบุหัวข้อ..." oninput="updateCehi('${r.uid}', 'testItems', this.value)"></td>
-            <td style="text-align:center;"><input type="number" class="score-input" value="${r.si ?? ''}" oninput="updateCehi('${r.uid}', 'si', this.value)"></td>
-            <td style="text-align:center;"><input type="number" class="score-input" value="${r.smax ?? ''}" oninput="updateCehi('${r.uid}', 'smax', this.value)"></td>
-            <td style="text-align:center;"><input type="number" class="score-input" value="${r.wi ?? ''}" oninput="updateCehi('${r.uid}', 'wi', this.value)"></td>
+            <td><input type="text" class="text-input" value="${escapeHtml(r.testCategory || '')}" placeholder="ระบุหมวด..." oninput="updateHi('${r.uid}', 'testCategory', this.value)"></td>
+            <td><input type="text" class="text-input" value="${escapeHtml(r.testItems || '')}" placeholder="ระบุหัวข้อ..." oninput="updateHi('${r.uid}', 'testItems', this.value)"></td>
+            <td style="text-align:center;"><input type="number" class="score-input" value="${r.si ?? ''}" oninput="updateHi('${r.uid}', 'si', this.value)"></td>
+            <td style="text-align:center;"><input type="number" class="score-input" value="${r.smax ?? ''}" oninput="updateHi('${r.uid}', 'smax', this.value)"></td>
+            <td style="text-align:center;"><input type="number" class="score-input" value="${r.wi ?? ''}" oninput="updateHi('${r.uid}', 'wi', this.value)"></td>
             <td style="text-align:center;" class="mono">${siWi}</td>
             <td style="text-align:center;">
-              <button class="del-row-btn" onclick="deleteCehiRow('${r.uid}')" title="ลบ">🗑️</button>
+              <button class="del-row-btn" onclick="deleteHiRow('${r.uid}')" title="ลบ">🗑️</button>
             </td>
           </tr>
         `;
       });
 
-      const compCehi = compSmaxWi > 0 ? ((compSiWi / compSmaxWi) * 100).toFixed(2) : '0.00';
+      const compHi = compSmaxWi > 0 ? ((compSiWi / compSmaxWi) * 100).toFixed(2) : '0.00';
       globalTotalSiWi += compSiWi;
       globalTotalSmaxWi += compSmaxWi;
 
@@ -1337,9 +1336,9 @@ function renderTable(){
         <tr style="background:var(--panel-2); border-top:1px solid var(--border);">
           <td colspan="9" style="padding:10px 14px;">
             <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:8px;">
-              <button class="add-row-btn" onclick="addCehiRow('${escapeHtml(comp)}')">➕ เพิ่มการทดสอบให้ ${escapeHtml(comp)}</button>
+              <button class="add-row-btn" onclick="addHiRow('${escapeHtml(comp)}')">➕ เพิ่มการทดสอบให้ ${escapeHtml(comp)}</button>
               <div style="font-size:0.82rem; color:var(--teal);">
-                <b>ยอดรวม:</b> <span class="mono">${compSiWi.toFixed(2)}</span> | <b>CEHI:</b> <span class="mono">${compCehi}%</span>
+                <b>ยอดรวม:</b> <span class="mono">${compSiWi.toFixed(2)}</span> | <b>HI:</b> <span class="mono">${compHi}%</span>
               </div>
             </div>
           </td>
@@ -1348,8 +1347,8 @@ function renderTable(){
     });
 
     tbody.innerHTML = htmlRows;
-    visibleCountEl.textContent = filteredCehi.length;
-    emptyState.style.display = filteredCehi.length === 0 ? 'block' : 'none';
+    visibleCountEl.textContent = filteredHi.length;
+    emptyState.style.display = filteredHi.length === 0 ? 'block' : 'none';
 
   } else {
     paginationBar.style.display = 'flex';
@@ -1463,8 +1462,8 @@ function updateFmea(id, field, val) {
   }
 }
 
-function updateCehi(uid, field, val) {
-  const item = cehiRecords.find(r => r.uid === uid);
+function updateHi(uid, field, val) {
+  const item = hiRecords.find(r => r.uid === uid);
   if (item) {
     item[field] = val;
     updateDashboardStats();
@@ -1534,8 +1533,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v65', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v65', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v66', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v66', JSON.stringify(hiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
