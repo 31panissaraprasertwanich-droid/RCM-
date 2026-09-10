@@ -68,13 +68,14 @@
   }
   .mode-toggle-btn:hover { border-color: var(--primary); }
 
-  .nav-tabs{display:flex; gap:8px; flex-wrap:wrap;}
-  .tab-btn{
-    background:var(--panel-2); border:1px solid var(--border); color:var(--muted);
-    padding:8px 16px; border-radius: var(--radius); cursor:pointer; font-family:inherit; font-size:0.82rem; font-weight: 500; transition:all .15s;
+  /* เมนูแท็บฝั่งซ้าย */
+  .nav-tabs { display: flex; flex-direction: column; gap: 6px; min-width: 190px; }
+  .tab-btn {
+    background: var(--panel-2); border: 1px solid var(--border); color: var(--muted);
+    padding: 9px 16px; border-radius: var(--radius); cursor: pointer; font-family: inherit; font-size: 0.85rem; font-weight: 500; transition: all .15s; text-align: left;
   }
-  .tab-btn:hover{border-color:var(--primary); color:var(--text);}
-  .tab-btn.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight:700; }
+  .tab-btn:hover { border-color: var(--primary); color: var(--text); }
+  .tab-btn.active { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight: 700; }
 
   .action-btn, .save-btn, .guideline-btn, .tip-btn {
     background: var(--teal-dim); border: 1px solid var(--teal); color: var(--teal);
@@ -85,6 +86,17 @@
   .tip-btn { background: rgba(245, 158, 11, 0.15); border-color: var(--primary); color: var(--primary); }
   .tip-btn:hover { background: rgba(245, 158, 11, 0.3); }
   .action-btn:hover, .save-btn:hover { opacity: 0.85; }
+
+  .dashboard-layout {
+    display: grid; grid-template-columns: 210px 1fr; gap: 20px; max-width: 1500px; margin: 0 auto; padding: 20px 24px 60px;
+  }
+  @media(max-width: 950px) { .dashboard-layout { grid-template-columns: 1fr; } }
+
+  .sidebar-panel {
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; height: fit-content;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .sidebar-title { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.05em; }
 
   .dashboard-stats {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 16px;
@@ -142,8 +154,6 @@
   }
   .chip:hover{border-color:var(--primary); color:var(--text);}
   .chip.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight:600; }
-
-  main{ max-width:1500px; margin:0 auto; padding:20px 24px 60px; }
 
   /* Table Design */
   .table-responsive {
@@ -272,7 +282,7 @@
 
   @media (max-width: 600px) {
     header { padding: 14px 18px; }
-    main { padding: 16px; }
+    .dashboard-layout { padding: 16px; }
     h1 { font-size: 1.1rem; }
     .subtitle { display: none; }
   }
@@ -291,13 +301,6 @@
       <div class="header-controls">
         <button class="guideline-btn" onclick="openGuidelineModal()">📘 ดูเกณฑ์มาตรฐาน (MIL-STD-1629A)</button>
         <button class="mode-toggle-btn" id="modeToggleBtn" onclick="toggleLightDarkMode()" title="สลับโหมด">🌙</button>
-
-        <div class="nav-tabs">
-          <button class="tab-btn active" onclick="switchTab('fmea', this)">1. FMEA</button>
-          <button class="tab-btn" onclick="switchTab('hi', this)" id="btnHi">2. HI</button>
-          <button class="tab-btn" onclick="switchTab('plan', this)" id="btnPlan">3. Plan</button>
-          <button class="tab-btn" onclick="switchTab('dga', this)" id="btnDga">4. DGA Analysis (6 วิธี)</button>
-        </div>
         <button class="action-btn" onclick="exportToCSV()" title="ส่งออก CSV">📥</button>
         <button class="save-btn" onclick="saveData()">💾</button>
       </div>
@@ -349,9 +352,9 @@
         <input id="search" type="text" placeholder="พิมพ์ค้นหารหัส เช่น T001, สาเหตุ, หมายเหตุ..." autocomplete="off">
       </div>
       <div class="risk-filters" id="riskFilters">
-        <div class="filter-chip active" onclick="setRiskFilter('ALL', this)">ทั้งหมด</div>
-        <div class="filter-chip" onclick="setRiskFilter('CRITICAL', this)">🚨 วิกฤตสูงสุด (P1)</div>
-        <div class="filter-chip" onclick="setRiskFilter('WARNING', this)">⚠️ เฝ้าระวัง</div>
+        <button class="filter-chip active" onclick="setRiskFilter('ALL', this)">ทั้งหมด</button>
+        <button class="filter-chip" onclick="setRiskFilter('CRITICAL', this)">🚨 วิกฤตสูงสุด (P1)</button>
+        <button class="filter-chip" onclick="setRiskFilter('WARNING', this)">⚠️ เฝ้าระวัง</button>
         <button class="tip-btn" id="tipButton" onclick="openTipModal()" style="display:none;">💡 คำแนะนำ PM/CBM</button>
       </div>
     </div>
@@ -360,160 +363,174 @@
   </div>
 </header>
 
-<main>
-  <div class="section-label">
-    <span id="tableInstruction">คลิกแถวเพื่อดูรายละเอียด หรือคลิกช่องคะแนนเพื่อประเมิน</span>
-    <span style="font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--teal);" id="countDisplay">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</span>
-  </div>
-  
-  <div id="bannerContainer"></div>
+<div class="dashboard-layout">
+  <!-- Sidebar เมนูฝั่งซ้าย -->
+  <aside class="sidebar-panel">
+    <div class="sidebar-title">เมนูหลักระบบ</div>
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('fmea', this)">1. FMEA</button>
+      <button class="tab-btn" onclick="switchTab('hi', this)" id="btnHi">2. HI</button>
+      <button class="tab-btn" onclick="switchTab('plan', this)" id="btnPlan">3. Plan</button>
+      <button class="tab-btn" onclick="switchTab('dga', this)" id="btnDga">4. DGA Analysis (6 วิธี)</button>
+    </div>
+  </aside>
 
-  <!-- Main Table View -->
-  <div class="table-responsive" id="mainTableWrapper">
-    <table>
-      <thead id="tableHead"></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-  </div>
+  <!-- เนื้อหาหลักฝั่งขวา -->
+  <main style="padding: 0;">
+    <div class="section-label">
+      <span id="tableInstruction">คลิกแถวเพื่อดูรายละเอียด หรือคลิกช่องคะแนนเพื่อประเมิน</span>
+      <span style="font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--teal);" id="countDisplay">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</span>
+    </div>
+    
+    <div id="bannerContainer"></div>
 
-  <!-- DGA 6 Methods Analysis View -->
-  <div id="dgaView" style="display:none;">
-    <div class="dga-toolbar">
-      <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 280px;">
-        <label style="font-size: 0.85rem; font-weight: 600; color: var(--muted); white-space: nowrap;">เลือกอุปกรณ์:</label>
-        <select id="dgaAssetSelect" class="text-input" onchange="onDgaAssetChange()">
-          <option value="">-- เลือกอุปกรณ์หม้อแปลงในระบบ --</option>
-        </select>
+    <!-- Main Table View -->
+    <div class="table-responsive" id="mainTableWrapper">
+      <table>
+        <thead id="tableHead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- DGA 6 Methods Analysis View -->
+    <div id="dgaView" style="display:none;">
+      <div class="dga-toolbar">
+        <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 280px;">
+          <label style="font-size: 0.85rem; font-weight: 600; color: var(--muted); white-space: nowrap;">เลือกอุปกรณ์:</label>
+          <select id="dgaAssetSelect" class="text-input" onchange="onDgaAssetChange()">
+            <option value="">-- เลือกอุปกรณ์หม้อแปลงในระบบ --</option>
+          </select>
+        </div>
+        <div style="font-size: 0.82rem; color: var(--teal); font-family: 'IBM Plex Mono', monospace;">
+          สถานะ: <span id="dgaAssetStatus">ยังไม่ได้เลือกอุปกรณ์</span>
+        </div>
       </div>
-      <div style="font-size: 0.82rem; color: var(--teal); font-family: 'IBM Plex Mono', monospace;">
-        สถานะ: <span id="dgaAssetStatus">ยังไม่ได้เลือกอุปกรณ์</span>
+
+      <div class="dga-container">
+        <!-- วิธีที่ 1 -->
+        <div class="dga-card">
+          <div>
+            <h4>1. Key Gas Method</h4>
+            <div class="dga-desc">วิเคราะห์หาก๊าซหลักที่เป็นตัวบ่งชี้ความผิดปกติเด่นชัด</div>
+            <div class="dga-input-grid">
+              <div class="dga-field"><label>H2 (ppm)</label><input type="number" class="text-input" id="dga_h2" value="0"></div>
+              <div class="dga-field"><label>CH4 (ppm)</label><input type="number" class="text-input" id="dga_ch4" value="0"></div>
+              <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input" id="dga_c2h2" value="0"></div>
+            </div>
+          </div>
+          <div>
+            <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(1)">⚡ คำนวณวิธีที่ 1</button>
+            <div class="dga-result-box" id="res_dga_1">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
+          </div>
+        </div>
+
+        <!-- วิธีที่ 2 -->
+        <div class="dga-card">
+          <div>
+            <h4>2. Rogers Ratio Method</h4>
+            <div class="dga-desc">ประเมินความผิดปกติจากอัตราส่วนก๊าซ 4 คู่</div>
+            <div class="dga-input-grid">
+              <div class="dga-field"><label>C2H4 (ppm)</label><input type="number" class="text-input" id="dga_c2h4" value="0"></div>
+              <div class="dga-field"><label>C2H6 (ppm)</label><input type="number" class="text-input" id="dga_c2h6" value="0"></div>
+              <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input" id="dga_c2h2_2" value="0"></div>
+            </div>
+          </div>
+          <div>
+            <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(2)">⚡ คำนวณวิธีที่ 2</button>
+            <div class="dga-result-box" id="res_dga_2">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
+          </div>
+        </div>
+
+        <!-- วิธีที่ 3 -->
+        <div class="dga-card">
+          <div>
+            <h4>3. IEC 3-Ratio Method</h4>
+            <div class="dga-desc">ใช้เกณฑ์สัดส่วน 3 อัตราส่วนมาตรฐาน IEC</div>
+            <div class="dga-input-grid">
+              <div class="dga-field"><label>Ratio 1</label><input type="number" class="text-input" disabled placeholder="คำนวณออโต้"></div>
+              <div class="dga-field"><label>Ratio 2</label><input type="number" class="text-input" disabled placeholder="คำนวณออโต้"></div>
+              <div class="dga-field"><label>Ratio 3</label><input type="number" class="text-input" disabled placeholder="คำนวณออโต้"></div>
+            </div>
+          </div>
+          <div>
+            <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(3)">⚡ คำนวณวิธีที่ 3</button>
+            <div class="dga-result-box" id="res_dga_3">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
+          </div>
+        </div>
+
+        <!-- วิธีที่ 4: Duval Triangle Method + Canvas สามเหลี่ยมจำลอง -->
+        <div class="dga-card">
+          <div>
+            <h4>4. Duval Triangle Method</h4>
+            <div class="dga-desc">พล็อตสัดส่วนก๊าซ CH4, C2H4, C2H2 ลงบนสามเหลี่ยมพิกัด</div>
+            <div class="dga-input-grid">
+              <div class="dga-field"><label>CH4 (ppm)</label><input type="number" class="text-input" id="dga_dv_ch4" value="10"></div>
+              <div class="dga-field"><label>C2H4 (ppm)</label><input type="number" class="text-input" id="dga_dv_c2h4" value="10"></div>
+              <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input" id="dga_dv_c2h2" value="10"></div>
+            </div>
+            <div class="duval-box">
+              <canvas id="duvalCanvas" width="220" height="180"></canvas>
+              <div style="font-size:0.7rem; color:var(--muted); margin-top:4px;">จำลองพิกัด Duval Triangle 1</div>
+            </div>
+          </div>
+          <div>
+            <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(4)">⚡ คำนวณและ Plot พิกัด</button>
+            <div class="dga-result-box" id="res_dga_4">โซนความเสียหาย: รอคำนวณ...</div>
+          </div>
+        </div>
+
+        <!-- วิธีที่ 5 -->
+        <div class="dga-card">
+          <div>
+            <h4>5. Dornenburg Ratio Method</h4>
+            <div class="dga-desc">วิเคราะห์จากอัตราส่วนก๊าซ 4 คู่สำหรับความผิดปกติรุนแรง</div>
+            <div class="dga-input-grid">
+              <div class="dga-field"><label>CO (ppm)</label><input type="number" class="text-input" value="0"></div>
+              <div class="dga-field"><label>CO2 (ppm)</label><input type="number" class="text-input" value="0"></div>
+              <div class="dga-field"><label>H2 (ppm)</label><input type="number" class="text-input" value="0"></div>
+            </div>
+          </div>
+          <div>
+            <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(5)">⚡ คำนวณวิธีที่ 5</button>
+            <div class="dga-result-box" id="res_dga_5">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
+          </div>
+        </div>
+
+        <!-- วิธีที่ 6 -->
+        <div class="dga-card">
+          <div>
+            <h4>6. Carbon Dioxide / CO Ratio</h4>
+            <div class="dga-desc">ประเมินการเสื่อมสภาพของฉนวนกระดาษจาก CO2 ต่อ CO</div>
+            <div class="dga-input-grid">
+              <div class="dga-field"><label>CO (ppm)</label><input type="number" class="text-input" id="dga_co" value="0"></div>
+              <div class="dga-field"><label>CO2 (ppm)</label><input type="number" class="text-input" id="dga_co2" value="0"></div>
+              <div class="dga-field"><label>Ratio</label><input type="number" class="text-input" disabled placeholder="อัตราส่วน"></div>
+            </div>
+          </div>
+          <div>
+            <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(6)">⚡ คำนวณวิธีที่ 6</button>
+            <div class="dga-result-box" id="res_dga_6">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Pagination Controls Bar -->
+    <div class="pagination-bar" id="paginationBar">
+      <div class="pagination-info" id="paginationInfo">แสดงรายการที่ 1-10 จากทั้งหมด 222 รายการ</div>
+      <div class="pagination-btns">
+        <button class="page-btn" id="prevPageBtn" onclick="changePage(-1)">◀ ก่อนหน้า</button>
+        <span class="page-indicator" id="pageIndicator">หน้า 1 / 23</span>
+        <button class="page-btn" id="nextPageBtn" onclick="changePage(1)">ถัดไป ▶</button>
       </div>
     </div>
 
-    <div class="dga-container">
-      <!-- วิธีที่ 1 -->
-      <div class="dga-card">
-        <div>
-          <h4>1. Key Gas Method</h4>
-          <div class="dga-desc">วิเคราะห์หาก๊าซหลักที่เป็นตัวบ่งชี้ความผิดปกติเด่นชัด</div>
-          <div class="dga-input-grid">
-            <div class="dga-field"><label>H2 (ppm)</label><input type="number" class="text-input" id="dga_h2" value="0"></div>
-            <div class="dga-field"><label>CH4 (ppm)</label><input type="number" class="text-input" id="dga_ch4" value="0"></div>
-            <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input" id="dga_c2h2" value="0"></div>
-          </div>
-        </div>
-        <div>
-          <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(1)">⚡ คำนวณวิธีที่ 1</button>
-          <div class="dga-result-box" id="res_dga_1">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
-        </div>
-      </div>
-
-      <!-- วิธีที่ 2 -->
-      <div class="dga-card">
-        <div>
-          <h4>2. Rogers Ratio Method</h4>
-          <div class="dga-desc">ประเมินความผิดปกติจากอัตราส่วนก๊าซ 4 คู่</div>
-          <div class="dga-input-grid">
-            <div class="dga-field"><label>C2H4 (ppm)</label><input type="number" class="text-input" id="dga_c2h4" value="0"></div>
-            <div class="dga-field"><label>C2H6 (ppm)</label><input type="number" class="text-input" id="dga_c2h6" value="0"></div>
-            <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input" id="dga_c2h2_2" value="0"></div>
-          </div>
-        </div>
-        <div>
-          <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(2)">⚡ คำนวณวิธีที่ 2</button>
-          <div class="dga-result-box" id="res_dga_2">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
-        </div>
-      </div>
-
-      <!-- วิธีที่ 3 -->
-      <div class="dga-card">
-        <div>
-          <h4>3. IEC 3-Ratio Method</h4>
-          <div class="dga-desc">ใช้เกณฑ์สัดส่วน 3 อัตราส่วนมาตรฐาน IEC</div>
-          <div class="dga-input-grid">
-            <div class="dga-field"><label>Ratio 1</label><input type="number" class="text-input" disabled placeholder="คำนวณออโต้"></div>
-            <div class="dga-field"><label>Ratio 2</label><input type="number" class="text-input" disabled placeholder="คำนวณออโต้"></div>
-            <div class="dga-field"><label>Ratio 3</label><input type="number" class="text-input" disabled placeholder="คำนวณออโต้"></div>
-          </div>
-        </div>
-        <div>
-          <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(3)">⚡ คำนวณวิธีที่ 3</button>
-          <div class="dga-result-box" id="res_dga_3">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
-        </div>
-      </div>
-
-      <!-- วิธีที่ 4: Duval Triangle Method + Canvas สามเหลี่ยมจำลอง -->
-      <div class="dga-card">
-        <div>
-          <h4>4. Duval Triangle Method</h4>
-          <div class="dga-desc">พล็อตสัดส่วนก๊าซ CH4, C2H4, C2H2 ลงบนสามเหลี่ยมพิกัด</div>
-          <div class="dga-input-grid">
-            <div class="dga-field"><label>CH4 (ppm)</label><input type="number" class="text-input" id="dga_dv_ch4" value="10"></div>
-            <div class="dga-field"><label>C2H4 (ppm)</label><input type="number" class="text-input" id="dga_dv_c2h4" value="10"></div>
-            <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input" id="dga_dv_c2h2" value="10"></div>
-          </div>
-          <div class="duval-box">
-            <canvas id="duvalCanvas" width="220" height="180"></canvas>
-            <div style="font-size:0.7rem; color:var(--muted); margin-top:4px;">จำลองพิกัด Duval Triangle 1</div>
-          </div>
-        </div>
-        <div>
-          <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(4)">⚡ คำนวณและ Plot พิกัด</button>
-          <div class="dga-result-box" id="res_dga_4">โซนความเสียหาย: รอคำนวณ...</div>
-        </div>
-      </div>
-
-      <!-- วิธีที่ 5 -->
-      <div class="dga-card">
-        <div>
-          <h4>5. Dornenburg Ratio Method</h4>
-          <div class="dga-desc">วิเคราะห์จากอัตราส่วนก๊าซ 4 คู่สำหรับความผิดปกติรุนแรง</div>
-          <div class="dga-input-grid">
-            <div class="dga-field"><label>CO (ppm)</label><input type="number" class="text-input" value="0"></div>
-            <div class="dga-field"><label>CO2 (ppm)</label><input type="number" class="text-input" value="0"></div>
-            <div class="dga-field"><label>H2 (ppm)</label><input type="number" class="text-input" value="0"></div>
-          </div>
-        </div>
-        <div>
-          <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(5)">⚡ คำนวณวิธีที่ 5</button>
-          <div class="dga-result-box" id="res_dga_5">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
-        </div>
-      </div>
-
-      <!-- วิธีที่ 6 -->
-      <div class="dga-card">
-        <div>
-          <h4>6. Carbon Dioxide / CO Ratio</h4>
-          <div class="dga-desc">ประเมินการเสื่อมสภาพของฉนวนกระดาษจาก CO2 ต่อ CO</div>
-          <div class="dga-input-grid">
-            <div class="dga-field"><label>CO (ppm)</label><input type="number" class="text-input" id="dga_co" value="0"></div>
-            <div class="dga-field"><label>CO2 (ppm)</label><input type="number" class="text-input" id="dga_co2" value="0"></div>
-            <div class="dga-field"><label>Ratio</label><input type="number" class="text-input" disabled placeholder="อัตราส่วน"></div>
-          </div>
-        </div>
-        <div>
-          <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(6)">⚡ คำนวณวิธีที่ 6</button>
-          <div class="dga-result-box" id="res_dga_6">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
-        </div>
-      </div>
+    <div class="empty" id="emptyState" style="display:none;">
+      <div class="big">∅</div>
+      ไม่พบรายการที่ตรงกับคำค้นหา
     </div>
-  </div>
-  
-  <!-- Pagination Controls Bar -->
-  <div class="pagination-bar" id="paginationBar">
-    <div class="pagination-info" id="paginationInfo">แสดงรายการที่ 1-10 จากทั้งหมด 222 รายการ</div>
-    <div class="pagination-btns">
-      <button class="page-btn" id="prevPageBtn" onclick="changePage(-1)">◀ ก่อนหน้า</button>
-      <span class="page-indicator" id="pageIndicator">หน้า 1 / 23</span>
-      <button class="page-btn" id="nextPageBtn" onclick="changePage(1)">ถัดไป ▶</button>
-    </div>
-  </div>
-
-  <div class="empty" id="emptyState" style="display:none;">
-    <div class="big">∅</div>
-    ไม่พบรายการที่ตรงกับคำค้นหา
-  </div>
-</main>
+  </main>
+</div>
 
 <footer>
   ฐานข้อมูล RCM ตามเกณฑ์มาตรฐาน MIL-STD-1629A — ระบบบันทึกอัตโนมัติผ่าน LocalStorage
@@ -846,13 +863,13 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  ['v63','v64'].forEach(v => {
+  ['v64','v65'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v65');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v66');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   } else {
@@ -867,7 +884,7 @@ function initApp() {
     });
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v65');
+  const savedHi = localStorage.getItem('rcm_hi_data_v66');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -1533,8 +1550,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v66', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v66', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v67', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v67', JSON.stringify(hiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
