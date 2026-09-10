@@ -197,6 +197,11 @@
   }
 
   /* DGA Analysis Styles */
+  .dga-toolbar {
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px;
+    margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
   .dga-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
   .dga-card {
     background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;
@@ -213,7 +218,6 @@
   .dga-field { display: flex; flex-direction: column; gap: 3px; }
   .dga-field label { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
   
-  /* Duval Canvas Box */
   .duval-box {
     background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px;
     display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 10px;
@@ -372,11 +376,19 @@
     </table>
   </div>
 
-  <!-- DGA 6 Methods Analysis View พร้อม Canvas Duval Triangle -->
+  <!-- DGA 6 Methods Analysis View -->
   <div id="dgaView" style="display:none;">
-    <div class="plan-info-banner" style="margin-bottom: 20px;">
-      🧪 <b>ระบบวิเคราะห์ก๊าซละลายในน้ำมันหม้อแปลง (Dissolved Gas Analysis - DGA) ตาม 6 วิธีมาตรฐานสากล:</b><br>
-      กรอกค่าความเข้มข้นของก๊าซแต่ละชนิดเป็นหน่วย ppm เพื่อประเมินผลพร้อมแสดงพิกัดลงบนกราฟสามเหลี่ยมจำลอง
+    <!-- DGA Toolbar: เลือกอุปกรณ์และค้นหา -->
+    <div class="dga-toolbar">
+      <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 280px;">
+        <label style="font-size: 0.85rem; font-weight: 600; color: var(--muted); white-space: nowrap;">เลือกอุปกรณ์:</label>
+        <select id="dgaAssetSelect" class="text-input" onchange="onDgaAssetChange()">
+          <option value="">-- เลือกอุปกรณ์หม้อแปลงในระบบ --</option>
+        </select>
+      </div>
+      <div style="font-size: 0.82rem; color: var(--teal); font-family: 'IBM Plex Mono', monospace;">
+        สถานะ: <span id="dgaAssetStatus">ยังไม่ได้เลือกอุปกรณ์</span>
+      </div>
     </div>
 
     <div class="dga-container">
@@ -441,7 +453,6 @@
             <div class="dga-field"><label>C2H4 (ppm)</label><input type="number" class="text-input" id="dga_dv_c2h4" value="10"></div>
             <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input" id="dga_dv_c2h2" value="10"></div>
           </div>
-          <!-- พื้นที่แสดง Canvas สามเหลี่ยม Duval -->
           <div class="duval-box">
             <canvas id="duvalCanvas" width="220" height="180"></canvas>
             <div style="font-size:0.7rem; color:var(--muted); margin-top:4px;">จำลองพิกัด Duval Triangle 1</div>
@@ -836,12 +847,12 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  ['v61','v62'].forEach(v => {
+  ['v62','v63'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v63');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v64');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   } else {
@@ -856,7 +867,7 @@ function initApp() {
     });
   }
 
-  const savedCehi = localStorage.getItem('rcm_cehi_data_v63');
+  const savedCehi = localStorage.getItem('rcm_cehi_data_v64');
   if (savedCehi) {
     try { cehiRecords = JSON.parse(savedCehi); } catch(e) {}
   } else {
@@ -873,11 +884,37 @@ function initApp() {
 
   categories = [...new Set(records.map(r => r.component ? r.component.split('_')[0] : 'OTHER'))];
   
+  populateDgaAssetDropdown();
   initCharts();
   updateDashboardStats();
   renderChips();
   renderTable();
-  drawDuvalTriangle(33.3, 33.3, 33.3); // วาดสามเหลี่ยมเริ่มต้น
+}
+
+function populateDgaAssetDropdown() {
+  const select = document.getElementById('dgaAssetSelect');
+  if (!select) return;
+  // ดึงรายชื่อ Component ที่ขึ้นต้นด้วย TR หรือ หม้อแปลง/อุปกรณ์หลัก
+  const uniqueComps = [...new Set(records.map(r => r.component))];
+  select.innerHTML = `<option value="">-- เลือกอุปกรณ์หม้อแปลงในระบบ (${uniqueComps.length} รายการ) --</option>`;
+  uniqueComps.forEach(comp => {
+    const opt = document.createElement('option');
+    opt.value = comp;
+    opt.textContent = comp;
+    select.appendChild(opt);
+  });
+}
+
+function onDgaAssetChange() {
+  const val = document.getElementById('dgaAssetSelect').value;
+  const statusEl = document.getElementById('dgaAssetStatus');
+  if (val) {
+    statusEl.textContent = `กำลังวิเคราะห์: [ ${val} ]`;
+    statusEl.style.color = 'var(--primary)';
+  } else {
+    statusEl.textContent = 'ยังไม่ได้เลือกอุปกรณ์';
+    statusEl.style.color = 'var(--teal)';
+  }
 }
 
 function addCehiRow(compName) {
@@ -984,15 +1021,15 @@ function switchTab(tab, el) {
     tipBtn.style.display = 'none';
   } else if(tab === 'dga') {
     document.getElementById('modeTitle').textContent = "DGA Analysis (Dissolved Gas Analysis)";
-    document.getElementById('tableInstruction').textContent = "แสดงผลการคำนวณและวิเคราะห์ก๊าซในน้ำมันหม้อแปลง (6 วิธี)";
+    document.getElementById('tableInstruction').textContent = "แสดงผลการคำนวณและวิเคราะห์ก๊าซในน้ำมันหม้อแปลงแยกตามรายตัวอุปกรณ์";
     document.getElementById('toolbarRow').style.display = 'none';
     document.getElementById('chips').style.display = 'none';
     tipBtn.style.display = 'none';
     
     bannerContainer.innerHTML = `
       <div class="plan-info-banner">
-        🧪 <b>ระบบวิเคราะห์ DGA 6 วิธี (เตรียมพร้อมรองรับผลแล็บ):</b><br>
-        กรอกค่าตัวเลข ppm ลงในฟอร์มด้านล่างเพื่อประเมินผลตามสูตรและเกณฑ์มาตรฐานสากล
+        🧪 <b>ระบบวิเคราะห์ DGA 6 วิธี (เชื่อมโยงรายตัวอุปกรณ์):</b><br>
+        เลือกอุปกรณ์ที่ต้องการตรวจสอบจากเมนูดรอปดาวน์ด้านบน แล้วกรอกค่า ppm เพื่อพล็อตพิกัดลงบน Duval Triangle
       </div>
     `;
     setTimeout(() => drawDuvalTriangle(33.3, 33.3, 33.3), 50);
@@ -1054,8 +1091,13 @@ function changePage(direction) {
   renderTable();
 }
 
-// ฟังก์ชันคำนวณและวาดจุดพิกัดลงบน Duval Triangle บน Canvas
 function calcDga(methodNo) {
+  const asset = document.getElementById('dgaAssetSelect').value;
+  if (!asset && methodNo === 4) {
+    alert("⚠️ กรุณาเลือกอุปกรณ์หม้อแปลงที่ต้องการวิเคราะห์ก่อนทำการคำนวณ");
+    return;
+  }
+
   if (methodNo === 4) {
     let ch4 = parseFloat(document.getElementById('dga_dv_ch4').value) || 0;
     let c2h4 = parseFloat(document.getElementById('dga_dv_c2h4').value) || 0;
@@ -1071,10 +1113,11 @@ function calcDga(methodNo) {
     let zone = "Slight Overheating (OT)";
     if (p_c2h2 > 20) zone = "Discharge of High Energy (D3)";
     else if (p_c2h4 > 50) zone = "Thermal Fault > 700 C (T3)";
-    document.getElementById('res_dga_4').innerHTML = `โซน: <b>${zone}</b>`;
+    
+    document.getElementById('res_dga_4').innerHTML = `[${asset}] โซน: <b>${zone}</b>`;
   } else {
     const resultBox = document.getElementById('res_dga_' + methodNo);
-    resultBox.innerHTML = `สถานะ: ประเมินผลสำเร็จ 👉 ตรวจพบสภาพปกติ (รอผลแล็บจริง)`;
+    resultBox.innerHTML = `[${asset || 'ทั่วไป'}] ผลลัพธ์: ตรวจพบสภาพปกติ (รอผลแล็บ)`;
   }
 }
 
@@ -1091,15 +1134,10 @@ function drawDuvalTriangle(p_ch4, p_c2h4, p_c2h2) {
   const strokeColor = isLight ? '#334155' : '#94a3b8';
   const textColor = isLight ? '#0f172a' : '#f8fafc';
 
-  // พิกัดมุมสามเหลี่ยมด้านเท่า
-  // Apex (C2H2)
   const ax = w / 2, ay = 15;
-  // Bottom-Left (CH4)
   const bx = 20, by = h - 20;
-  // Bottom-Right (C2H4)
   const cx = w - 20, cy = h - 20;
 
-  // วาดโครงสามเหลี่ยม
   ctx.beginPath();
   ctx.moveTo(ax, ay);
   ctx.lineTo(bx, by);
@@ -1109,19 +1147,15 @@ function drawDuvalTriangle(p_ch4, p_c2h4, p_c2h2) {
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
-  // ใส่ชื่อมุม
   ctx.fillStyle = textColor;
   ctx.font = '9px sans-serif';
   ctx.fillText('C2H2', ax - 12, ay - 5);
   ctx.fillText('CH4', bx - 5, by + 12);
   ctx.fillText('C2H4', cx - 12, cy + 12);
 
-  // คำนวณพิกัดจุดพล็อตตามสัดส่วน Barycentric
-  // p_ch4 -> มุม B, p_c2h4 -> มุม C, p_c2h2 -> มุม A
   const px = (p_ch4 * bx + p_c2h4 * cx + p_c2h2 * ax) / 100;
   const py = (p_ch4 * by + p_c2h4 * cy + p_c2h2 * ay) / 100;
 
-  // วาดจุดพล็อตแดง
   ctx.beginPath();
   ctx.arc(px, py, 5, 0, Math.PI * 2);
   ctx.fillStyle = '#ef4444';
@@ -1500,8 +1534,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v64', JSON.stringify(records));
-  localStorage.setItem('rcm_cehi_data_v64', JSON.stringify(cehiRecords));
+  localStorage.setItem('rcm_excel_data_v65', JSON.stringify(records));
+  localStorage.setItem('rcm_cehi_data_v65', JSON.stringify(cehiRecords));
   alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
