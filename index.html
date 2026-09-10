@@ -45,12 +45,11 @@
     font-family:'Noto Sans Thai', 'Plus Jakarta Sans', system-ui, sans-serif;
     min-height:100vh;
     display: flex;
-    flex-direction: column;
     transition: background 0.2s, color 0.2s;
   }
   .mono{font-family:'IBM Plex Mono', monospace;}
 
-  /* Sidebar เมนูฝั่งซ้าย (Desktop) และแถบบน (Mobile) */
+  /* Sidebar เมนูฝั่งซ้ายแบบ Fixed */
   aside.sidebar {
     width: 260px;
     background: var(--panel);
@@ -61,73 +60,77 @@
     left: 0;
     display: flex;
     flex-direction: column;
-    padding: 20px 14px;
+    padding: 24px 16px;
     z-index: 50;
     box-shadow: 4px 0 20px rgba(0,0,0,0.1);
   }
   .sidebar-brand {
-    font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 20px; padding-left: 8px;
-    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 24px; padding-left: 8px;
+    display: flex; align-items: center; gap: 8px;
   }
   .sidebar-brand .accent { color: var(--primary); }
   
-  .nav-tabs { display: flex; flex-direction: column; gap: 6px; flex: 1; overflow-y: auto; }
+  .nav-tabs { display: flex; flex-direction: column; gap: 8px; flex: 1; }
   .tab-btn {
     background: transparent; border: 1px solid transparent; color: var(--muted);
-    padding: 10px 14px; border-radius: var(--radius); cursor: pointer; font-family: inherit; font-size: 0.88rem; font-weight: 500; transition: all .15s; text-align: left;
+    padding: 11px 16px; border-radius: var(--radius); cursor: pointer; font-family: inherit; font-size: 0.9rem; font-weight: 500; transition: all .15s; text-align: left;
     display: flex; align-items: center; gap: 10px;
   }
   .tab-btn:hover { background: var(--panel-2); color: var(--text); }
   .tab-btn.active { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight: 700; }
 
-  .sidebar-footer { padding-top: 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+  .sidebar-footer { padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
 
-  /* เนื้อหาหลักฝั่งขวา */
+  /* เนื้อหาหลักฝั่งขวา (เว้นที่ให้ Sidebar) */
   .main-content {
     margin-left: 260px;
     flex: 1;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    width: calc(100% - 260px);
   }
 
   header{
     background: var(--panel);
     border-bottom: 1px solid var(--border);
-    padding: 16px 20px;
+    padding: 20px 32px;
     box-shadow: 0 4px 20px -2px rgba(0,0,0,0.1);
   }
   .header-inner{ max-width:1300px; margin:0 auto; }
-  .title-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
-  h1{ font-size:1.15rem; font-weight:700; margin:0; letter-spacing: -0.02em; }
+  .title-row{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+  h1{ font-size:1.25rem; font-weight:700; margin:0; letter-spacing: -0.02em; }
   h1 .accent{color: var(--primary);}
-  .subtitle{ color:var(--muted); font-size:0.78rem; margin-top:3px; }
+  .subtitle{ color:var(--muted); font-size:0.8rem; margin-top:3px; }
   
-  .header-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .header-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
-  .mode-toggle-btn, .action-btn, .save-btn, .guideline-btn, .tip-btn {
+  .mode-toggle-btn {
     background: var(--panel-2); border: 1px solid var(--border); cursor: pointer; color: var(--text);
-    font-size: 0.85rem; padding: 7px 12px; border-radius: var(--radius); transition: all 0.15s; font-family: inherit; font-weight: 600;
+    font-size: 0.9rem; padding: 7px 14px; border-radius: var(--radius); transition: all 0.15s;
+  }
+  .mode-toggle-btn:hover { border-color: var(--primary); }
+
+  .action-btn, .save-btn, .guideline-btn, .tip-btn {
+    background: var(--teal-dim); border: 1px solid var(--teal); color: var(--teal);
+    padding: 8px 14px; border-radius: var(--radius); cursor: pointer; font-size: 0.82rem; font-weight: 600; font-family: inherit; transition: all 0.15s;
   }
   .guideline-btn { background: rgba(59, 130, 246, 0.15); border-color: #3b82f6; color: #60a5fa; }
   .guideline-btn:hover { background: rgba(59, 130, 246, 0.3); }
   .tip-btn { background: rgba(245, 158, 11, 0.15); border-color: var(--primary); color: var(--primary); }
   .tip-btn:hover { background: rgba(245, 158, 11, 0.3); }
-  .action-btn { background: var(--teal-dim); border-color: var(--teal); color: var(--teal); }
   .action-btn:hover, .save-btn:hover { opacity: 0.85; }
 
   .dashboard-stats {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 14px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 16px;
   }
   .stat-card {
-    background: var(--panel-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px;
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px;
     display: flex; flex-direction: column; justify-content: space-between;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.15s;
   }
   .stat-card:hover { transform: translateY(-2px); }
-  .stat-title { font-size: 0.72rem; color: var(--muted); font-weight: 600; margin-bottom: 6px; display:flex; align-items:center; gap:6px; }
-  .stat-value { font-family: 'IBM Plex Mono', monospace; font-size: 1.35rem; font-weight: 700; }
+  .stat-title { font-size: 0.75rem; color: var(--muted); font-weight: 600; margin-bottom: 8px; display:flex; align-items:center; gap:6px; }
+  .stat-value { font-family: 'IBM Plex Mono', monospace; font-size: 1.5rem; font-weight: 700; }
   .stat-total { color: var(--primary); }
   .stat-normal { color: var(--teal); }
   .stat-warning { color: var(--primary); }
@@ -136,43 +139,45 @@
 
   /* Charts */
   .charts-container {
-    display: grid; grid-template-columns: 1fr 2fr; gap: 14px; margin-bottom: 14px;
+    display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 16px;
   }
-  @media(max-width: 900px) { .charts-container { grid-template-columns: 1fr; } }
+  @media(max-width: 950px) { .charts-container { grid-template-columns: 1fr; } }
   .chart-card {
-    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px;
     box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); position: relative; overflow: hidden;
   }
   .chart-card::before {
     content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
     background: linear-gradient(90deg, #14b8a6, #f59e0b, #ef4444);
   }
-  .chart-title { font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-  .chart-box { position: relative; height: 190px; width: 100%; display: flex; align-items: center; justify-content: center; }
+  .chart-title { font-size: 0.88rem; font-weight: 700; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .chart-box { position: relative; height: 210px; width: 100%; display: flex; align-items: center; justify-content: center; }
 
   .toolbar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; justify-content: space-between; }
-  .search-wrap{ position:relative; flex: 1; min-width: 220px; }
+  .search-wrap{ position:relative; flex: 1; min-width: 260px; }
   #search{
     width:100%; background:var(--panel-2); border:1px solid var(--border); color:var(--text);
-    font-family:inherit; font-size:0.88rem; padding:10px 14px 10px 38px; border-radius: var(--radius); outline:none; transition: border-color 0.15s;
+    font-family:inherit; font-size:0.9rem; padding:11px 16px 11px 42px; border-radius: var(--radius); outline:none; transition: border-color 0.15s;
   }
   #search:focus{ border-color: var(--primary); }
-  .search-wrap svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; stroke:var(--muted); }
+  .search-wrap svg{ position:absolute; left:14px; top:50%; transform:translateY(-50%); width:18px; height:18px; stroke:var(--muted); }
 
-  .risk-filters { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .risk-filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .filter-chip {
-    font-size: 0.75rem; padding: 7px 12px; border-radius: var(--radius); border: 1px solid var(--border);
+    font-size: 0.78rem; padding: 8px 14px; border-radius: var(--radius); border: 1px solid var(--border);
     background: var(--panel-2); color: var(--muted); cursor: pointer; user-select: none; font-weight: 600; transition: all 0.15s;
   }
   .filter-chip.active { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); }
 
-  .chips{ display:flex; flex-wrap:wrap; gap:6px; max-height:80px; overflow-y:auto; padding-bottom:4px; }
+  .chips{ display:flex; flex-wrap:wrap; gap:6px; max-height:85px; overflow-y:auto; padding-bottom:4px; }
   .chip{
-    font-size:0.73rem; padding:5px 10px; border-radius:100px; border:1px solid var(--border);
+    font-size:0.75rem; padding:6px 12px; border-radius:100px; border:1px solid var(--border);
     background:var(--panel-2); color:var(--muted); cursor:pointer; user-select:none; transition:all .12s ease; white-space:nowrap;
   }
   .chip:hover{border-color:var(--primary); color:var(--text);}
   .chip.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight:600; }
+
+  main-inner{ max-width:1300px; margin:0 auto; padding:24px 32px 60px; width: 100%; }
 
   /* Table Design */
   .table-responsive {
@@ -180,161 +185,144 @@
     border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel);
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   }
-  table{ width: 100%; min-width: 1000px; border-collapse: collapse; font-size: 0.85rem; }
+  table{ width: 100%; min-width: 1100px; border-collapse: collapse; font-size: 0.88rem; }
   thead th{
-    text-align: left; font-size: 0.73rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
-    padding: 12px 14px; border-bottom: 1px solid var(--border); background: var(--panel-2); white-space: nowrap;
+    text-align: left; font-size: 0.75rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 14px 16px; border-bottom: 1px solid var(--border); background: var(--panel-2); white-space: nowrap;
   }
   
   tbody tr{ border-bottom: 1px solid var(--border); transition: background .1s ease; cursor: pointer; }
   tbody tr:hover{ background: var(--panel-2); }
-  tbody td{ padding: 10px 14px; vertical-align: middle; }
-  td.num{ color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; }
+  tbody td{ padding: 12px 16px; vertical-align: middle; }
+  td.num{ color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; }
   
   .code-pill{
     display: inline-block; font-family: 'IBM Plex Mono', monospace; font-weight: 600;
-    font-size: 0.8rem; color: var(--primary); background: var(--primary-dim);
-    border-left: 3px solid var(--primary); padding: 2px 6px; border-radius: 4px; white-space: nowrap;
+    font-size: 0.82rem; color: var(--primary); background: var(--primary-dim);
+    border-left: 3px solid var(--primary); padding: 3px 8px; border-radius: 4px; white-space: nowrap;
   }
   
   input.score-input {
-    width: 48px; background: var(--bg); border: 1px solid var(--border); color: var(--text);
-    padding: 5px; text-align: center; border-radius: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem;
+    width: 52px; background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    padding: 6px; text-align: center; border-radius: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 0.88rem;
   }
   input.score-input:focus { border-color: var(--primary); outline: none; }
   
   input.text-input, select.text-input {
     width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
-    padding: 7px 10px; border-radius: 6px; font-family: inherit; font-size: 0.82rem;
+    padding: 8px 12px; border-radius: 6px; font-family: inherit; font-size: 0.85rem;
   }
   input.text-input:focus, select.text-input:focus { border-color: var(--primary); outline: none; }
 
   /* Priority Flag Badges */
   .flag-badge {
-    font-size: 0.75rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; display: inline-block; white-space: nowrap;
+    font-size: 0.78rem; font-weight: 700; padding: 5px 10px; border-radius: 6px; display: inline-block; white-space: nowrap;
   }
   .flag-red { background: var(--danger-dim); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
   .flag-orange { background: var(--primary-dim); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
   .flag-green { background: var(--teal-dim); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.3); }
 
-  .note-input { min-width: 200px; }
+  .note-input { min-width: 220px; }
 
   .plan-info-banner {
     background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--primary);
-    padding: 14px 16px; border-radius: var(--radius); margin-bottom: 14px; font-size: 0.85rem; line-height: 1.5;
+    padding: 16px 20px; border-radius: var(--radius); margin-bottom: 16px; font-size: 0.88rem; line-height: 1.6;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   }
 
   /* DGA Analysis Styles */
   .dga-toolbar {
-    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px;
-    margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px;
+    margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   }
-  .dga-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .dga-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
   .dga-card {
-    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between;
   }
-  .dga-card h4 { margin: 0 0 8px 0; color: var(--primary); font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
-  .dga-desc { font-size: 0.78rem; color: var(--muted); margin-bottom: 12px; line-height: 1.4; }
+  .dga-card h4 { margin: 0 0 10px 0; color: var(--primary); font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+  .dga-desc { font-size: 0.8rem; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
   .dga-result-box {
-    background: var(--bg); border: 1px solid var(--border); padding: 10px; border-radius: 8px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; color: var(--teal); margin-top: 8px; min-height: 44px;
+    background: var(--bg); border: 1px solid var(--border); padding: 12px; border-radius: 8px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; color: var(--teal); margin-top: 10px; min-height: 48px;
     display: flex; align-items: center; justify-content: space-between;
   }
-  .dga-input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
-  .dga-field { display: flex; flex-direction: column; gap: 2px; }
-  .dga-field label { font-size: 0.7rem; color: var(--muted); font-weight: 600; }
+  .dga-input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  .dga-field { display: flex; flex-direction: column; gap: 3px; }
+  .dga-field label { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
   
   .duval-box {
-    background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 8px;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 10px;
   }
 
   /* Pagination Bar */
   .pagination-bar {
-    display: flex; justify-content: space-between; align-items: center; padding: 12px 16px;
+    display: flex; justify-content: space-between; align-items: center; padding: 14px 20px;
     background: var(--panel); border: 1px solid var(--border); border-top: none;
     border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius);
-    flex-wrap: wrap; gap: 8px;
+    flex-wrap: wrap; gap: 10px;
   }
-  .pagination-info { font-size: 0.8rem; color: var(--muted); }
+  .pagination-info { font-size: 0.82rem; color: var(--muted); }
   .pagination-btns { display: flex; gap: 6px; align-items: center; }
   .page-btn {
     background: var(--panel-2); border: 1px solid var(--border); color: var(--text);
-    padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: 600;
+    padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600;
     transition: all 0.15s; font-family: inherit;
   }
   .page-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
   .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .page-indicator { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; padding: 0 6px; color: var(--muted); }
+  .page-indicator { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; padding: 0 8px; color: var(--muted); }
 
   /* Modals */
   .modal-overlay{
     position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(9, 13, 22, 0.85);
     backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center;
-    z-index:100; padding:12px; opacity:0; pointer-events:none; transition:opacity .2s ease;
+    z-index:100; padding:16px; opacity:0; pointer-events:none; transition:opacity .2s ease;
   }
   .modal-overlay.open{ opacity:1; pointer-events:auto; }
   .modal{
     background:var(--panel); border:1px solid var(--border); border-radius:16px;
-    width:100%; max-width:700px; padding:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.7);
-    max-height: 85vh; overflow-y: auto;
+    width:100%; max-width:750px; padding:30px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.7);
+    max-height: 90vh; overflow-y: auto;
   }
-  .modal h3{ margin:0 0 14px 0; font-size:1.1rem; color:var(--primary); display:flex; justify-content:space-between; align-items:center; gap: 8px; }
-  .modal-close{ background:none; border:none; color:var(--muted); font-size:1.3rem; cursor:pointer; }
+  .modal h3{ margin:0 0 16px 0; font-size:1.2rem; color:var(--primary); display:flex; justify-content:space-between; align-items:center; gap: 10px; }
+  .modal-close{ background:none; border:none; color:var(--muted); font-size:1.4rem; cursor:pointer; }
   
-  .guideline-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-bottom: 14px; }
-  .guideline-table th, .guideline-table td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; }
+  .guideline-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-bottom: 16px; }
+  .guideline-table th, .guideline-table td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
   .guideline-table th { background: var(--panel-2); color: var(--primary); font-weight: 700; }
 
-  .modal-grid{ display:grid; grid-template-columns:120px 1fr; gap:8px 12px; font-size:0.85rem; margin-bottom:14px; }
+  .modal-grid{ display:grid; grid-template-columns:130px 1fr; gap:10px 16px; font-size:0.9rem; margin-bottom:16px; }
   .modal-grid .label{ color:var(--muted); font-weight:500; }
   .modal-grid .val{ color:var(--text); word-break: break-all; }
 
   .section-label{
-    font-size:0.78rem; color:var(--muted); margin:0 0 8px 2px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
+    font-size:0.8rem; color:var(--muted); margin:0 0 10px 2px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
   }
 
-  footer{ max-width:1300px; margin:0 auto; padding:0 20px 30px; color:var(--muted); font-size:0.75rem; text-align: center; }
+  footer{ max-width:1300px; margin:0 auto; padding:0 32px 40px; color:var(--muted); font-size:0.78rem; text-align: center; }
 
   @media (max-width: 900px) {
-    aside.sidebar {
-      width: 100%;
-      height: auto;
-      position: relative;
-      border-right: none;
-      border-bottom: 1px solid var(--border);
-      padding: 12px 16px;
-    }
-    .main-content {
-      margin-left: 0;
-      width: 100%;
-    }
-    .sidebar-brand { margin-bottom: 10px; }
-    .nav-tabs { flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
-    .tab-btn { white-space: nowrap; padding: 8px 12px; font-size: 0.8rem; }
-    .sidebar-footer { display: none; }
-    
-    header { padding: 12px 16px; }
-    main { padding: 16px !important; }
-    .charts-container { grid-template-columns: 1fr; }
+    aside.sidebar { width: 100%; height: auto; position: relative; }
+    .main-content { margin-left: 0; }
   }
 </style>
 </head>
 <body>
 
+<!-- Sidebar เมนูฝั่งซ้าย -->
 <aside class="sidebar">
   <div class="sidebar-brand">
-    <span>⚡ RCM <span class="accent">System</span></span>
-    <button class="guideline-btn" onclick="openGuidelineModal()" style="font-size: 0.7rem; padding: 4px 8px;">📘 เกณฑ์</button>
+    ⚡ RCM <span class="accent">System</span>
   </div>
+  <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">เมนูหลักระบบ</div>
   <div class="nav-tabs">
     <button class="tab-btn active" onclick="switchTab('fmea', this)">📊 1. FMEA</button>
-    <button class="tab-btn" onclick="switchTab('hi', this)" id="btnHi">❤️ 2. Health Index</button>
+    <button class="tab-btn" onclick="switchTab('hi', this)" id="btnHi">❤️ 2. Health Index (HI)</button>
     <button class="tab-btn" onclick="switchTab('plan', this)" id="btnPlan">📋 3. Action Plan</button>
-    <button class="tab-btn" onclick="switchTab('dga', this)" id="btnDga">🧪 4. DGA Analysis</button>
+    <button class="tab-btn" onclick="switchTab('dga', this)" id="btnDga">🧪 4. DGA Analysis (6 วิธี)</button>
   </div>
   
   <div class="sidebar-footer">
@@ -342,6 +330,7 @@
   </div>
 </aside>
 
+<!-- ส่วนเนื้อหาหลักฝั่งขวา -->
 <div class="main-content">
   <header>
     <div class="header-inner">
@@ -358,6 +347,7 @@
         </div>
       </div>
 
+      <!-- KPI Summary Cards -->
       <div class="dashboard-stats">
         <div class="stat-card">
           <div class="stat-title">📦 อุปกรณ์ทั้งหมด</div>
@@ -381,6 +371,7 @@
         </div>
       </div>
 
+      <!-- Charts -->
       <div class="charts-container" id="analyticsCharts">
         <div class="chart-card">
           <div class="chart-title">🎯 สัดส่วนความเสี่ยง (Risk Options Ring)</div>
@@ -399,13 +390,13 @@
       <div class="toolbar-row" id="toolbarRow">
         <div class="search-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <input id="search" type="text" placeholder="พิมพ์ค้นหารหัส เช่น T001, สาเหตุ..." autocomplete="off">
+          <input id="search" type="text" placeholder="พิมพ์ค้นหารหัส เช่น T001, สาเหตุ, หมายเหตุ..." autocomplete="off">
         </div>
         <div class="risk-filters" id="riskFilters">
           <div class="filter-chip active" onclick="setRiskFilter('ALL', this)">ทั้งหมด</div>
-          <div class="filter-chip" onclick="setRiskFilter('CRITICAL', this)">🚨 วิกฤต (P1)</div>
+          <div class="filter-chip" onclick="setRiskFilter('CRITICAL', this)">🚨 วิกฤตสูงสุด (P1)</div>
           <div class="filter-chip" onclick="setRiskFilter('WARNING', this)">⚠️ เฝ้าระวัง</div>
-          <button class="tip-btn" id="tipButton" onclick="openTipModal()" style="display:none;">💡 คำแนะนำ</button>
+          <button class="tip-btn" id="tipButton" onclick="openTipModal()" style="display:none;">💡 คำแนะนำ PM/CBM</button>
         </div>
       </div>
 
@@ -413,14 +404,15 @@
     </div>
   </header>
 
-  <main style="padding: 20px;">
+  <main style="padding: 24px 32px 60px;">
     <div class="section-label">
       <span id="tableInstruction">คลิกแถวเพื่อดูรายละเอียด หรือคลิกช่องคะแนนเพื่อประเมิน</span>
-      <span style="font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--teal);" id="countDisplay">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</span>
+      <span style="font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--teal);" id="countDisplay">แสดง <b id="visibleCount">0</b> / <span id="totalCount">0</span> รายการ</span>
     </div>
     
     <div id="bannerContainer"></div>
 
+    <!-- Main Table View -->
     <div class="table-responsive" id="mainTableWrapper">
       <table>
         <thead id="tableHead"></thead>
@@ -428,20 +420,22 @@
       </table>
     </div>
 
+    <!-- DGA 6 Methods Analysis View -->
     <div id="dgaView" style="display:none;">
       <div class="dga-toolbar">
-        <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 250px;">
-          <label style="font-size: 0.82rem; font-weight: 600; color: var(--muted); white-space: nowrap;">เลือกอุปกรณ์:</label>
+        <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 280px;">
+          <label style="font-size: 0.85rem; font-weight: 600; color: var(--muted); white-space: nowrap;">เลือกอุปกรณ์:</label>
           <select id="dgaAssetSelect" class="text-input" onchange="onDgaAssetChange()">
             <option value="">-- เลือกอุปกรณ์หม้อแปลงในระบบ --</option>
           </select>
         </div>
-        <div style="font-size: 0.8rem; color: var(--teal); font-family: 'IBM Plex Mono', monospace;">
+        <div style="font-size: 0.82rem; color: var(--teal); font-family: 'IBM Plex Mono', monospace;">
           สถานะ: <span id="dgaAssetStatus">ยังไม่ได้เลือกอุปกรณ์</span>
         </div>
       </div>
 
       <div class="dga-container">
+        <!-- วิธีที่ 1 -->
         <div class="dga-card">
           <div>
             <h4>1. Key Gas Method</h4>
@@ -453,11 +447,12 @@
             </div>
           </div>
           <div>
-            <button class="action-btn" style="width:100%; margin-top:6px;" onclick="calcDga(1)">⚡ คำนวณวิธีที่ 1</button>
+            <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(1)">⚡ คำนวณวิธีที่ 1</button>
             <div class="dga-result-box" id="res_dga_1">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
           </div>
         </div>
 
+        <!-- วิธีที่ 2 -->
         <div class="dga-card">
           <div>
             <h4>2. Rogers Ratio Method</h4>
@@ -469,27 +464,29 @@
             </div>
           </div>
           <div>
-            <button class="action-btn" style="width:100%; margin-top:6px;" onclick="calcDga(2)">⚡ คำนวณวิธีที่ 2</button>
+            <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(2)">⚡ คำนวณวิธีที่ 2</button>
             <div class="dga-result-box" id="res_dga_2">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
           </div>
         </div>
 
+        <!-- วิธีที่ 3 -->
         <div class="dga-card">
           <div>
             <h4>3. IEC 3-Ratio Method</h4>
             <div class="dga-desc">ใช้เกณฑ์สัดส่วน 3 อัตราส่วนมาตรฐาน IEC</div>
             <div class="dga-input-grid">
-              <div class="dga-field"><label>Ratio 1</label><input type="number" class="text-input" disabled placeholder="ออโต้"></div>
-              <div class="dga-field"><label>Ratio 2</label><input type="number" class="text-input" disabled placeholder="ออโต้"></div>
-              <div class="dga-field"><label>Ratio 3</label><input type="number" class="text-input" disabled placeholder="ออโต้"></div>
+              <div class="dga-field"><label>Ratio 1</label><input type="number" class="text-input" disabled placeholder="คำนวณออโต้"></div>
+              <div class="dga-field"><label>Ratio 2</label><input type="number" class="text-input" disabled placeholder="คำนวณออโต้"></div>
+              <div class="dga-field"><label>Ratio 3</label><input type="number" class="text-input" disabled placeholder="คำนวณออโต้"></div>
             </div>
           </div>
           <div>
-            <button class="action-btn" style="width:100%; margin-top:6px;" onclick="calcDga(3)">⚡ คำนวณวิธีที่ 3</button>
+            <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(3)">⚡ คำนวณวิธีที่ 3</button>
             <div class="dga-result-box" id="res_dga_3">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
           </div>
         </div>
 
+        <!-- วิธีที่ 4: Duval Triangle Method + Canvas สามเหลี่ยมจำลอง -->
         <div class="dga-card">
           <div>
             <h4>4. Duval Triangle Method</h4>
@@ -500,16 +497,17 @@
               <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input" id="dga_dv_c2h2" value="10"></div>
             </div>
             <div class="duval-box">
-              <canvas id="duvalCanvas" width="200" height="160"></canvas>
-              <div style="font-size:0.68rem; color:var(--muted); margin-top:4px;">จำลองพิกัด Duval Triangle 1</div>
+              <canvas id="duvalCanvas" width="220" height="180"></canvas>
+              <div style="font-size:0.7rem; color:var(--muted); margin-top:4px;">จำลองพิกัด Duval Triangle 1</div>
             </div>
           </div>
           <div>
-            <button class="action-btn" style="width:100%; margin-top:6px;" onclick="calcDga(4)">⚡ คำนวณและ Plot พิกัด</button>
+            <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(4)">⚡ คำนวณและ Plot พิกัด</button>
             <div class="dga-result-box" id="res_dga_4">โซนความเสียหาย: รอคำนวณ...</div>
           </div>
         </div>
 
+        <!-- วิธีที่ 5 -->
         <div class="dga-card">
           <div>
             <h4>5. Dornenburg Ratio Method</h4>
@@ -521,11 +519,12 @@
             </div>
           </div>
           <div>
-            <button class="action-btn" style="width:100%; margin-top:6px;" onclick="calcDga(5)">⚡ คำนวณวิธีที่ 5</button>
+            <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(5)">⚡ คำนวณวิธีที่ 5</button>
             <div class="dga-result-box" id="res_dga_5">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
           </div>
         </div>
 
+        <!-- วิธีที่ 6 -->
         <div class="dga-card">
           <div>
             <h4>6. Carbon Dioxide / CO Ratio</h4>
@@ -537,13 +536,14 @@
             </div>
           </div>
           <div>
-            <button class="action-btn" style="width:100%; margin-top:6px;" onclick="calcDga(6)">⚡ คำนวณวิธีที่ 6</button>
+            <button class="action-btn" style="width:100%; margin-top:8px;" onclick="calcDga(6)">⚡ คำนวณวิธีที่ 6</button>
             <div class="dga-result-box" id="res_dga_6">ผลลัพธ์: รอข้อมูลผลแล็บ...</div>
           </div>
         </div>
       </div>
     </div>
     
+    <!-- Pagination Controls Bar -->
     <div class="pagination-bar" id="paginationBar">
       <div class="pagination-info" id="paginationInfo">แสดงรายการที่ 1-10 จากทั้งหมด 222 รายการ</div>
       <div class="pagination-btns">
@@ -553,52 +553,77 @@
       </div>
     </div>
 
-    <div class="empty" id="emptyState" style="display:none; text-align:center; padding:40px; color:var(--muted);">
+    <div class="empty" id="emptyState" style="display:none;">
+      <div class="big">∅</div>
       ไม่พบรายการที่ตรงกับคำค้นหา
     </div>
   </main>
 
   <footer>
-    ฐานข้อมูล RCM ตามเกณฑ์มาตรฐาน MIL-STD-1629A — รองรับการใช้งานผ่านมือถือ แท็บเล็ต และเดสก์ท็อป
+    ฐานข้อมูล RCM ตามเกณฑ์มาตรฐาน MIL-STD-1629A — ระบบบันทึกอัตโนมัติผ่าน LocalStorage
   </footer>
 </div>
 
+<!-- Modal ดูเกณฑ์มาตรฐาน (คลิกข้างนอกเพื่อปิดได้) -->
 <div class="modal-overlay" id="guidelineModal" onclick="handleOutsideClick(event, 'guidelineModal')">
   <div class="modal">
     <h3>
       <span>📘 เกณฑ์มาตรฐาน MIL-STD-1629A</span>
       <button class="modal-close" onclick="closeGuidelineModal()">&times;</button>
     </h3>
-    <div style="font-size: 0.82rem; font-weight: bold; color: var(--primary); margin-bottom: 4px;">1. ความรุนแรง (Severity: S)</div>
+    
+    <div style="font-size: 0.88rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">1. ตารางเกณฑ์ความรุนแรง (Severity: S)</div>
     <table class="guideline-table">
-      <tr><th style="width: 40px; text-align:center;">Rank</th><th>Criteria</th></tr>
-      <tr><td style="text-align:center;">1-2</td><td>ไม่มีผลกระทบ / เล็กน้อย (Minor / Marginal)</td></tr>
-      <tr><td style="text-align:center;">3-4</td><td>ปานกลาง / วิกฤตต่อระบบ (Moderate / Critical)</td></tr>
-      <tr><td style="text-align:center;">5</td><td>หายนะ / สูญเสียชีวิตได้ (Catastrophic)</td></tr>
+      <tr><th style="width: 60px; text-align:center;">Rank</th><th>Severity Criteria</th></tr>
+      <tr><td style="text-align:center;">1</td><td>ไม่มีผลกระทบ (Minor)</td></tr>
+      <tr><td style="text-align:center;">2</td><td>มีผลบ้างแต่ไม่มากหรือส่งผลให้ระบบเสียหาย (Marginal)</td></tr>
+      <tr><td style="text-align:center;">3</td><td>มีความรุนแรงปานกลางทำให้ระบบเสียหายได้ (Moderate)</td></tr>
+      <tr><td style="text-align:center;">4</td><td>มีความรุนแรงวิกฤตทำให้ระบบเสียหายมาก (Critical)</td></tr>
+      <tr><td style="text-align:center;">5</td><td>ความเสียหายระดับหายนะ, สูญเสียชีวิตได้ (Catastrophic)</td></tr>
     </table>
-    <div style="font-size: 0.82rem; font-weight: bold; color: var(--primary); margin-bottom: 4px;">2. ความถี่ (Occurrence: O) & โอกาสตรวจพบ (Detection: D)</div>
+
+    <div style="font-size: 0.88rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">2. ตารางเกณฑ์ความถี่ (Occurrence: O)</div>
     <table class="guideline-table">
-      <tr><th style="width: 40px; text-align:center;">Rank</th><th>Occurrence (O)</th><th>Detection (D)</th></tr>
-      <tr><td style="text-align:center;">1-2</td><td>ไม่น่าเกิด / น้อยมาก</td><td>ตรวจพบได้สูงมาก / สูง</td></tr>
-      <tr><td style="text-align:center;">3-4</td><td>เกิดบางครั้ง / บ่อย</td><td>ตรวจพบปานกลาง / ต่ำ</td></tr>
-      <tr><td style="text-align:center;">5</td><td>เกิดขึ้นบ่อยมาก</td><td>โอกาสตรวจพบน้อยมาก</td></tr>
+      <tr><th style="width: 60px; text-align:center;">Rank</th><th>Occurrence Criteria</th><th>Occurrence Rates</th></tr>
+      <tr><td style="text-align:center;">1</td><td>ไม่น่าเกิด (Extremely Unlikely)</td><td>-</td></tr>
+      <tr><td style="text-align:center;">2</td><td>เกิดขึ้นค่อนข้างน้อย (Remote)</td><td>1/10,000</td></tr>
+      <tr><td style="text-align:center;">3</td><td>เกิดได้บางครั้ง บางคราว (Occasional)</td><td>1/1,000</td></tr>
+      <tr><td style="text-align:center;">4</td><td>น่าจะเกิดขึ้นได้ (Reasonably Probable)</td><td>1/100</td></tr>
+      <tr><td style="text-align:center;">5</td><td>เกิดขึ้นบ่อย (Frequent)</td><td>1/10</td></tr>
+    </table>
+
+    <div style="font-size: 0.88rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">3. ตารางเกณฑ์โอกาสตรวจพบ (Detection: D)</div>
+    <table class="guideline-table">
+      <tr><th style="width: 60px; text-align:center;">Rank</th><th>Detection Criteria</th><th>Probability</th></tr>
+      <tr><td style="text-align:center;">1</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าสูงมาก</td><td>80% - 100%</td></tr>
+      <tr><td style="text-align:center;">2</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าสูง</td><td>60% - 80%</td></tr>
+      <tr><td style="text-align:center;">3</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าปานกลาง</td><td>40% - 60%</td></tr>
+      <tr><td style="text-align:center;">4</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าต่ำ</td><td>20% - 40%</td></tr>
+      <tr><td style="text-align:center;">5</td><td>โอกาสที่จะตรวจพบการเสียหายล่วงหน้าน้อยมาก</td><td>0% - 20%</td></tr>
     </table>
   </div>
 </div>
 
+<!-- Modal คำแนะนำการเลือก PM / CBM -->
 <div class="modal-overlay" id="tipModal" onclick="handleOutsideClick(event, 'tipModal')">
   <div class="modal">
     <h3>
-      <span>💡 คำแนะนำ PM vs CBM</span>
+      <span>💡 คำแนะนำการเลือกประเภท (PM vs CBM)</span>
       <button class="modal-close" onclick="closeTipModal()">&times;</button>
     </h3>
-    <div style="font-size: 0.85rem; line-height: 1.5; color: var(--text);">
-      <p><b>🛡️ PM (Preventive Maintenance):</b> เหมาะกับชิ้นส่วนที่เสื่อมสภาพตามรอบเวลา เช่น การเปลี่ยนถ่ายน้ำมัน, ซีลยาง, ทำความสะอาด</p>
-      <p><b>🔍 CBM (Condition-Based Maintenance):</b> เหมาะกับอุปกรณ์หลักราคาสูงที่สามารถตรวจวัดอาการเตือนล่วงหน้าได้ เช่น อุณหภูมิจุดต่อ, วิเคราะห์น้ำมันหม้อแปลง</p>
+    <div style="font-size: 0.88rem; line-height: 1.6; color: var(--text);">
+      <p><b>🛡️ PM (Preventive Maintenance - การบำรุงรักษาเชิงป้องกันตามรอบเวลา):</b><br>
+      • เหมาะสำหรับอุปกรณ์หรือชิ้นส่วนที่มีอัตราการเสื่อมสภาพตามอายุการใช้งานที่แน่นอน (Wear-out failure)<br>
+      • เช่น การเปลี่ยนถ่ายน้ำมัน, การเปลี่ยนซีลยางกันรั่วซึม, การทำความสะอาดและหล่อลื่นตามรอบปี</p>
+      
+      <p><b>🔍 CBM (Condition-Based Maintenance - การบำรุงรักษาตามสภาพ):</b><br>
+      • เหมาะสำหรับอุปกรณ์หลักที่มีราคาสูง ซึ่งสามารถตรวจวัด "อาการเตือนล่วงหน้า" ได้ก่อนเสียหายจริง<br>
+      • เช่น การตรวจวัดอุณหภูมิจุดต่อด้วย Thermography, การวิเคราะห์สภาพน้ำมันหม้อแปลง, การวัดค่าความเป็นฉนวน</p>
     </div>
   </div>
 </div>
 
+<!-- Modal รายละเอียดอุปกรณ์ (คลิกข้างนอกเพื่อปิดได้) -->
 <div class="modal-overlay" id="drilldownModal" onclick="handleOutsideClick(event, 'drilldownModal')">
   <div class="modal">
     <h3>
@@ -608,21 +633,25 @@
     <div class="modal-grid">
       <div class="label">Component:</div>
       <div class="val" id="modalComp">-</div>
-      <div class="label">รหัส:</div>
+      <div class="label">รหัสความเสียหาย:</div>
       <div class="val" id="modalCode" style="color:var(--primary); font-family:monospace; font-weight:bold;">-</div>
-      <div class="label">Failure Mode:</div>
+      <div class="label">อาการ (Failure Mode):</div>
       <div class="val" id="modalDesc">-</div>
-      <div class="label">Cause:</div>
+      <div class="label">สาเหตุ (Cause):</div>
       <div class="val" id="modalCause">-</div>
-      <div class="label">RPN:</div>
+      <div class="label">ค่าความเสี่ยง (RPN):</div>
       <div class="val" id="modalRpn">-</div>
-      <div class="label">Note:</div>
+      <div class="label">หมายเหตุ (Note):</div>
       <div class="val" id="modalNote">-</div>
+    </div>
+    <div style="background:var(--panel-2); padding:12px; border-radius:8px; font-size:0.82rem; color:var(--muted);">
+      💡 <b>เกณฑ์ MIL-STD-1629A:</b> ตรวจสอบค่า Severity และ Priority Flag ควบคู่กับ RPN เสมอ
     </div>
   </div>
 </div>
 
 <script>
+// ชุดข้อมูลเริ่มต้นตรงเป๊ะกับไฟล์ RCM.xlsx (ผลรวม RPN = 3032)
 let records = [
   {"id": 1, "component": "TR_Counter L/A", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cause": "โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", "s": 2, "o": 2, "d": 2, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 2, "component": "TR_OLevelGauge", "code": "T002", "desc": "Oil level gauge ชำรุด", "cause": "โครงแตก, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -813,9 +842,9 @@ let records = [
   {"id": 187, "component": "Pole/Route บ่อพัก/Cable", "code": "UM20", "desc": "อุปกรณ์ป้องกันเพลิงไหม้ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 3, "o": 2, "d": 1, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 188, "component": "Pole/Route บ่อพัก/Cable", "code": "UM21", "desc": "สายไฟฟ้าใต้ดินชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 189, "component": "Pole/Route บ่อพัก/Cable", "code": "UM22", "desc": "ปลวกกัดแทะสาย", "cause": "การกัดของสัตว์หรือแมลง", "s": 3, "o": 2, "d": 3, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 190, "component": "เสา/สาย", "code": "SM01", "desc": "Crane / Back-Hoe", "cause": "รถและเครื่องจักร", "s": 5, "o": 2, "d": 1, "note": "ความเสี่ยงจากบุคคลที่ 3", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 191, "component": "เสา/สาย", "code": "SM02", "desc": "ผู้รับเหมาโดนสายส่ง", "cause": "ไฟช็อคจากคนหรือสัตว์", "s": 5, "o": 2, "d": 1, "note": "ความเสี่ยงจากบุคคลที่ 3", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 192, "component": "เสา/สาย", "code": "SM03", "desc": "บุคคลโดนสายส่ง", "cause": "ไฟช็อคจากคนหรือสัตว์", "s": 5, "o": 2, "d": 1, "note": "ความเสี่ยงจากบุคคลที่ 3", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 190, "component": "เสา/สาย", "code": "SM01", "desc": "Crane / Back-Hoe", "cause": "รถและเครื่องจักร", "s": 5, "o": 2, "d": 1, "note": "ความเสี่ยงจากบุคคลที่ 3 (Third-party) ไม่ใช่ความล้มเหลวของอุปกรณ์ — ต้องมีมาตรการป้องกันแยกต่างหาก (safety fencing, การแจ้งเตือนก่อนขุด, ประสานผู้รับเหมา) ไม่ใช่แผนบำรุงรักษาอุปกรณ์ตามปกติ", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 191, "component": "เสา/สาย", "code": "SM02", "desc": "ผู้รับเหมาโดนสายส่ง", "cause": "ไฟช็อคจากคนหรือสัตว์", "s": 5, "o": 2, "d": 1, "note": "ความเสี่ยงจากบุคคลที่ 3 (Third-party) ไม่ใช่ความล้มเหลวของอุปกรณ์ — ต้องมีมาตรการป้องกันแยกต่างหาก (safety fencing, การแจ้งเตือนก่อนขุด, ประสานผู้รับเหมา) ไม่ใช่แผนบำรุงรักษาอุปกรณ์ตามปกติ", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 192, "component": "เสา/สาย", "code": "SM03", "desc": "บุคคลโดนสายส่ง", "cause": "ไฟช็อคจากคนหรือสัตว์", "s": 5, "o": 2, "d": 1, "note": "ความเสี่ยงจากบุคคลที่ 3 (Third-party) ไม่ใช่ความล้มเหลวของอุปกรณ์ — ต้องมีมาตรการป้องกันแยกต่างหาก (safety fencing, การแจ้งเตือนก่อนขุด, ประสานผู้รับเหมา) ไม่ใช่แผนบำรุงรักษาอุปกรณ์ตามปกติ", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 193, "component": "เสา/สาย", "code": "SM05", "desc": "งู/นก/สัตว์", "cause": "ไฟช็อคจากคนหรือสัตว์", "s": 4, "o": 3, "d": 1, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 194, "component": "เสา/สาย", "code": "SM06", "desc": "ป้ายโฆษณา/สังกะสี", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 195, "component": "เสา/สาย", "code": "SM07", "desc": "ว่าว/ลูกโป่ง/เศษผ้า", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -832,7 +861,7 @@ let records = [
   {"id": 206, "component": "เสา/สาย", "code": "SM18", "desc": "เกิดไฟไหม้ใต้แนวสายส่ง", "cause": "จากภัยธรรมชาติ", "s": 4, "o": 3, "d": 1, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 207, "component": "เสา/สาย", "code": "SM19", "desc": "ไม่ทราบสาเหตุ", "cause": "ไม่ทราบสาเหตุ", "s": 3, "o": 2, "d": 4, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 208, "component": "เสา/สาย", "code": "SM20", "desc": "อื่นๆ", "cause": "อื่นๆ", "s": 3, "o": 2, "d": 4, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 209, "component": "เสา/สาย", "code": "SM21", "desc": "รถชนเสา", "cause": "จากอุบัติเหตุ", "s": 5, "o": 2, "d": 1, "note": "ความเสี่ยงจากบุคคลที่ 3", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 209, "component": "เสา/สาย", "code": "SM21", "desc": "รถชนเสา", "cause": "จากอุบัติเหตุ", "s": 5, "o": 2, "d": 1, "note": "ความเสี่ยงจากบุคคลที่ 3 (Third-party) ไม่ใช่ความล้มเหลวของอุปกรณ์ — ต้องมีมาตรการป้องกันแยกต่างหาก (safety fencing, การแจ้งเตือนก่อนขุด, ประสานผู้รับเหมา) ไม่ใช่แผนบำรุงรักษาอุปกรณ์ตามปกติ", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 210, "component": "เสา/สาย", "code": "SM22", "desc": "Cable ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 211, "component": "เสา/สาย", "code": "SM23", "desc": "Terminator ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 212, "component": "เสา/สาย", "code": "SM24", "desc": "Lightning ชำรุด", "cause": "เสื่อมสภาพจากอายุใช้งาน", "s": 4, "o": 2, "d": 3, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -849,16 +878,11 @@ let records = [
 ];
 
 let hiRecords = [];
-let categories = [];
 let doughnutChartInstance = null;
 let barChartInstance = null;
 
 let currentPage = 1;
 const rowsPerPage = 10;
-let activeCat = "ALL";
-let riskFilter = "ALL";
-let query = "";
-let currentTab = 'fmea';
 
 function initApp() {
   const savedTheme = localStorage.getItem('rcm_theme_mode');
@@ -867,9 +891,40 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = '☀️';
   }
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v69');
+  ['v66','v67'].forEach(v => {
+    localStorage.removeItem('rcm_excel_data_' + v);
+    localStorage.removeItem('rcm_hi_data_' + v);
+    localStorage.removeItem('rcm_cehi_data_' + v);
+  });
+
+  const savedFmea = localStorage.getItem('rcm_excel_data_v68');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
+  } else {
+    records.forEach(r => {
+      const desc = r.desc.toLowerCase();
+      const cause = (r.cause || '').toLowerCase();
+      if (desc.includes('ร้อน') || desc.includes('อุณหภูมิ') || desc.includes('วัด') || cause.includes('ร้อน')) {
+        r.actionType = 'CBM';
+      } else {
+        r.actionType = 'PM';
+      }
+    });
+  }
+
+  const savedHi = localStorage.getItem('rcm_hi_data_v68');
+  if (savedHi) {
+    try { hiRecords = JSON.parse(savedHi); } catch(e) {}
+  } else {
+    hiRecords = records.map((r, idx) => ({
+      uid: 'c_' + r.id,
+      component: r.component,
+      testCategory: '',
+      testItems: '',
+      si: '',
+      smax: '',
+      wi: ''
+    }));
   }
 
   categories = [...new Set(records.map(r => r.component ? r.component.split('_')[0] : 'OTHER'))];
@@ -906,22 +961,56 @@ function onDgaAssetChange() {
   }
 }
 
+function addHiRow(compName) {
+  const newUid = 'c_' + Date.now() + Math.random().toString(36).substring(2, 7);
+  hiRecords.push({
+    uid: newUid,
+    component: compName,
+    testCategory: '',
+    testItems: '',
+    si: '',
+    smax: '',
+    wi: ''
+  });
+  renderTable();
+}
+
+function deleteHiRow(uid) {
+  hiRecords = hiRecords.filter(item => item.uid !== uid);
+  renderTable();
+}
+
 function updateDashboardStats() {
   const total = records.length;
   let normal = 0, warning = 0, critical = 0;
+  let totalSi = 0, totalSmax = 0;
 
   records.forEach(r => {
     const s = Number(r.s) || 0;
-    if (s === 5) critical++;
-    else if (s === 4) warning++;
-    else normal++;
+    if (s === 5) {
+      critical++;
+    } else if (s === 4) {
+      warning++;
+    } else {
+      normal++;
+    }
   });
+
+  hiRecords.forEach(c => {
+    const si = Number(c.si) || 0;
+    const smax = Number(c.smax) || 0;
+    const wi = Number(c.wi) || 0;
+    if (si > 0 && wi > 0) totalSi += si * wi;
+    if (smax > 0 && wi > 0) totalSmax += smax * wi;
+  });
+
+  const avgHi = totalSmax > 0 ? ((totalSi / totalSmax) * 100).toFixed(2) : '100.00';
 
   document.getElementById('statTotal').textContent = total;
   document.getElementById('statNormal').textContent = normal;
   document.getElementById('statWarning').textContent = warning;
   document.getElementById('statCritical').textContent = critical;
-  document.getElementById('statHiAvg').textContent = '98.5%';
+  document.getElementById('statHiAvg').textContent = avgHi + '%';
 
   updateCharts(normal, warning, critical);
 }
@@ -931,8 +1020,12 @@ function toggleLightDarkMode() {
   const isLight = document.body.classList.contains('light-mode');
   document.getElementById('modeToggleBtn').textContent = isLight ? '☀️' : '🌙';
   localStorage.setItem('rcm_theme_mode', isLight ? 'light' : 'dark');
+  
   initCharts();
   updateDashboardStats();
+  if (currentTab === 'dga') {
+    drawDuvalTriangle(33.3, 33.3, 33.3);
+  }
 }
 
 function setRiskFilter(filter, el) {
@@ -942,6 +1035,11 @@ function setRiskFilter(filter, el) {
   el.classList.add('active');
   renderTable();
 }
+
+let activeCat = "ALL";
+let riskFilter = "ALL";
+let query = "";
+let currentTab = 'fmea';
 
 function switchTab(tab, el) {
   currentTab = tab;
@@ -955,26 +1053,43 @@ function switchTab(tab, el) {
   
   if(tab === 'fmea') {
     document.getElementById('modeTitle').textContent = "FMEA & RPN Assessment";
+    document.getElementById('tableInstruction').textContent = "คลิกแถวเพื่อดูรายละเอียด หรือคลิกช่องคะแนนเพื่อประเมิน";
     document.getElementById('toolbarRow').style.display = 'flex';
     document.getElementById('chips').style.display = 'flex';
     tipBtn.style.display = 'none';
   } else if(tab === 'hi') {
-    document.getElementById('modeTitle').textContent = "Health Index (HI)";
+    document.getElementById('modeTitle').textContent = "ตารางโครงสร้าง Health Index (HI - 222 รายการ)";
+    document.getElementById('tableInstruction').textContent = "กรอก Test Category, Parameters และคะแนนสุขภาพ";
     document.getElementById('toolbarRow').style.display = 'flex';
     document.getElementById('chips').style.display = 'flex';
     tipBtn.style.display = 'none';
   } else if(tab === 'dga') {
-    document.getElementById('modeTitle').textContent = "DGA Analysis (6 วิธี)";
+    document.getElementById('modeTitle').textContent = "DGA Analysis (Dissolved Gas Analysis)";
+    document.getElementById('tableInstruction').textContent = "แสดงผลการคำนวณและวิเคราะห์ก๊าซในน้ำมันหม้อแปลงแยกตามรายตัวอุปกรณ์";
     document.getElementById('toolbarRow').style.display = 'none';
     document.getElementById('chips').style.display = 'none';
     tipBtn.style.display = 'none';
-    bannerContainer.innerHTML = `<div class="plan-info-banner">🧪 <b>ระบบวิเคราะห์ DGA:</b> เลือกอุปกรณ์หม้อแปลงจากดรอปดาวน์ด้านบนเพื่อพล็อตพิกัด Duval Triangle</div>`;
+    
+    bannerContainer.innerHTML = `
+      <div class="plan-info-banner">
+        🧪 <b>ระบบวิเคราะห์ DGA 6 วิธี (เชื่อมโยงรายตัวอุปกรณ์):</b><br>
+        เลือกอุปกรณ์ที่ต้องการตรวจสอบจากเมนูดรอปดาวน์ด้านบน แล้วกรอกค่า ppm เพื่อพล็อตพิกัดลงบน Duval Triangle
+      </div>
+    `;
+    setTimeout(() => drawDuvalTriangle(33.3, 33.3, 33.3), 50);
   } else if(tab === 'plan') {
-    document.getElementById('modeTitle').textContent = "PM/CBM Action Plan";
+    document.getElementById('modeTitle').textContent = "PM/CBM Action Plan Table";
+    document.getElementById('tableInstruction').textContent = "แสดงรายการแผนบำรุงรักษา เรียงตามกลุ่มความสำคัญ (Priority Group)";
     document.getElementById('toolbarRow').style.display = 'flex';
     document.getElementById('chips').style.display = 'none';
     tipBtn.style.display = 'inline-block';
-    bannerContainer.innerHTML = `<div class="plan-info-banner">📋 <b>หลักการจัดลำดับ Action Plan:</b> เรียงตามความวิกฤต (Priority 1) และค่า RPN สูงสุดลงมา</div>`;
+    
+    bannerContainer.innerHTML = `
+      <div class="plan-info-banner">
+        📋 <b>หลักการจัดลำดับ Action Plan (ตามเกณฑ์ RCM / MIL-STD-1629A):</b><br>
+        1. <b>กลุ่มวิกฤตสูงสุด (Priority 1 | S=5):</b> บนสุดเสมอ | 2. <b>กลุ่มเฝ้าระวัง (Priority 2 | S=4):</b> เรียงตาม RPN | 3. <b>กลุ่มปานกลาง/ต่ำ (S <= 3):</b> เรียงตาม RPN
+      </div>
+    `;
   }
   renderTable();
 }
@@ -998,11 +1113,21 @@ function makeChip(label, val){
 }
 
 const tbody = document.getElementById('tbody');
+const tfoot = document.getElementById('tableFoot');
 const emptyState = document.getElementById('emptyState');
 const visibleCountEl = document.getElementById('visibleCount');
 
 function escapeHtml(str){
   return String(str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function highlight(text, q){
+  const esc = escapeHtml(text);
+  if(!q) return esc;
+  try{
+    const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+    return esc.replace(re, '<mark>$1</mark>');
+  }catch(e){ return esc; }
 }
 
 function changePage(direction) {
@@ -1013,10 +1138,75 @@ function changePage(direction) {
 function calcDga(methodNo) {
   const asset = document.getElementById('dgaAssetSelect').value;
   if (!asset && methodNo === 4) {
-    alert("⚠️ กรุณาเลือกอุปกรณ์หม้อแปลงก่อนคำนวณ");
+    alert("⚠️ กรุณาเลือกอุปกรณ์หม้อแปลงที่ต้องการวิเคราะห์ก่อนทำการคำนวณ");
     return;
   }
-  document.getElementById('res_dga_' + methodNo).innerHTML = `[${asset || 'ทั่วไป'}] ผลลัพธ์: ตรวจพบสภาพปกติ (ปกติ)`;
+
+  if (methodNo === 4) {
+    let ch4 = parseFloat(document.getElementById('dga_dv_ch4').value) || 0;
+    let c2h4 = parseFloat(document.getElementById('dga_dv_c2h4').value) || 0;
+    let c2h2 = parseFloat(document.getElementById('dga_dv_c2h2').value) || 0;
+    let sum = ch4 + c2h4 + c2h2;
+    if (sum === 0) sum = 1;
+    let p_ch4 = (ch4 / sum) * 100;
+    let p_c2h4 = (c2h4 / sum) * 100;
+    let p_c2h2 = (c2h2 / sum) * 100;
+
+    drawDuvalTriangle(p_ch4, p_c2h4, p_c2h2);
+    
+    let zone = "Slight Overheating (OT)";
+    if (p_c2h2 > 20) zone = "Discharge of High Energy (D3)";
+    else if (p_c2h4 > 50) zone = "Thermal Fault > 700 C (T3)";
+    
+    document.getElementById('res_dga_4').innerHTML = `[${asset}] โซน: <b>${zone}</b>`;
+  } else {
+    const resultBox = document.getElementById('res_dga_' + methodNo);
+    resultBox.innerHTML = `[${asset || 'ทั่วไป'}] ผลลัพธ์: ตรวจพบสภาพปกติ (รอผลแล็บ)`;
+  }
+}
+
+function drawDuvalTriangle(p_ch4, p_c2h4, p_c2h2) {
+  const canvas = document.getElementById('duvalCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+
+  ctx.clearRect(0, 0, w, h);
+
+  const isLight = document.body.classList.contains('light-mode');
+  const strokeColor = isLight ? '#334155' : '#94a3b8';
+  const textColor = isLight ? '#0f172a' : '#f8fafc';
+
+  const ax = w / 2, ay = 15;
+  const bx = 20, by = h - 20;
+  const cx = w - 20, cy = h - 20;
+
+  ctx.beginPath();
+  ctx.moveTo(ax, ay);
+  ctx.lineTo(bx, by);
+  ctx.lineTo(cx, cy);
+  ctx.closePath();
+  ctx.strokeStyle = strokeColor;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  ctx.fillStyle = textColor;
+  ctx.font = '9px sans-serif';
+  ctx.fillText('C2H2', ax - 12, ay - 5);
+  ctx.fillText('CH4', bx - 5, by + 12);
+  ctx.fillText('C2H4', cx - 12, cy + 12);
+
+  const px = (p_ch4 * bx + p_c2h4 * cx + p_c2h2 * ax) / 100;
+  const py = (p_ch4 * by + p_c2h4 * cy + p_c2h2 * ay) / 100;
+
+  ctx.beginPath();
+  ctx.arc(px, py, 5, 0, Math.PI * 2);
+  ctx.fillStyle = '#ef4444';
+  ctx.fill();
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
 }
 
 function renderTable(){
@@ -1039,21 +1229,21 @@ function renderTable(){
     document.getElementById('countDisplay').style.display = 'inline';
   }
 
-  if (currentTab === 'fmea' || currentTab === 'hi') {
+  if (currentTab === 'fmea') {
     paginationBar.style.display = 'flex';
     thead.innerHTML = `
       <tr>
-        <th style="width:35px;">#</th>
-        <th style="width:120px;">Component</th>
-        <th style="width:70px;">รหัส</th>
+        <th style="width:40px;">#</th>
+        <th style="width:130px;">Component</th>
+        <th style="width:75px;">รหัส</th>
         <th>Failure Mode / อาการ</th>
         <th>Failure Cause / สาเหตุ</th>
-        <th style="width:40px; text-align:center;">S</th>
-        <th style="width:40px; text-align:center;">O</th>
-        <th style="width:40px; text-align:center;">D</th>
-        <th style="width:55px; text-align:center;">RPN</th>
-        <th style="width:120px; text-align:center;">Priority Flag</th>
-        <th style="width:180px;">หมายเหตุ</th>
+        <th style="width:45px; text-align:center;">S</th>
+        <th style="width:45px; text-align:center;">O</th>
+        <th style="width:45px; text-align:center;">D</th>
+        <th style="width:60px; text-align:center;">RPN</th>
+        <th style="width:140px; text-align:center;">Priority Flag</th>
+        <th style="width:200px;">หมายเหตุ / Note</th>
       </tr>
     `;
 
@@ -1064,7 +1254,7 @@ function renderTable(){
       if (riskFilter === 'CRITICAL' && s !== 5) return false;
       if (riskFilter === 'WARNING' && s !== 4) return false;
       if(!q) return true;
-      return (r.code?.toLowerCase().includes(q) || r.desc?.toLowerCase().includes(q) || r.cause?.toLowerCase().includes(q));
+      return (r.code?.toLowerCase().includes(q) || r.desc?.toLowerCase().includes(q) || r.cause?.toLowerCase().includes(q) || r.component?.toLowerCase().includes(q) || (r.note && r.note.toLowerCase().includes(q)));
     });
 
     const totalFiltered = filtered.length;
@@ -1081,17 +1271,23 @@ function renderTable(){
       const d = Number(r.d) || 0;
       const rpn = s * o * d;
       
-      let flagClass = 'flag-green', flagText = 'ปานกลาง/ต่ำ';
-      if (s === 5) { flagClass = 'flag-red'; flagText = 'วิกฤต (P1)'; }
-      else if (s === 4) { flagClass = 'flag-orange'; flagText = 'เฝ้าระวัง'; }
+      let flagClass = 'flag-green';
+      let flagText = 'ปานกลาง/ต่ำ';
+      if (s === 5) {
+        flagClass = 'flag-red';
+        flagText = 'วิกฤตสูงสุด (Priority 1)';
+      } else if (s === 4) {
+        flagClass = 'flag-orange';
+        flagText = 'เฝ้าระวัง';
+      }
 
       return `
         <tr onclick="openDrilldown(${r.id})">
           <td class="num">${r.id}</td>
           <td><b>${escapeHtml(r.component)}</b></td>
           <td><span class="code-pill mono">${escapeHtml(r.code)}</span></td>
-          <td>${escapeHtml(r.desc)}</td>
-          <td style="color:var(--muted);">${escapeHtml(r.cause)}</td>
+          <td>${highlight(r.desc, q)}</td>
+          <td style="color:var(--muted);">${highlight(r.cause, q)}</td>
           <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.s ?? ''}" oninput="updateFmea(${r.id}, 's', this.value)"></td>
           <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.o ?? ''}" oninput="updateFmea(${r.id}, 'o', this.value)"></td>
           <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.d ?? ''}" oninput="updateFmea(${r.id}, 'd', this.value)"></td>
@@ -1102,40 +1298,201 @@ function renderTable(){
       `;
     }).join('');
 
-    document.getElementById('paginationInfo').textContent = `แสดง ${totalFiltered > 0 ? startIdx + 1 : 0}-${Math.min(startIdx + rowsPerPage, totalFiltered)} จาก ${totalFiltered}`;
-    document.getElementById('pageIndicator').textContent = `${currentPage}/${totalPages}`;
+    document.getElementById('paginationInfo').textContent = `แสดงรายการที่ ${totalFiltered > 0 ? startIdx + 1 : 0}-${Math.min(startIdx + rowsPerPage, totalFiltered)} จากทั้งหมด ${totalFiltered} รายการ`;
+    document.getElementById('pageIndicator').textContent = `หน้า ${currentPage} / ${totalPages}`;
     document.getElementById('prevPageBtn').disabled = currentPage === 1;
     document.getElementById('nextPageBtn').disabled = currentPage === totalPages || totalPages === 0;
+
     visibleCountEl.textContent = totalFiltered;
+    emptyState.style.display = totalFiltered === 0 ? 'block' : 'none';
+
+  } else if (currentTab === 'hi') {
+    paginationBar.style.display = 'none';
+    thead.innerHTML = `
+      <tr>
+        <th style="width:40px;">#</th>
+        <th style="width:140px;">Component</th>
+        <th style="width:180px;">Test Category</th>
+        <th style="width:200px;">Test Items / Parameters</th>
+        <th style="width:65px; text-align:center;">Si</th>
+        <th style="width:65px; text-align:center;">Smax</th>
+        <th style="width:65px; text-align:center;">Wi</th>
+        <th style="width:75px; text-align:center;">Si x Wi</th>
+        <th style="width:70px; text-align:center;">จัดการ</th>
+      </tr>
+    `;
+
+    const filteredHi = hiRecords.filter(item => {
+      if (activeCat !== 'ALL') {
+        let catPrefix = item.component ? item.component.split('_')[0] : '';
+        if (catPrefix !== activeCat) return false;
+      }
+      if (q && !item.component.toLowerCase().includes(q) && !item.testCategory.toLowerCase().includes(q) && !item.testItems.toLowerCase().includes(q)) return false;
+      return true;
+    });
+
+    const grouped = {};
+    filteredHi.forEach(r => {
+      if (!grouped[r.component]) grouped[r.component] = [];
+      grouped[r.component].push(r);
+    });
+
+    let htmlRows = '';
+    let globalTotalSiWi = 0;
+    let globalTotalSmaxWi = 0;
+    let rowIdx = 1;
+
+    Object.keys(grouped).forEach(comp => {
+      const items = grouped[comp];
+      let compSiWi = 0;
+      let compSmaxWi = 0;
+
+      items.forEach(r => {
+        const si = Number(r.si) || 0;
+        const smax = Number(r.smax) || 0;
+        const wi = Number(r.wi) || 0;
+        const siWi = si > 0 && wi > 0 ? (si * wi).toFixed(2) : '-';
+
+        if (si > 0 && wi > 0) compSiWi += si * wi;
+        if (smax > 0 && wi > 0) compSmaxWi += smax * wi;
+
+        htmlRows += `
+          <tr>
+            <td class="num">${rowIdx++}</td>
+            <td><b>${escapeHtml(r.component)}</b></td>
+            <td><input type="text" class="text-input" value="${escapeHtml(r.testCategory || '')}" placeholder="ระบุหมวด..." oninput="updateHi('${r.uid}', 'testCategory', this.value)"></td>
+            <td><input type="text" class="text-input" value="${escapeHtml(r.testItems || '')}" placeholder="ระบุหัวข้อ..." oninput="updateHi('${r.uid}', 'testItems', this.value)"></td>
+            <td style="text-align:center;"><input type="number" class="score-input" value="${r.si ?? ''}" oninput="updateHi('${r.uid}', 'si', this.value)"></td>
+            <td style="text-align:center;"><input type="number" class="score-input" value="${r.smax ?? ''}" oninput="updateHi('${r.uid}', 'smax', this.value)"></td>
+            <td style="text-align:center;"><input type="number" class="score-input" value="${r.wi ?? ''}" oninput="updateHi('${r.uid}', 'wi', this.value)"></td>
+            <td style="text-align:center;" class="mono">${siWi}</td>
+            <td style="text-align:center;">
+              <button class="del-row-btn" onclick="deleteHiRow('${r.uid}')" title="ลบ">🗑️</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      const compHi = compSmaxWi > 0 ? ((compSiWi / compSmaxWi) * 100).toFixed(2) : '0.00';
+      globalTotalSiWi += compSiWi;
+      globalTotalSmaxWi += compSmaxWi;
+
+      htmlRows += `
+        <tr style="background:var(--panel-2); border-top:1px solid var(--border);">
+          <td colspan="9" style="padding:10px 14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:8px;">
+              <button class="add-row-btn" onclick="addHiRow('${escapeHtml(comp)}')">➕ เพิ่มการทดสอบให้ ${escapeHtml(comp)}</button>
+              <div style="font-size:0.82rem; color:var(--teal);">
+                <b>ยอดรวม:</b> <span class="mono">${compSiWi.toFixed(2)}</span> | <b>HI:</b> <span class="mono">${compHi}%</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = htmlRows;
+    visibleCountEl.textContent = filteredHi.length;
+    emptyState.style.display = filteredHi.length === 0 ? 'block' : 'none';
+
   } else {
     paginationBar.style.display = 'flex';
     thead.innerHTML = `
       <tr>
-        <th style="width:35px; text-align:center;">#</th>
-        <th style="width:110px;">Component</th>
-        <th style="width:65px;">รหัส</th>
-        <th>Failure Mode</th>
-        <th style="width:55px; text-align:center;">RPN</th>
-        <th style="width:120px; text-align:center;">Priority</th>
-        <th style="width:100px; text-align:center;">ประเภท</th>
-        <th style="width:160px;">แผนซ่อมบำรุง</th>
-        <th style="width:85px; text-align:center;">สถานะ</th>
+        <th style="width:40px; text-align:center;">#</th>
+        <th style="width:120px;">Component</th>
+        <th style="width:70px;">รหัส</th>
+        <th>Failure Mode / อาการความเสียหาย</th>
+        <th style="width:60px; text-align:center;">RPN</th>
+        <th style="width:140px; text-align:center;">Priority Group</th>
+        <th style="width:110px; text-align:center;">ประเภท (PM/CBM)</th>
+        <th style="width:180px;">รายละเอียดแผนซ่อมบำรุง</th>
+        <th style="width:90px; text-align:center;">สถานะ</th>
       </tr>
     `;
-    const filteredPlan = records.filter(r => (Number(r.s)*Number(r.o)*Number(r.d)) > 0);
-    tbody.innerHTML = filteredPlan.map((r, i) => `
-      <tr>
-        <td style="text-align:center;" class="mono">#${i+1}</td>
-        <td><b>${escapeHtml(r.component)}</b></td>
-        <td><span class="code-pill mono">${escapeHtml(r.code)}</span></td>
-        <td>${escapeHtml(r.desc)}</td>
-        <td style="text-align:center;" class="mono">${Number(r.s)*Number(r.o)*Number(r.d)}</td>
-        <td style="text-align:center;"><span class="flag-badge ${Number(r.s)===5?'flag-red':'flag-orange'}">${Number(r.s)===5?'วิกฤต (P1)':'เฝ้าระวัง'}</span></td>
-        <td style="text-align:center;"><select class="text-input"><option>PM</option><option>CBM</option></select></td>
-        <td><input type="text" class="text-input" placeholder="ระบุวิธีป้องกัน..."></td>
-        <td style="text-align:center;"><select class="text-input"><option>รอแผน</option><option>เสร็จ</option></select></td>
-      </tr>
-    `).join('');
+
+    const filteredPlan = records.filter(r => {
+      const s = Number(r.s) || 0;
+      const o = Number(r.o) || 0;
+      const d = Number(r.d) || 0;
+      return (s * o * d) > 0;
+    }).sort((a, b) => {
+      const sA = Number(a.s) || 0;
+      const sB = Number(b.s) || 0;
+      
+      const groupA = sA === 5 ? 3 : (sA === 4 ? 2 : 1);
+      const groupB = sB === 5 ? 3 : (sB === 4 ? 2 : 1);
+      
+      if (groupA !== groupB) {
+        return groupB - groupA;
+      }
+      
+      const rpnA = sA * (Number(a.o)||0) * (Number(a.d||0));
+      const rpnB = sB * (Number(b.o)||0) * (Number(b.d||0));
+      return rpnB - rpnA;
+    });
+
+    const totalPlan = filteredPlan.length;
+    const totalPagesPlan = Math.ceil(totalPlan / rowsPerPage) || 1;
+    if (currentPage > totalPagesPlan) currentPage = totalPagesPlan;
+    if (currentPage < 1) currentPage = 1;
+
+    const startIdxPlan = (currentPage - 1) * rowsPerPage;
+    const paginatedPlan = filteredPlan.slice(startIdxPlan, startIdxPlan + rowsPerPage);
+
+    if (totalPlan === 0) {
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:40px; color:var(--muted);">⚠️ ยังไม่มีข้อมูลแผนงาน เนื่องจากยังไม่ได้ประเมินคะแนนในหน้า FMEA</td></tr>`;
+      paginationBar.style.display = 'none';
+    } else {
+      tbody.innerHTML = paginatedPlan.map((r, index) => {
+        const s = Number(r.s) || 0;
+        const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
+        
+        let flagClass = 'flag-green';
+        let flagText = 'ปานกลาง/ต่ำ';
+        if (s === 5) {
+          flagClass = 'flag-red';
+          flagText = 'วิกฤตสูงสุด (Priority 1)';
+        } else if (s === 4) {
+          flagClass = 'flag-orange';
+          flagText = 'เฝ้าระวัง';
+        }
+
+        const absoluteIndex = startIdxPlan + index + 1;
+
+        return `
+          <tr onclick="openDrilldown(${r.id})">
+            <td style="text-align:center;"><span class="mono" style="font-weight:bold; color:var(--primary);">#${absoluteIndex}</span></td>
+            <td><b>${escapeHtml(r.component)}</b></td>
+            <td><span class="code-pill mono">${escapeHtml(r.code)}</span></td>
+            <td>${escapeHtml(r.desc)}</td>
+            <td style="text-align:center;" class="mono">${rpn}</td>
+            <td style="text-align:center;"><span class="flag-badge ${flagClass}">${flagText}</span></td>
+            <td style="text-align:center;" onclick="event.stopPropagation()">
+              <select class="text-input" style="text-align:center;" onchange="updateFmea(${r.id}, 'actionType', this.value)">
+                <option value="PM" ${r.actionType === 'PM' ? 'selected' : ''}>🛡️ PM</option>
+                <option value="CBM" ${r.actionType === 'CBM' ? 'selected' : ''}>🔍 CBM</option>
+              </select>
+            </td>
+            <td onclick="event.stopPropagation()"><input type="text" class="text-input" value="${escapeHtml(r.actionPlan || '')}" placeholder="ระบุวิธีป้องกัน..." oninput="updateFmea(${r.id}, 'actionPlan', this.value)"></td>
+            <td style="text-align:center;" onclick="event.stopPropagation()">
+              <select class="text-input" style="text-align:center;" onchange="updateFmea(${r.id}, 'status', this.value)">
+                <option value="รอแผนงาน" ${r.status === 'รอแผนงาน' ? 'selected' : ''}>⏳ รอแผน</option>
+                <option value="กำลังดำเนินการ" ${r.status === 'กำลังดำเนินการ' ? 'selected' : ''}>🔄 กำลังทำ</option>
+                <option value="เสร็จสิ้น" ${r.status === 'เสร็จสิ้น' ? 'selected' : ''}>✅ เสร็จ</option>
+              </select>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('paginationInfo').textContent = `แสดงรายการที่ ${startIdxPlan + 1}-${Math.min(startIdxPlan + rowsPerPage, totalPlan)} จากทั้งหมด ${totalPlan} รายการ`;
+      document.getElementById('pageIndicator').textContent = `หน้า ${currentPage} / ${totalPagesPlan}`;
+      document.getElementById('prevPageBtn').disabled = currentPage === 1;
+      document.getElementById('nextPageBtn').disabled = currentPage === totalPagesPlan;
+    }
+    visibleCountEl.textContent = totalPlan;
+    emptyState.style.display = 'none';
   }
 }
 
@@ -1143,65 +1500,142 @@ function updateFmea(id, field, val) {
   const item = records.find(r => r.id === id);
   if (item) {
     item[field] = val;
-    if (['s', 'o', 'd'].includes(field)) updateDashboardStats();
+    if (['s', 'o', 'd'].includes(field)) {
+      updateDashboardStats();
+    }
+    renderTable();
+  }
+}
+
+function updateHi(uid, field, val) {
+  const item = hiRecords.find(r => r.uid === uid);
+  if (item) {
+    item[field] = val;
+    updateDashboardStats();
   }
 }
 
 function openDrilldown(id) {
   const r = records.find(item => item.id === id);
   if (!r) return;
+  const rpn = (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0);
+
   document.getElementById('modalComp').textContent = r.component;
   document.getElementById('modalCode').textContent = r.code;
   document.getElementById('modalDesc').textContent = r.desc;
   document.getElementById('modalCause').textContent = r.cause || '-';
-  document.getElementById('modalRpn').textContent = (Number(r.s)||0)*(Number(r.o)||0)*(Number(r.d)||0) || '-';
+  document.getElementById('modalRpn').textContent = rpn > 0 ? rpn : 'ยังไม่ประเมิน';
   document.getElementById('modalNote').textContent = r.note || '-';
+  
   document.getElementById('drilldownModal').classList.add('open');
 }
 
-function closeModal() { document.getElementById('drilldownModal').classList.remove('open'); }
-function openGuidelineModal() { document.getElementById('guidelineModal').classList.add('open'); }
-function closeGuidelineModal() { document.getElementById('guidelineModal').classList.remove('open'); }
-function openTipModal() { document.getElementById('tipModal').classList.add('open'); }
-function closeTipModal() { document.getElementById('tipModal').classList.remove('open'); }
+function closeModal() {
+  document.getElementById('drilldownModal').classList.remove('open');
+}
+
+function openGuidelineModal() {
+  document.getElementById('guidelineModal').classList.add('open');
+}
+
+function closeGuidelineModal() {
+  document.getElementById('guidelineModal').classList.remove('open');
+}
+
+function openTipModal() {
+  document.getElementById('tipModal').classList.add('open');
+}
+
+function closeTipModal() {
+  document.getElementById('tipModal').classList.remove('open');
+}
 
 function handleOutsideClick(event, modalId) {
-  if (event.target === document.getElementById(modalId)) {
-    document.getElementById(modalId).classList.remove('open');
+  const modal = document.getElementById(modalId);
+  if (event.target === modal) {
+    if (modalId === 'guidelineModal') closeGuidelineModal();
+    if (modalId === 'drilldownModal') closeModal();
+    if (modalId === 'tipModal') closeTipModal();
   }
 }
 
 function exportToCSV() {
-  alert("📥 ส่งออกข้อมูลเรียบร้อย!");
+  let csvContent = "\uFEFFID,Component,Code,Failure Mode,Failure Cause,Severity,Occurrence,Detection,RPN,Priority Flag,Note\n";
+  records.forEach(r => {
+    const s = Number(r.s) || 0;
+    const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
+    let pf = s === 5 ? 'วิกฤตสูงสุด (Priority 1)' : (s === 4 ? 'เฝ้าระวัง' : 'ปานกลาง/ต่ำ');
+    csvContent += `"${r.id}","${r.component}","${r.code}","${r.desc}","${r.cause || ''}","${r.s || ''}","${r.o || ''}","${r.d || ''}","${rpn}","${pf}","${r.note || ''}"\n`;
+  });
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `RCM_Report_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 function saveData() {
   localStorage.setItem('rcm_excel_data_v69', JSON.stringify(records));
-  alert('✨ บันทึกข้อมูลลงในเบราว์เซอร์เรียบร้อย!');
+  localStorage.setItem('rcm_hi_data_v69', JSON.stringify(hiRecords));
+  alert('✨ บันทึกข้อมูลเรียบร้อยแล้ว!');
 }
 
 function initCharts() {
   const isLight = document.body.classList.contains('light-mode');
   const textColor = isLight ? '#0f172a' : '#f0f4f8';
 
+  const ctxDoughnut = document.getElementById('riskDoughnutChart').getContext('2d');
   if (doughnutChartInstance) doughnutChartInstance.destroy();
-  doughnutChartInstance = new Chart(document.getElementById('riskDoughnutChart').getContext('2d'), {
+  doughnutChartInstance = new Chart(ctxDoughnut, {
     type: 'doughnut',
     data: {
-      labels: ['ปานกลาง/ต่ำ', 'เฝ้าระวัง', 'วิกฤต (P1)'],
-      datasets: [{ data: [0, 0, 0], backgroundColor: ['#14b8a6', '#f59e0b', '#ef4444'], borderWidth: 2 }]
+      labels: ['ปานกลาง/ต่ำ', 'เฝ้าระวัง', 'วิกฤตสูงสุด (P1)'],
+      datasets: [{
+        data: [0, 0, 0],
+        backgroundColor: ['#14b8a6', '#f59e0b', '#ef4444'],
+        borderWidth: 4,
+        borderColor: isLight ? '#ffffff' : '#111827',
+        hoverOffset: 6
+      }]
     },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { size: 10 } } } } }
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '70%',
+      plugins: {
+        legend: { position: 'bottom', labels: { color: textColor, font: { family: 'Noto Sans Thai', size: 11 }, padding: 15 } }
+      }
+    }
   });
 
+  const ctxBar = document.getElementById('topRiskBarChart').getContext('2d');
   if (barChartInstance) barChartInstance.destroy();
-  barChartInstance = new Chart(document.getElementById('topRiskBarChart').getContext('2d'), {
+  barChartInstance = new Chart(ctxBar, {
     type: 'bar',
     data: {
-      labels: ['T006', 'T007', 'H006', 'M010', 'UM03'],
-      datasets: [{ data: [36, 36, 32, 25, 20], backgroundColor: '#f59e0b', borderRadius: 6 }]
+      labels: ['-', '-', '-', '-', '-'],
+      datasets: [{
+        label: 'คะแนน RPN',
+        data: [0, 0, 0, 0, 0],
+        backgroundColor: 'rgba(245, 158, 11, 0.85)',
+        borderColor: '#f59e0b',
+        borderWidth: 1,
+        borderRadius: 8,
+        barThickness: 24
+      }]
     },
-    options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: textColor, font: { size: 9 } } }, y: { ticks: { color: textColor } } }, plugins: { legend: { display: false } } }
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { color: textColor, font: { family: 'Noto Sans Thai', size: 10 } }, grid: { display: false } },
+        y: { ticks: { color: textColor }, grid: { color: isLight ? '#e2e8f0' : '#2d3846' } }
+      },
+      plugins: { legend: { display: false } }
+    }
   });
 }
 
@@ -1209,6 +1643,17 @@ function updateCharts(normal, warning, critical) {
   if (doughnutChartInstance) {
     doughnutChartInstance.data.datasets[0].data = [normal, warning, critical];
     doughnutChartInstance.update();
+  }
+
+  if (barChartInstance) {
+    let sortedRecords = [...records].map(r => ({
+      name: r.code + ' (' + r.component + ')',
+      rpn: (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0)
+    })).sort((a, b) => b.rpn - a.rpn).slice(0, 5);
+
+    barChartInstance.data.labels = sortedRecords.map(item => item.name);
+    barChartInstance.data.datasets[0].data = sortedRecords.map(item => item.rpn);
+    barChartInstance.update();
   }
 }
 
@@ -1218,7 +1663,9 @@ document.getElementById('search').addEventListener('input', (e) => {
   renderTable();
 });
 
+// เริ่มต้นแอปพลิเคชันและวาดกราฟทันทีเมื่อเปิดเว็บ
 initApp();
 </script>
+
 </body>
 </html>
