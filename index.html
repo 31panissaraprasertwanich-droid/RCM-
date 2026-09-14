@@ -542,7 +542,7 @@
       </div>
     </div>
 
-    <!-- Decision Logic Tree View (แท็บที่ 5 สะอาดตา พร้อมปุ่มกดดูเกณฑ์) -->
+    <!-- Decision Logic Tree View (แท็บที่ 5 สะอาดตา พร้อมปุ่มกดดูเกณฑ์ตามรูป) -->
     <div id="treeView" style="display:none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
         <div style="font-size: 0.85rem; color: var(--muted);">แสดงตารางวิเคราะห์กลยุทธ์ตามเงื่อนไข Decision Logic Tree สากล</div>
@@ -628,14 +628,14 @@
   </div>
 </div>
 
-<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree (ตามรูปตัวอย่าง) -->
+<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree (อัปเดตข้อความให้ตรงตาม 5 ข้อเป๊ะ) -->
 <div class="modal-overlay" id="logicTreeModal" onclick="handleOutsideClick(event, 'logicTreeModal')">
-  <div class="modal" style="max-width: 650px;">
+  <div class="modal" style="max-width: 680px;">
     <h3>
       <span>เกณฑ์การตัดสินใจ Decision Logic Tree</span>
       <button class="modal-close" onclick="closeLogicTreeModal()">&times;</button>
     </h3>
-    <div style="font-size: 0.85rem; line-height: 1.7; color: var(--text);">
+    <div style="font-size: 0.85rem; line-height: 1.8; color: var(--text);">
       <p><b>1. เช็คความเสี่ยงบุคคลที่ 3 (จาก Note):</b><br>
       • ถ้าใช่ (เช่น เครนขุดโดนสาย, คนโดนไฟช็อต) ตัดออกจากเส้นทางบำรุงรักษาอุปกรณ์ทันที เพราะต้องแก้ด้วยมาตรการป้องกัน/การแจ้งเตือน ไม่ใช่ซ่อมอุปกรณ์</p>
       
@@ -643,12 +643,12 @@
       • ถ้าใช่ จบที่ <b>Redesign บังคับ / Scheduled Discard</b> ทันที ไม่ต้องดูค่าอื่น เพราะเป็นกฎความปลอดภัยสูงสุดจาก MIL-STD-1629A</p>
       
       <p><b>3. เช็ค S = 4 (Operational):</b><br>
-      • ไปดูค่า <b>D (Detection)</b> ต่อ: ถ้า $D \ge 3$ (ตรวจจับล่วงหน้ายาก) บังคับทำ <i>Time-based (PM) ตามรอบเวลา</i> / ถ้า $D < 3$ (ตรวจจับง่าย) ใช้ <i>Condition-based (PdM)</i> แทนได้</p>
+      • ไปดูค่า <b>D (Detection)</b> ต่อ: ถ้า D ≥ 3 (ตรวจจับล่วงหน้ายาก) บังคับทำ <i>Time-based (PM) ตามรอบเวลา</i> เพราะรอสัญญาณเตือนไม่ได้ / ถ้า D < 3 (ตรวจจับง่าย) ใช้ <i>Condition-based (PdM)</i> แทนได้ เพราะเห็นสัญญาณเตือนก่อนพังจริง</p>
       
       <p><b>4. เช็ค S = 3 (Economic):</b><br>
-      • ไปดูค่า <b>O (Occurrence)</b> ต่อ: ถ้าเกิดขึ้นบ่อย ($O \ge 3$) คุ้มที่จะทำ <i>Time-based (PM) ตามรอบ</i> / ถ้าไม่บ่อย ปล่อยให้เลือก <i>PdM หรือ PM ตามความเหมาะสม</i></p>
+      • ไปดูค่า <b>O (Occurrence)</b> ต่อ: ถ้าเกิดขึ้นบ่อย (O ≥ 3) คุ้มที่จะทำ <i>Time-based (PM) ตามรอบ</i> / ถ้าไม่บ่อย ปล่อยให้เลือก <i>PdM หรือ PM ตามความเหมาะสมของหน้างาน</i></p>
       
-      <p><b>5. ที่เหลือ ($S \le 2$):</b><br>
+      <p><b>5. ที่เหลือ (S ≤ 2):</b><br>
       • ตกไปที่ <b>Run-to-failure (CM)</b> เพราะผลกระทบต่ำมากจนไม่คุ้มที่จะทำ PM ล่วงหน้า</p>
     </div>
   </div>
@@ -955,23 +955,23 @@ function initApp() {
   const savedTheme = localStorage.getItem('rcm_theme_mode');
   if (savedTheme === 'light') {
     document.body.classList.add('light-mode');
-    document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
-  } else {
     document.getElementById('modeToggleBtn').textContent = 'โหมดมืด';
+  } else {
+    document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
   }
 
-  ['v77','v78'].forEach(v => {
+  ['v78','v79'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v79');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v80');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v79');
+  const savedHi = localStorage.getItem('rcm_hi_data_v80');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -1736,8 +1736,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v80', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v80', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v81', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v81', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
