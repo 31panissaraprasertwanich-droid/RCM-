@@ -8,6 +8,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <!-- โหลดไลบรารี Chart.js สำหรับวาดกราฟ -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- โหลดไลบรารี SheetJS (xlsx) สำหรับอ่านไฟล์ Excel -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
   :root {
     --bg: #090d16;
@@ -249,6 +251,15 @@
     text-align: center; color: var(--muted); font-weight: bold; font-size: 1.1rem; line-height: 1;
   }
 
+  /* Excel Upload Box */
+  .upload-box {
+    background: var(--panel); border: 2px dashed var(--border); border-radius: var(--radius);
+    padding: 40px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px;
+    margin-bottom: 20px; transition: all 0.2s;
+  }
+  .upload-box:hover { border-color: var(--primary); background: var(--panel-2); }
+  .upload-icon { font-size: 2.5rem; color: var(--primary); }
+
   /* Modal Clean Flow Card Styles */
   .modal-flow-grid {
     display: flex; flex-direction: column; gap: 14px; padding: 10px 0;
@@ -351,7 +362,7 @@
 </head>
 <body>
 
-<!-- Sidebar เมนูฝั่งซ้ายแบบทางการ -->
+<!-- Sidebar เมนูฝั่งซ้ายแบบทางการ (เพิ่มเมนูที่ 6: นำเข้าไฟล์ Excel) -->
 <aside class="sidebar">
   <div class="sidebar-brand">
     RCM <span class="accent">ENGINEERING SYSTEM</span>
@@ -363,6 +374,7 @@
     <button class="tab-btn" onclick="switchTab('plan', this)" id="btnPlan">3. แผนงานบำรุงรักษา (Action Plan)</button>
     <button class="tab-btn" onclick="switchTab('dga', this)" id="btnDga">4. วิเคราะห์ก๊าซละลาย (DGA)</button>
     <button class="tab-btn" onclick="switchTab('tree', this)" id="btnTree">5. Decision Logic Tree</button>
+    <button class="tab-btn" onclick="switchTab('import', this)" id="btnImport">6. นำเข้าไฟล์ Excel (Data Import)</button>
   </div>
   
   <div class="sidebar-footer">
@@ -481,7 +493,7 @@
       </div>
 
       <div class="dga-container">
-        <!-- วิธีที่ 1 -->
+        <!-- วิธีที่ 1 ถึง 6 -->
         <div class="dga-card">
           <div>
             <h4>1. Key Gas Method</h4>
@@ -497,8 +509,6 @@
             <div class="dga-result-box" id="res_dga_1">ผลลัพธ์: รอข้อมูลผลตรวจวิเคราะห์จากห้องปฏิบัติการ</div>
           </div>
         </div>
-
-        <!-- วิธีที่ 2 -->
         <div class="dga-card">
           <div>
             <h4>2. Rogers Ratio Method</h4>
@@ -514,16 +524,14 @@
             <div class="dga-result-box" id="res_dga_2">ผลลัพธ์: รอข้อมูลผลตรวจวิเคราะห์จากห้องปฏิบัติการ</div>
           </div>
         </div>
-
-        <!-- วิธีที่ 3 -->
         <div class="dga-card">
           <div>
             <h4>3. IEC 3-Ratio Method</h4>
             <div class="dga-desc">ใช้เกณฑ์สัดส่วน 3 อัตราส่วนมาตรฐานสากล IEC</div>
             <div class="dga-input-grid">
-              <div class="dga-field"><label>Ratio 1</label><input type="number" class="text-input" disabled placeholder="คำนวณอัตโนมัติ"></div>
-              <div class="dga-field"><label>Ratio 2</label><input type="number" class="text-input" disabled placeholder="คำนวณอัตโนมัติ"></div>
-              <div class="dga-field"><label>Ratio 3</label><input type="number" class="text-input" disabled placeholder="คำนวณอัตโนมัติ"></div>
+              <div class="dga-field"><label>Ratio 1</label><input type="number" class="text-input" disabled placeholder="อัตโนมัติ"></div>
+              <div class="dga-field"><label>Ratio 2</label><input type="number" class="text-input" disabled placeholder="อัตโนมัติ"></div>
+              <div class="dga-field"><label>Ratio 3</label><input type="number" class="text-input" disabled placeholder="อัตโนมัติ"></div>
             </div>
           </div>
           <div>
@@ -531,8 +539,6 @@
             <div class="dga-result-box" id="res_dga_3">ผลลัพธ์: รอข้อมูลผลตรวจวิเคราะห์จากห้องปฏิบัติการ</div>
           </div>
         </div>
-
-        <!-- วิธีที่ 4 -->
         <div class="dga-card">
           <div>
             <h4>4. Duval Triangle Method</h4>
@@ -552,8 +558,6 @@
             <div class="dga-result-box" id="res_dga_4">โซนความเสียหาย: รอการประเมิน</div>
           </div>
         </div>
-
-        <!-- วิธีที่ 5 -->
         <div class="dga-card">
           <div>
             <h4>5. Dornenburg Ratio Method</h4>
@@ -569,8 +573,6 @@
             <div class="dga-result-box" id="res_dga_5">ผลลัพธ์: รอข้อมูลผลตรวจวิเคราะห์จากห้องปฏิบัติการ</div>
           </div>
         </div>
-
-        <!-- วิธีที่ 6 -->
         <div class="dga-card">
           <div>
             <h4>6. Carbon Dioxide / CO Ratio</h4>
@@ -589,20 +591,18 @@
       </div>
     </div>
 
-    <!-- Decision Logic Tree View (แท็บที่ 5 พร้อมแสดงผลคะแนน S อัตโนมัติเมื่อมีการแก้ไข) -->
+    <!-- Decision Logic Tree View (แท็บที่ 5) -->
     <div id="treeView" style="display:none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
         <div style="font-size: 0.85rem; color: var(--muted);">แสดงตารางวิเคราะห์กลยุทธ์ตามเงื่อนไข Decision Logic Tree และระดับผลกระทบ (S)</div>
         <button class="guideline-btn" onclick="openLogicTreeModal()">ดูผังเกณฑ์การตัดสินใจ (Logic Flow)</button>
       </div>
 
-      <!-- Flow Chart Interactive UI -->
       <div class="flow-wrapper">
         <div class="flow-step-box" style="border-left-color: var(--teal); text-align: center;">
           <div class="flow-cond" style="justify-content: center; color: var(--teal);">1. จุดเริ่มต้น: โหมดความล้มเหลว (FMEA Input: S, O, D, Note)</div>
         </div>
         <div class="flow-down-arrow">↓</div>
-
         <div class="flow-step-box">
           <div class="flow-cond">2. มีความเสี่ยงบุคคลที่ 3 หรือไม่? (จาก Note)</div>
           <div class="flow-branches">
@@ -611,7 +611,6 @@
           </div>
         </div>
         <div class="flow-down-arrow">↓</div>
-
         <div class="flow-step-box">
           <div class="flow-cond">3. ระดับความรุนแรง S = 5 หรือไม่? (Safety-critical)</div>
           <div class="flow-branches">
@@ -620,7 +619,6 @@
           </div>
         </div>
         <div class="flow-down-arrow">↓</div>
-
         <div class="flow-step-box">
           <div class="flow-cond">4. ระดับความรุนแรง S = 4 หรือไม่? (Operational)</div>
           <div class="flow-branches">
@@ -629,7 +627,6 @@
           </div>
         </div>
         <div class="flow-down-arrow">↓</div>
-
         <div class="flow-step-box">
           <div class="flow-cond">5. ระดับความรุนแรง S = 3 หรือไม่? (Economic)</div>
           <div class="flow-branches">
@@ -660,6 +657,23 @@
         </table>
       </div>
     </div>
+
+    <!-- Data Import View (แท็บที่ 6: นำเข้าไฟล์ Excel) -->
+    <div id="importView" style="display:none;">
+      <div class="plan-info-banner">
+        <b>โมดูลนำเข้าข้อมูลด้วยไฟล์ Excel (Data Import):</b><br>
+        คุณสามารถอัปโหลดไฟล์ Excel (.xlsx, .xls) ของคุณเข้ามาเพื่ออัปเดตฐานข้อมูล FMEA ในระบบได้ทันที โดยโครงสร้างคอลัมน์ในไฟล์ควรประกอบด้วย: <b>component, code, desc, cause, s, o, d, note</b>
+      </div>
+
+      <div class="upload-box" onclick="document.getElementById('excelFileInput').click()">
+        <div class="upload-icon">📂</div>
+        <div style="font-size: 1rem; font-weight: 700; color: var(--text);">คลิกเพื่อเลือกไฟล์ Excel หรือลากไฟล์มาวางที่นี่</div>
+        <div style="font-size: 0.8rem; color: var(--muted);">รองรับไฟล์นามสกุล .xlsx และ .xls</div>
+        <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display:none;" onchange="handleExcelUpload(event)">
+      </div>
+
+      <div id="importResultMsg" style="font-size: 0.85rem; color: var(--teal); text-align: center; margin-top: 10px; font-weight: 600;"></div>
+    </div>
     
     <!-- Pagination Controls Bar -->
     <div class="pagination-bar" id="paginationBar">
@@ -689,7 +703,6 @@
       <span>เกณฑ์มาตรฐาน MIL-STD-1629A</span>
       <button class="modal-close" onclick="closeGuidelineModal()">&times;</button>
     </h3>
-    
     <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">1. เกณฑ์ระดับความรุนแรง (Severity: S)</div>
     <table class="guideline-table">
       <tr><th style="width: 50px; text-align:center;">ระดับ</th><th>เกณฑ์การประเมินผลกระทบ</th></tr>
@@ -699,30 +712,10 @@
       <tr><td style="text-align:center;">4</td><td>ส่งผลกระทบรุนแรง ระบบหยุดทำงานหลัก (Critical)</td></tr>
       <tr><td style="text-align:center;">5</td><td>ระดับความเสียหายรุนแรงสูงสุด สูญเสียชีวิตหรือทรัพย์สินมหาศาล (Catastrophic)</td></tr>
     </table>
-
-    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">2. เกณฑ์ความถี่ของการเกิด (Occurrence: O)</div>
-    <table class="guideline-table">
-      <tr><th style="width: 50px; text-align:center;">ระดับ</th><th>เกณฑ์ความถี่</th><th>อัตราการเกิด</th></tr>
-      <tr><td style="text-align:center;">1</td><td>ไม่น่าจะเกิดขึ้น</td><td>-</td></tr>
-      <tr><td style="text-align:center;">2</td><td>เกิดขึ้นค่อนข้างน้อยมาก</td><td>1 ใน 10,000</td></tr>
-      <tr><td style="text-align:center;">3</td><td>เกิดขึ้นเป็นบางครั้งคราว</td><td>1 ใน 1,000</td></tr>
-      <tr><td style="text-align:center;">4</td><td>มีโอกาสเกิดขึ้นได้ปานกลาง</td><td>1 ใน 100</td></tr>
-      <tr><td style="text-align:center;">5</td><td>เกิดขึ้นบ่อยครั้ง</td><td>1 ใน 10</td></tr>
-    </table>
-
-    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">3. เกณฑ์โอกาสตรวจพบ (Detection: D)</div>
-    <table class="guideline-table">
-      <tr><th style="width: 50px; text-align:center;">ระดับ</th><th>เกณฑ์การตรวจพบความผิดปกติล่วงหน้า</th></tr>
-      <tr><td style="text-align:center;">1</td><td>มีระบบตรวจสอบและโอกาสตรวจพบสูงมาก (80% - 100%)</td></tr>
-      <tr><td style="text-align:center;">2</td><td>มีโอกาสตรวจพบสูง (60% - 80%)</td></tr>
-      <tr><td style="text-align:center;">3</td><td>มีโอกาสตรวจพบปานกลาง (40% - 60%)</td></tr>
-      <tr><td style="text-align:center;">4</td><td>มีโอกาสตรวจพบค่อนข้างน้อย (20% - 40%)</td></tr>
-      <tr><td style="text-align:center;">5</td><td>ไม่สามารถตรวจพบได้ล่วงหน้าหรือน้อยมาก (0% - 20%)</td></tr>
-    </table>
   </div>
 </div>
 
-<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree แบบการ์ดขั้นตอนสะอาดตา -->
+<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree -->
 <div class="modal-overlay" id="logicTreeModal" onclick="handleOutsideClick(event, 'logicTreeModal')">
   <div class="modal" style="max-width: 720px;">
     <h3>
@@ -730,52 +723,41 @@
       <button class="modal-close" onclick="closeLogicTreeModal()">&times;</button>
     </h3>
     <div class="modal-flow-grid">
-      
       <div class="flow-card">
         <div class="flow-card-header">
           <span>ขั้นตอนที่ 1: เช็คความเสี่ยงบุคคลที่ 3 (จากช่อง Note)</span>
-          <span style="font-size:0.75rem; color:var(--muted);">เงื่อนไขเบื้องต้น</span>
         </div>
-        <div class="flow-card-body"><b>ถ้าใช่:</b> (เช่น เครนขุดโดนสาย, คนโดนไฟช็อต) ตัดออกจากเส้นทางบำรุงรักษาอุปกรณ์ทันที เพราะต้องแก้ด้วยมาตรการป้องกันหรือการแจ้งเตือน ไม่ใช่การซ่อมอุปกรณ์</div>
+        <div class="flow-card-body"><b>ถ้าใช่:</b> ตัดออกจากเส้นทางบำรุงรักษาอุปกรณ์ทันที เพราะต้องแก้ด้วยมาตรการป้องกันหรือการแจ้งเตือน</div>
         <div class="flow-card-footer">ผลลัพธ์: มาตรการป้องกันเฉพาะ (ไม่ใช่ PM อุปกรณ์)</div>
       </div>
-
       <div class="flow-card">
         <div class="flow-card-header">
           <span>ขั้นตอนที่ 2: เช็คระดับความรุนแรง S = 5</span>
-          <span style="font-size:0.75rem; color:var(--danger);">Safety-critical</span>
         </div>
-        <div class="flow-card-body"><b>ถ้าใช่:</b> จบที่การปรับปรุงระบบทันทีเนื่องจากเป็นความปลอดภัยสูงสุด ไม่ต้องพิจารณาค่าอื่นเพิ่มเติม</div>
+        <div class="flow-card-body"><b>ถ้าใช่:</b> จบที่การปรับปรุงระบบทันทีเนื่องจากเป็นความปลอดภัยสูงสุด</div>
         <div class="flow-card-footer">ผลลัพธ์: Redesign บังคับ / Scheduled Discard</div>
       </div>
-
       <div class="flow-card">
         <div class="flow-card-header">
-          <span>ขั้นตอนที่ 3: เช็คระดับความรุนแรง S = 4 — อิงค่า D (Detection)</span>
-          <span style="font-size:0.75rem; color:var(--primary);">Operational Impact</span>
+          <span>ขั้นตอนที่ 3: เช็คระดับความรุนแรง S = 4 (อิงค่า D)</span>
         </div>
-        <div class="flow-card-body"><b>ถ้า D ≥ 3:</b> (ตรวจจับล่วงหน้ายาก) บังคับทำ Time-based (PM) ตามรอบเวลา เพราะรอสัญญาณเตือนไม่ได้<br><b>ถ้า D < 3:</b> (ตรวจจับง่าย) ใช้ Condition-based (PdM) แทนได้ เพราะเห็นสัญญาณเสื่อมก่อนพังจริง</div>
-        <div class="flow-card-footer">ผลลัพธ์: Time-based (PM) บังคับ หรือ Condition-based (PdM)</div>
+        <div class="flow-card-body"><b>ถ้า D ≥ 3:</b> ทำ Time-based (PM) บังคับ / <b>ถ้า D < 3:</b> ใช้ Condition-based (PdM) แทนได้</div>
+        <div class="flow-card-footer">ผลลัพธ์: Time-based (PM) หรือ Condition-based (PdM)</div>
       </div>
-
       <div class="flow-card">
         <div class="flow-card-header">
-          <span>ขั้นตอนที่ 4: เช็คระดับความรุนแรง S = 3 — อิงค่า O (Occurrence)</span>
-          <span style="font-size:0.75rem; color:var(--primary);">Economic Impact</span>
+          <span>ขั้นตอนที่ 4: เช็คระดับความรุนแรง S = 3 (อิงค่า O)</span>
         </div>
-        <div class="flow-card-body"><b>ถ้า O ≥ 3:</b> (เกิดขึ้นบ่อย) คุ้มค่าที่จะทำ Time-based (PM) ตามรอบเวลา<br><b>ถ้า O < 3:</b> ปล่อยให้เลือก Condition-based (PdM) หรือ PM ตามความเหมาะสมของหน้างาน</div>
-        <div class="flow-card-footer">ผลลัพธ์: Time-based (PM) ตามรอบ หรือ Condition-based (PdM)</div>
+        <div class="flow-card-body"><b>ถ้า O ≥ 3:</b> ทำ Time-based (PM) ตามรอบ / <b>ถ้า O < 3:</b> เลือก PdM หรือ PM ตามความเหมาะสม</div>
+        <div class="flow-card-footer">ผลลัพธ์: Time-based (PM) หรือ Condition-based (PdM)</div>
       </div>
-
       <div class="flow-card" style="border-left-color: #60a5fa; background: rgba(59, 130, 246, 0.08);">
         <div class="flow-card-header" style="color: #60a5fa;">
           <span>ขั้นตอนที่ 5: เงื่อนไขที่เหลือ (S ≤ 2)</span>
-          <span style="font-size:0.75rem; color:var(--muted);">Minor Impact</span>
         </div>
-        <div class="flow-card-body">ตกไปที่กลยุทธ์ซ่อมเมื่อเสียหาย เนื่องจากผลกระทบต่อระบบต่ำมากจนไม่คุ้มค่าที่จะทำ PM ล่วงหน้า</div>
+        <div class="flow-card-body">ตกไปที่กลยุทธ์ซ่อมเมื่อเสียหาย เนื่องจากผลกระทบต่อระบบต่ำมาก</div>
         <div class="flow-card-footer" style="color: #60a5fa; background: rgba(59, 130, 246, 0.15);">ผลลัพธ์: Run-to-failure (CM)</div>
       </div>
-
     </div>
   </div>
 </div>
@@ -788,11 +770,8 @@
       <button class="modal-close" onclick="closeTipModal()">&times;</button>
     </h3>
     <div style="font-size: 0.85rem; line-height: 1.6; color: var(--text);">
-      <p><b>งานบำรุงรักษาเชิงป้องกันตามรอบเวลา (Preventive Maintenance - PM):</b><br>
-      • เหมาะสำหรับอุปกรณ์หรือชิ้นส่วนที่มีอัตราการเสื่อมสภาพตามอายุการใช้งานที่แน่นอน (Wear-out failure)</p>
-      
-      <p><b>งานบำรุงรักษาตามสภาพ (Condition-Based Maintenance - CBM / PdM):</b><br>
-      • เหมาะสำหรับอุปกรณ์หลักที่มีความสำคัญสูง ซึ่งสามารถตรวจวัดอาการเตือนล่วงหน้าได้ก่อนเกิดความเสียหายจริง</p>
+      <p><b>งานบำรุงรักษาเชิงป้องกันตามรอบเวลา (Preventive Maintenance - PM):</b> เหมาะสำหรับอุปกรณ์ที่มีการเสื่อมสภาพตามอายุการใช้งาน</p>
+      <p><b>งานบำรุงรักษาตามสภาพ (Condition-Based Maintenance - CBM / PdM):</b> เหมาะสำหรับอุปกรณ์หลักที่ตรวจวัดอาการเตือนล่วงหน้าได้</p>
     </div>
   </div>
 </div>
@@ -821,9 +800,6 @@
       <div class="val" id="modalStrategy">-</div>
       <div class="label">หมายเหตุเพิ่มเติม:</div>
       <div class="val" id="modalNote">-</div>
-    </div>
-    <div style="background:var(--panel-2); padding:12px; border-radius:8px; font-size:0.8rem; color:var(--muted);">
-      เกณฑ์มาตรฐาน MIL-STD-1629A และ Decision Logic Tree: การประเมินความเสี่ยงและกลยุทธ์ต้องสอดคล้องตามผลกระทบทางวิศวกรรม
     </div>
   </div>
 </div>
@@ -1064,7 +1040,7 @@ let records = [
   {"id": 216, "component": "เสา/สาย", "code": "SM28", "desc": "ปลดสวิตซ์ผิดตัว", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 217, "component": "เสา/สาย", "code": "SM29", "desc": "อุปกรณ์ชำรุดภายในสถานี กฟน.", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 218, "component": "เสา/สาย", "code": "SM30", "desc": "ต้นไม้ (โดนอุปกรณ์สถานี กฟน.)", "cause": "เสื่อมสภาพ", "s": 4, "o": 3, "d": 1, "category": "Operational (ตรวจจับได้)", "strategy": "Condition-based (PdM)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 219, "component": "เสา/สาย", "code": "SM31", "desc": "อุปกรณ์ชำรุดภายในสถานี กฟผ./กฟภ.", "cause": "เสื่อમสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 219, "component": "เสา/สาย", "code": "SM31", "desc": "อุปกรณ์ชำรุดภายในสถานี กฟผ./กฟภ.", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 220, "component": "เสา/สาย", "code": "SM32", "desc": "อุปกรณ์ชำรุดภายในสถานี ลูกค้า", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 221, "component": "เสา/สาย", "code": "SM33", "desc": "สายส่งไม่มีไฟ", "cause": "อื่นๆ", "s": 3, "o": 2, "d": 4, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 222, "component": "เสา/สาย", "code": "SM34", "desc": "Charge Line", "cause": "อื่นๆ", "s": 3, "o": 2, "d": 4, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"}
@@ -1086,18 +1062,18 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
   }
 
-  ['v84','v85'].forEach(v => {
+  ['v85','v86'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v86');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v87');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v86');
+  const savedHi = localStorage.getItem('rcm_hi_data_v87');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -1120,6 +1096,65 @@ function initApp() {
   renderChips();
   renderTable();
   applyRolePermissions();
+}
+
+// ฟังก์ชันอัปโหลดและอ่านไฟล์ Excel (.xlsx, .xls)
+function handleExcelUpload(event) {
+  if (currentUserRole === 'viewer') {
+    alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถอัปโหลดข้อมูลได้');
+    return;
+  }
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      const jsonRows = XLSX.utils.sheet_to_json(worksheet);
+
+      if (jsonRows.length === 0) {
+        alert('ไม่พบข้อมูลภายในไฟล์ Excel ที่อัปโหลด');
+        return;
+      }
+
+      // แปลงข้อมูลให้อยู่ในรูปแบบโครงสร้าง RCM ที่ระบบรองรับ
+      records = jsonRows.map((row, idx) => {
+        let item = {
+          id: row.id || (idx + 1),
+          component: row.component || row.Component || 'TR_General',
+          code: row.code || row.Code || ('C' + (idx + 1)),
+          desc: row.desc || row.Description || row.Failure_Mode || 'โหมดความล้มเหลว',
+          cause: row.cause || row.Cause || '',
+          s: Number(row.s || row.Severity || 3),
+          o: Number(row.o || row.Occurrence || 2),
+          d: Number(row.d || row.Detection || 2),
+          note: row.note || row.Note || '',
+          actionType: 'PM',
+          actionPlan: '',
+          status: 'รอแผนงาน'
+        };
+        calculateLogicTree(item);
+        return item;
+      });
+
+      categories = [...new Set(records.map(r => r.component ? r.component.split('_')[0] : 'OTHER'))];
+      
+      saveData();
+      updateDashboardStats();
+      renderChips();
+      renderTable();
+
+      document.getElementById('importResultMsg').textContent = `✓ นำเข้าข้อมูลจากไฟล์ "${file.name}" สำเร็จ (${records.length} รายการ)`;
+    } catch(err) {
+      console.error(err);
+      alert('เกิดข้อผิดพลาดในการอ่านไฟล์ Excel กรุณาตรวจสอบรูปแบบไฟล์');
+    }
+  };
+  reader.readAsArrayBuffer(file);
 }
 
 function getFormalCategoryName(cat) {
@@ -1314,6 +1349,14 @@ function switchTab(tab, el) {
     tipBtn.style.display = 'none';
     if(kpiStats) kpiStats.style.display = 'none';
     if(analyticsCharts) analyticsCharts.style.display = 'none';
+  } else if(tab === 'import') {
+    titleSub.textContent = "นำเข้าข้อมูลด้วยไฟล์ Excel (Data Import)";
+    document.getElementById('tableInstruction').textContent = "อัปโหลดไฟล์ Excel เพื่ออัปเดตฐานข้อมูล FMEA ในระบบ";
+    document.getElementById('toolbarRow').style.display = 'none';
+    document.getElementById('chips').style.display = 'none';
+    tipBtn.style.display = 'none';
+    if(kpiStats) kpiStats.style.display = 'none';
+    if(analyticsCharts) analyticsCharts.style.display = 'none';
   }
   renderTable();
 }
@@ -1442,12 +1485,14 @@ function renderTable(){
   const mainTableWrapper = document.getElementById('mainTableWrapper');
   const dgaView = document.getElementById('dgaView');
   const treeView = document.getElementById('treeView');
+  const importView = document.getElementById('importView');
 
   if (currentTab === 'dga') {
     paginationBar.style.display = 'none';
     mainTableWrapper.style.display = 'none';
     dgaView.style.display = 'block';
     treeView.style.display = 'none';
+    importView.style.display = 'none';
     document.getElementById('countDisplay').style.display = 'none';
     emptyState.style.display = 'none';
     return;
@@ -1456,13 +1501,24 @@ function renderTable(){
     mainTableWrapper.style.display = 'none';
     dgaView.style.display = 'none';
     treeView.style.display = 'block';
+    importView.style.display = 'none';
     document.getElementById('countDisplay').style.display = 'none';
     emptyState.style.display = 'none';
     renderLogicTreeTable();
     return;
+  } else if (currentTab === 'import') {
+    paginationBar.style.display = 'none';
+    mainTableWrapper.style.display = 'none';
+    dgaView.style.display = 'none';
+    treeView.style.display = 'none';
+    importView.style.display = 'block';
+    document.getElementById('countDisplay').style.display = 'none';
+    emptyState.style.display = 'none';
+    return;
   } else {
     dgaView.style.display = 'none';
     treeView.style.display = 'none';
+    importView.style.display = 'none';
     mainTableWrapper.style.display = 'block';
     document.getElementById('countDisplay').style.display = 'inline';
   }
@@ -1752,26 +1808,20 @@ function renderTable(){
   }
 }
 
-// ฟังก์ชันคำนวณ Logic Tree อัตโนมัติเมื่อคะแนน S เปลี่ยน
 function calculateLogicTree(item) {
   const s = Number(item.s) || 0;
   const note = (item.note || '').toLowerCase();
   
-  // 1. เช็คความเสี่ยงบุคคลที่ 3 จาก Note
   if (note.includes('บุคคลที่ 3') || note.includes('รถชน') || note.includes('เครน') || note.includes('ผู้รับเหมา')) {
     item.category = 'ความเสี่ยงบุคคลที่ 3 (Third-party)';
     item.strategy = 'มาตรการป้องกันเฉพาะ (ไม่ใช่ PM อุปกรณ์)';
     return;
   }
-
-  // 2. เช็ค S = 5
   if (s === 5) {
     item.category = 'Safety-critical';
     item.strategy = 'Redesign บังคับ / Scheduled Discard';
     return;
   }
-
-  // 3. เช็ค S = 4
   if (s === 4) {
     const d = Number(item.d) || 2;
     if (d >= 3) {
@@ -1783,8 +1833,6 @@ function calculateLogicTree(item) {
     }
     return;
   }
-
-  // 4. เช็ค S = 3
   if (s === 3) {
     const o = Number(item.o) || 2;
     if (o >= 3) {
@@ -1796,8 +1844,6 @@ function calculateLogicTree(item) {
     }
     return;
   }
-
-  // 5. ที่เหลือ S <= 2
   item.category = 'Economic-minor';
   item.strategy = 'Run-to-failure (CM)';
 }
@@ -1808,7 +1854,7 @@ function renderLogicTreeTable() {
 
   treeTbody.innerHTML = records.map((r, index) => {
     const s = Number(r.s) || 0;
-    const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
+    const rpn = s * (Number(r.o)||0) * (Number(r.d||0));
     return `
       <tr onclick="openDrilldown(${r.id})">
         <td style="text-align:center;" class="num">${index + 1}</td>
@@ -1842,7 +1888,6 @@ function updateFmea(id, field, val) {
   const item = records.find(r => r.id === id);
   if (item) {
     item[field] = val;
-    // เมื่อมีการเปลี่ยนคะแนนหรือหมายเหตุ ให้รันระบบคำนวณ Logic Tree อัตโนมัติทันที
     if (['s', 'o', 'd', 'note'].includes(field)) {
       calculateLogicTree(item);
     }
@@ -1931,8 +1976,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v87', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v87', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v88', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v88', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
