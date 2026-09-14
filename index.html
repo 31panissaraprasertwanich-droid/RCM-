@@ -236,6 +236,18 @@
   .flow-node.result { border-left-color: #60a5fa; color: #60a5fa; background: rgba(59, 130, 246, 0.08); }
   .flow-arrow { color: var(--muted); font-size: 1.1rem; font-weight: bold; line-height: 1; }
 
+  /* Modal Flow Chart Styles */
+  .modal-flow {
+    display: flex; flex-direction: column; gap: 12px; padding: 10px 0;
+  }
+  .modal-step {
+    background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--primary);
+    padding: 12px 16px; border-radius: var(--radius); font-size: 0.85rem; line-height: 1.5;
+  }
+  .modal-step-title { font-weight: 700; color: var(--primary); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+  .modal-step-desc { color: var(--muted); font-size: 0.8rem; }
+  .modal-flow-arrow { text-align: center; color: var(--muted); font-weight: bold; font-size: 1rem; line-height: 0.5; }
+
   /* DGA Analysis Styles */
   .dga-toolbar {
     background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px;
@@ -561,7 +573,7 @@
     <div id="treeView" style="display:none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
         <div style="font-size: 0.85rem; color: var(--muted);">แผนผังลำดับตรรกะการตัดสินใจเลือกกลยุทธ์บำรุงรักษาตามมาตรฐาน RCM</div>
-        <button class="guideline-btn" onclick="openLogicTreeModal()">ดูเกณฑ์การตัดสินใจแบบละเอียด (Logic Criteria)</button>
+        <button class="guideline-btn" onclick="openLogicTreeModal()">ดูเกณฑ์การตัดสินใจแบบ Flow (Logic Criteria)</button>
       </div>
 
       <!-- Flow Chart Interactive UI -->
@@ -661,28 +673,50 @@
   </div>
 </div>
 
-<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree แบบละเอียด -->
+<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree แบบ Flow Chart -->
 <div class="modal-overlay" id="logicTreeModal" onclick="handleOutsideClick(event, 'logicTreeModal')">
-  <div class="modal" style="max-width: 680px;">
+  <div class="modal" style="max-width: 700px;">
     <h3>
-      <span>เกณฑ์การตัดสินใจ Decision Logic Tree</span>
+      <span>ผังขั้นตอนเกณฑ์การตัดสินใจ Decision Logic Tree</span>
       <button class="modal-close" onclick="closeLogicTreeModal()">&times;</button>
     </h3>
-    <div style="font-size: 0.85rem; line-height: 1.8; color: var(--text);">
-      <p><b>1. เช็คความเสี่ยงบุคคลที่ 3 (จาก Note):</b><br>
-      • ถ้าใช่ (เช่น เครนขุดโดนสาย, คนโดนไฟช็อต) ตัดออกจากเส้นทางบำรุงรักษาอุปกรณ์ทันที เพราะต้องแก้ด้วยมาตรการป้องกัน/การแจ้งเตือน ไม่ใช่ซ่อมอุปกรณ์</p>
+    <div class="modal-flow">
       
-      <p><b>2. เช็ค S = 5 (Safety-critical):</b><br>
-      • ถ้าใช่ จบที่ <b>Redesign บังคับ / Scheduled Discard</b> ทันที ไม่ต้องดูค่าอื่น เพราะเป็นกฎความปลอดภัยสูงสุดจาก MIL-STD-1629A</p>
-      
-      <p><b>3. เช็ค S = 4 (Operational):</b><br>
-      • ไปดูค่า <b>D (Detection)</b> ต่อ: ถ้า D ≥ 3 (ตรวจจับล่วงหน้ายาก) บังคับทำ <i>Time-based (PM) ตามรอบเวลา</i> เพราะรอสัญญาณเตือนไม่ได้ / ถ้า D < 3 (ตรวจจับง่าย) ใช้ <i>Condition-based (PdM)</i> แทนได้ เพราะเห็นสัญญาณเตือนก่อนพังจริง</p>
-      
-      <p><b>4. เช็ค S = 3 (Economic):</b><br>
-      • ไปดูค่า <b>O (Occurrence)</b> ต่อ: ถ้าเกิดขึ้นบ่อย (O ≥ 3) คุ้มที่จะทำ <i>Time-based (PM) ตามรอบ</i> / ถ้าไม่บ่อย ปล่อยให้เลือก <i>PdM หรือ PM ตามความเหมาะสมของหน้างาน</i></p>
-      
-      <p><b>5. ที่เหลือ (S ≤ 2):</b><br>
-      • ตกไปที่ <b>Run-to-failure (CM)</b> เพราะผลกระทบต่ำมากจนไม่คุ้มที่จะทำ PM ล่วงหน้า</p>
+      <div class="modal-step">
+        <div class="modal-step-title">1. เริ่มต้นจากโหมดความล้มเหลว</div>
+        <div class="modal-step-desc">รับข้อมูลนำเข้าจากตาราง FMEA (ประกอบด้วยค่า S, O, D และช่อง Note)</div>
+      </div>
+      <div class="modal-flow-arrow">↓</div>
+
+      <div class="modal-step">
+        <div class="modal-step-title">2. เช็คความเสี่ยงบุคคลที่ 3 (จาก Note)</div>
+        <div class="modal-step-desc"><b>ถ้าใช่:</b> (เช่น เครนขุดโดนสาย, คนโดนไฟช็อต) ตัดออกจากเส้นทางบำรุงรักษาอุปกรณ์ทันที เพราะต้องแก้ด้วยมาตรการป้องกัน/การแจ้งเตือน ไม่ใช่ซ่อมอุปกรณ์</div>
+      </div>
+      <div class="modal-flow-arrow">↓ [ไม่ใช่]</div>
+
+      <div class="modal-step">
+        <div class="modal-step-title">3. เช็ค S = 5 (Safety-critical)</div>
+        <div class="modal-step-desc"><b>ถ้าใช่:</b> จบที่ <b>Redesign บังคับ / Scheduled Discard</b> ทันที ไม่ต้องดูค่าอื่น เพราะเป็นกฎความปลอดภัยสูงสุดจาก MIL-STD-1629A</div>
+      </div>
+      <div class="modal-flow-arrow">↓ [ไม่ใช่]</div>
+
+      <div class="modal-step">
+        <div class="modal-step-title">4. เช็ค S = 4 (Operational) — อิงค่า D (Detection)</div>
+        <div class="modal-step-desc"><b>ถ้า D ≥ 3:</b> (ตรวจจับล่วงหน้ายาก) บังคับทำ <i>Time-based (PM) ตามรอบเวลา</i> เพราะรอสัญญาณเตือนไม่ได้<br><b>ถ้า D < 3:</b> (ตรวจจับง่าย) ใช้ <i>Condition-based (PdM)</i> แทนได้ เพราะเห็นสัญญาณเตือนก่อนพังจริง</div>
+      </div>
+      <div class="modal-flow-arrow">↓ [ไม่ใช่]</div>
+
+      <div class="modal-step">
+        <div class="modal-step-title">5. เช็ค S = 3 (Economic) — อิงค่า O (Occurrence)</div>
+        <div class="modal-step-desc"><b>ถ้า O ≥ 3:</b> (เกิดขึ้นบ่อย) คุ้มที่จะทำ <i>Time-based (PM) ตามรอบ</i><br><b>ถ้า O < 3:</b> ปล่อยให้เลือก <i>PdM หรือ PM ตามความเหมาะสมของหน้างาน</i></div>
+      </div>
+      <div class="modal-flow-arrow">↓ [ไม่ใช่ (S ≤ 2)]</div>
+
+      <div class="modal-step" style="border-left-color: #60a5fa; background: rgba(59, 130, 246, 0.08);">
+        <div class="modal-step-title" style="color: #60a5fa;">6. เงื่อนไขที่เหลือ (S ≤ 2)</div>
+        <div class="modal-step-desc">ตกไปที่ <b>Run-to-failure (CM)</b> เพราะผลกระทบต่ำมากจนไม่คุ้มที่จะทำ PM ล่วงหน้า</div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -993,18 +1027,18 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
   }
 
-  ['v79','v80'].forEach(v => {
+  ['v80','v81'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v81');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v82');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v81');
+  const savedHi = localStorage.getItem('rcm_hi_data_v82');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -1651,7 +1685,7 @@ function renderLogicTreeTable() {
 
   treeTbody.innerHTML = records.map((r, index) => {
     const s = Number(r.s) || 0;
-    const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
+    const rpn = s * (Number(r.o)||0) * (Number(r.d||0));
     return `
       <tr onclick="openDrilldown(${r.id})">
         <td style="text-align:center;" class="num">${index + 1}</td>
@@ -1769,8 +1803,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v82', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v82', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v83', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v83', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
