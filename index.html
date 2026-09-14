@@ -95,7 +95,7 @@
     border-bottom: 1px solid var(--border);
     padding: 20px 32px;
   }
-  .header-inner{ max-width:1300px; margin:0 auto; width: 100%; }
+  .header-inner{ max-width:1400px; margin:0 auto; width: 100%; }
   .title-row{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
   h1{ font-size:1.2rem; font-weight:700; margin:0; letter-spacing: -0.02em; }
   h1 .accent{color: var(--primary);}
@@ -170,22 +170,22 @@
   .chip:hover{border-color:var(--primary); color:var(--text);}
   .chip.active{ background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight:600; }
 
-  main { padding: 24px 32px 60px; max-width: 1300px; margin: 0 auto; width: 100%; }
+  main { padding: 24px 32px 60px; max-width: 1400px; margin: 0 auto; width: 100%; }
 
-  /* Table Design */
+  /* Table Design - ปรับความกว้างตารางให้โปร่งโล่ง อ่านง่ายขึ้น ไม่เบียด */
   .table-responsive {
     width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
     border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel);
   }
-  table{ width: 100%; min-width: 1100px; border-collapse: collapse; font-size: 0.85rem; }
+  table{ width: 100%; min-width: 1250px; border-collapse: collapse; font-size: 0.84rem; }
   thead th{
     text-align: left; font-size: 0.73rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
-    padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--panel-2); white-space: nowrap;
+    padding: 12px 14px; border-bottom: 1px solid var(--border); background: var(--panel-2); white-space: nowrap;
   }
   
   tbody tr{ border-bottom: 1px solid var(--border); transition: background .1s ease; cursor: pointer; }
   tbody tr:hover{ background: var(--panel-2); }
-  tbody td{ padding: 10px 16px; vertical-align: middle; }
+  tbody td{ padding: 10px 14px; vertical-align: middle; }
   td.num{ color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; }
   
   .code-pill{
@@ -215,8 +215,6 @@
   .flag-red { background: var(--danger-dim); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
   .flag-orange { background: var(--primary-dim); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
   .flag-green { background: var(--teal-dim); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.3); }
-
-  .note-input { min-width: 200px; }
 
   .plan-info-banner {
     background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--primary);
@@ -293,7 +291,7 @@
     font-size:0.78rem; color:var(--muted); margin:0 0 10px 2px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
   }
 
-  footer{ max-width:1300px; margin:0 auto; padding:0 32px 40px; color:var(--muted); font-size:0.75rem; text-align: center; }
+  footer{ max-width:1400px; margin:0 auto; padding:0 32px 40px; color:var(--muted); font-size:0.75rem; text-align: center; }
 
   @media(max-width: 900px) {
     body { flex-direction: column; }
@@ -656,7 +654,6 @@
 </div>
 
 <script>
-// ตัวแปรเก็บสิทธิ์ผู้ใช้งานปัจจุบัน ('admin', 'operator', 'viewer')
 let currentUserRole = 'admin';
 
 function onRoleChange() {
@@ -673,7 +670,6 @@ function applyRolePermissions() {
   renderTable();
 }
 
-// ชุดข้อมูลเริ่มต้น พร้อมข้อมูลจาก Decision Logic Tree
 let records = [
   {"id": 1, "component": "TR_Counter L/A", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cause": "โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", "s": 2, "o": 2, "d": 2, "category": "Economic-minor", "strategy": "Run-to-failure (CM)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 2, "component": "TR_OLevelGauge", "code": "T002", "desc": "Oil level gauge ชำรุด", "cause": "โครงแตก, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -915,18 +911,18 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = 'โหมดมืด';
   }
 
-  ['v73','v74'].forEach(v => {
+  ['v74','v75'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v75');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v76');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v75');
+  const savedHi = localStorage.getItem('rcm_hi_data_v76');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -1437,9 +1433,9 @@ function renderTable(){
         <th style="width:120px; text-align:center;">กลุ่มความสำคัญ</th>
         <th style="width:140px; text-align:center;">ประเภทผลกระทบ</th>
         <th style="width:150px; text-align:center;">กลยุทธ์ตาม Logic Tree</th>
-        <th style="width:110px; text-align:center;">กลยุทธ์บำรุงรักษา</th>
-        <th style="width:160px;">รายละเอียดแผนปฏิบัติการ</th>
-        <th style="width:85px; text-align:center;">สถานะ</th>
+        <th style="width:130px; text-align:center;">กลยุทธ์บำรุงรักษา</th>
+        <th style="width:180px;">รายละเอียดแผนปฏิบัติการ</th>
+        <th style="width:95px; text-align:center;">สถานะ</th>
       </tr>
     `;
 
@@ -1485,7 +1481,7 @@ function renderTable(){
     } else {
       tbody.innerHTML = paginatedPlan.map((r, index) => {
         const s = Number(r.s) || 0;
-        const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
+        const rpn = s * (Number(r.o)||0) * (Number(r.d||0));
         
         let flagClass = 'flag-green';
         let flagText = 'ปานกลาง / ต่ำ';
@@ -1510,17 +1506,17 @@ function renderTable(){
             <td style="font-size:0.78rem; color:var(--muted);">${escapeHtml(r.category || 'Economic-low')}</td>
             <td style="font-size:0.78rem; color:var(--teal); font-weight:600;">${escapeHtml(r.strategy || 'Condition-based (PdM)')}</td>
             <td style="text-align:center;" onclick="event.stopPropagation()">
-              <select class="text-input" style="text-align:center;" ${disabledAttr} onchange="updateFmea(${r.id}, 'actionType', this.value)">
+              <select class="text-input" style="text-align:center; padding:6px 4px;" ${disabledAttr} onchange="updateFmea(${r.id}, 'actionType', this.value)">
                 <option value="PM" ${r.actionType === 'PM' ? 'selected' : ''}>PM (ตามรอบ)</option>
                 <option value="CBM" ${r.actionType === 'CBM' ? 'selected' : ''}>CBM (ตามสภาพ)</option>
               </select>
             </td>
             <td onclick="event.stopPropagation()"><input type="text" class="text-input" value="${escapeHtml(r.actionPlan || '')}" placeholder="ระบุแผนปฏิบัติการ..." ${disabledAttr} oninput="updateFmea(${r.id}, 'actionPlan', this.value)"></td>
             <td style="text-align:center;" onclick="event.stopPropagation()">
-              <select class="text-input" style="text-align:center;" ${isReadOnly ? 'disabled' : ''} onchange="updateFmea(${r.id}, 'status', this.value)">
-                <option value="รอแผนงาน" ${r.status === 'รอแผนงาน' ? 'selected' : ''}>รอแผนงาน</option>
-                <option value="กำลังดำเนินการ" ${r.status === 'กำลังดำเนินการ' ? 'selected' : ''}>กำลังดำเนินการ</option>
-                <option value="เสร็จสิ้น" ${r.status === 'เสร็จสิ้น' ? 'selected' : ''}>เสร็จสิ้น</option>
+              <select class="text-input" style="text-align:center; padding:6px 4px;" ${isReadOnly ? 'disabled' : ''} onchange="updateFmea(${r.id}, 'status', this.value)">
+                <option value="รอแผนงาน" ${r.status === 'รอแผนงาน' ? 'selected' : ''}>รอแผน</option>
+                <option value="กำลังดำเนินการ" ${r.status === 'กำลังดำเนินการ' ? 'selected' : ''}>กำลังทำ</option>
+                <option value="เสร็จสิ้น" ${r.status === 'เสร็จสิ้น' ? 'selected' : ''}>เสร็จ</option>
               </select>
             </td>
           </tr>
@@ -1631,8 +1627,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v76', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v76', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v77', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v77', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
