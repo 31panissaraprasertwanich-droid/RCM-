@@ -639,7 +639,7 @@
       </div>
     </div>
 
-    <!-- Data Import View (แท็บที่ 6: นำเข้าข้อมูลทั้ง FMEA และผลแล็บ HI) -->
+    <!-- Data Import View (แท็บที่ 6) -->
     <div id="importView" style="display:none;">
       <div class="plan-info-banner">
         <b>โมดูลนำเข้าข้อมูลด้วยไฟล์ Excel (Data Import):</b><br>
@@ -647,7 +647,6 @@
       </div>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 20px;">
-        <!-- อัปโหลด FMEA -->
         <div class="upload-box" onclick="document.getElementById('excelFileInput').click()">
           <div class="upload-icon">📊</div>
           <div style="font-size: 0.95rem; font-weight: 700; color: var(--text);">อัปโหลดข้อมูล FMEA / RPN</div>
@@ -655,7 +654,6 @@
           <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display:none;" onchange="handleExcelUpload(event)">
         </div>
 
-        <!-- อัปโหลดผลแล็บ HI -->
         <div class="upload-box" onclick="document.getElementById('hiExcelFileInput').click()">
           <div class="upload-icon">🧪</div>
           <div style="font-size: 0.95rem; font-weight: 700; color: var(--text);">อัปโหลดข้อมูลผลแล็บ / ดัชนีสุขภาพ (HI)</div>
@@ -688,13 +686,14 @@
   </footer>
 </div>
 
-<!-- Modal เกณฑ์มาตรฐาน FMEA -->
+<!-- Modal เกณฑ์มาตรฐาน MIL-STD-1629A ครบถ้วน (S, O, D) -->
 <div class="modal-overlay" id="guidelineModal" onclick="handleOutsideClick(event, 'guidelineModal')">
-  <div class="modal">
+  <div class="modal" style="max-width: 750px;">
     <h3>
       <span>เกณฑ์มาตรฐาน MIL-STD-1629A</span>
       <button class="modal-close" onclick="closeGuidelineModal()">&times;</button>
     </h3>
+    
     <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">1. เกณฑ์ระดับความรุนแรง (Severity: S)</div>
     <table class="guideline-table">
       <tr><th style="width: 50px; text-align:center;">ระดับ</th><th>เกณฑ์การประเมินผลกระทบ</th></tr>
@@ -704,42 +703,53 @@
       <tr><td style="text-align:center;">4</td><td>ส่งผลกระทบรุนแรง ระบบหยุดทำงานหลัก (Critical)</td></tr>
       <tr><td style="text-align:center;">5</td><td>ระดับความเสียหายรุนแรงสูงสุด สูญเสียชีวิตหรือทรัพย์สินมหาศาล (Catastrophic)</td></tr>
     </table>
+
+    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">2. เกณฑ์ความถี่ของการเกิด (Occurrence: O)</div>
+    <table class="guideline-table">
+      <tr><th style="width: 50px; text-align:center;">ระดับ</th><th>เกณฑ์ความถี่</th><th>อัตราการเกิด</th></tr>
+      <tr><td style="text-align:center;">1</td><td>ไม่น่าจะเกิดขึ้น</td><td>-</td></tr>
+      <tr><td style="text-align:center;">2</td><td>เกิดขึ้นค่อนข้างน้อยมาก</td><td>1 ใน 10,000</td></tr>
+      <tr><td style="text-align:center;">3</td><td>เกิดขึ้นเป็นบางครั้งคราว</td><td>1 ใน 1,000</td></tr>
+      <tr><td style="text-align:center;">4</td><td>มีโอกาสเกิดขึ้นได้ปานกลาง</td><td>1 ใน 100</td></tr>
+      <tr><td style="text-align:center;">5</td><td>เกิดขึ้นบ่อยครั้ง</td><td>1 ใน 10</td></tr>
+    </table>
+
+    <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px;">3. เกณฑ์โอกาสตรวจพบ (Detection: D)</div>
+    <table class="guideline-table">
+      <tr><th style="width: 50px; text-align:center;">ระดับ</th><th>เกณฑ์การตรวจพบความผิดปกติล่วงหน้า</th></tr>
+      <tr><td style="text-align:center;">1</td><td>มีระบบตรวจสอบและโอกาสตรวจพบสูงมาก (80% - 100%)</td></tr>
+      <tr><td style="text-align:center;">2</td><td>มีโอกาสตรวจพบสูง (60% - 80%)</td></tr>
+      <tr><td style="text-align:center;">3</td><td>มีโอกาสตรวจพบปานกลาง (40% - 60%)</td></tr>
+      <tr><td style="text-align:center;">4</td><td>มีโอกาสตรวจพบค่อนข้างน้อย (20% - 40%)</td></tr>
+      <tr><td style="text-align:center;">5</td><td>ไม่สามารถตรวจพบได้ล่วงหน้าหรือน้อยมาก (0% - 20%)</td></tr>
+    </table>
   </div>
 </div>
 
-<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree -->
+<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree แบบสะอาดตาไม่อึดอัด -->
 <div class="modal-overlay" id="logicTreeModal" onclick="handleOutsideClick(event, 'logicTreeModal')">
-  <div class="modal" style="max-width: 720px;">
+  <div class="modal" style="max-width: 650px;">
     <h3>
-      <span>รายละเอียดเกณฑ์การตัดสินใจ Decision Logic Tree</span>
+      <span>ผังเกณฑ์การตัดสินใจ Decision Logic Tree</span>
       <button class="modal-close" onclick="closeLogicTreeModal()">&times;</button>
     </h3>
-    <div class="modal-flow-grid">
-      <div class="flow-card">
-        <div class="flow-card-header"><span>ขั้นตอนที่ 1: เช็คความเสี่ยงบุคคลที่ 3 (จากช่อง Note)</span></div>
-        <div class="flow-card-body"><b>ถ้าใช่:</b> ตัดออกจากเส้นทางบำรุงรักษาอุปกรณ์ทันที เพราะต้องแก้ด้วยมาตรการป้องกันหรือการแจ้งเตือน</div>
-        <div class="flow-card-footer">ผลลัพธ์: มาตรการป้องกันเฉพาะ (ไม่ใช่ PM อุปกรณ์)</div>
-      </div>
-      <div class="flow-card">
-        <div class="flow-card-header"><span>ขั้นตอนที่ 2: เช็คระดับความรุนแรง S = 5</span></div>
-        <div class="flow-card-body"><b>ถ้าใช่:</b> จบที่การปรับปรุงระบบทันทีเนื่องจากเป็นความปลอดภัยสูงสุด</div>
-        <div class="flow-card-footer">ผลลัพธ์: Redesign บังคับ / Scheduled Discard</div>
-      </div>
-      <div class="flow-card">
-        <div class="flow-card-header"><span>ขั้นตอนที่ 3: เช็คระดับความรุนแรง S = 4 (อิงค่า D)</span></div>
-        <div class="flow-card-body"><b>ถ้า D ≥ 3:</b> ทำ Time-based (PM) บังคับ / <b>ถ้า D < 3:</b> ใช้ Condition-based (PdM) แทนได้</div>
-        <div class="flow-card-footer">ผลลัพธ์: Time-based (PM) หรือ Condition-based (PdM)</div>
-      </div>
-      <div class="flow-card">
-        <div class="flow-card-header"><span>ขั้นตอนที่ 4: เช็คระดับความรุนแรง S = 3 (อิงค่า O)</span></div>
-        <div class="flow-card-body"><b>ถ้า O ≥ 3:</b> ทำ Time-based (PM) ตามรอบ / <b>ถ้า O < 3:</b> เลือก PdM หรือ PM ตามความเหมาะสม</div>
-        <div class="flow-card-footer">ผลลัพธ์: Time-based (PM) หรือ Condition-based (PdM)</div>
-      </div>
-      <div class="flow-card" style="border-left-color: #60a5fa; background: rgba(59, 130, 246, 0.08);">
-        <div class="flow-card-header" style="color: #60a5fa;"><span>ขั้นตอนที่ 5: เงื่อนไขที่เหลือ (S ≤ 2)</span></div>
-        <div class="flow-card-body">ตกไปที่กลยุทธ์ซ่อมเมื่อเสียหาย เนื่องจากผลกระทบต่อระบบต่ำมาก</div>
-        <div class="flow-card-footer" style="color: #60a5fa; background: rgba(59, 130, 246, 0.15);">ผลลัพธ์: Run-to-failure (CM)</div>
-      </div>
+    <div style="font-size: 0.88rem; line-height: 1.8; color: var(--text);">
+      <p><b>1. เช็คความเสี่ยงบุคคลที่ 3 (จากช่อง Note):</b><br>
+      • <b>ถ้าใช่:</b> ตัดออกจากเส้นทางบำรุงรักษาอุปกรณ์ทันที เพราะต้องแก้ด้วยมาตรการป้องกันหรือการแจ้งเตือน (ไม่ใช่ซ่อมอุปกรณ์)</p>
+      
+      <p><b>2. เช็ค S = 5 (Safety-critical):</b><br>
+      • <b>ถ้าใช่:</b> จบที่การปรับปรุงระบบทันที เนื่องจากเป็นความปลอดภัยสูงสุด</p>
+      
+      <p><b>3. เช็ค S = 4 (Operational) — อิงค่า D (Detection):</b><br>
+      • <b>ถ้า D ≥ 3:</b> ตรวจจับยาก ➔ ทำ <b>Time-based (PM)</b> บังคับ<br>
+      • <b>ถ้า D < 3:</b> ตรวจจับง่าย ➔ ใช้ <b>Condition-based (PdM)</b> แทนได้</p>
+      
+      <p><b>4. เช็ค S = 3 (Economic) — อิงค่า O (Occurrence):</b><br>
+      • <b>ถ้า O ≥ 3:</b> เกิดบ่อย ➔ คุ้มทำ <b>Time-based (PM)</b> ตามรอบ<br>
+      • <b>ถ้า O < 3:</b> เกิดน้อย ➔ เลือก PdM หรือ PM ตามความเหมาะสม</p>
+      
+      <p><b>5. เงื่อนไขที่เหลือ (S ≤ 2):</b><br>
+      • ผลกระทบต่อระบบต่ำมาก ➔ ตกไปที่ <b>Run-to-failure (CM)</b> ซ่อมเมื่อเกิดความเสียหาย</p>
     </div>
   </div>
 </div>
@@ -1039,23 +1049,23 @@ function initApp() {
   const savedTheme = localStorage.getItem('rcm_theme_mode');
   if (savedTheme === 'light') {
     document.body.classList.add('light-mode');
-    document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
+    document.getElementById('modeToggleBtn').textContent = 'โหมดมืด';
   } else {
     document.getElementById('modeToggleBtn').textContent = 'โหมดมืด';
   }
 
-  ['v86','v87'].forEach(v => {
+  ['v87','v88'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v88');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v89');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v88');
+  const savedHi = localStorage.getItem('rcm_hi_data_v89');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -1080,7 +1090,6 @@ function initApp() {
   applyRolePermissions();
 }
 
-// ฟังก์ชันอัปโหลดไฟล์ FMEA
 function handleExcelUpload(event) {
   if (currentUserRole === 'viewer') {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถอัปโหลดข้อมูลได้');
@@ -1138,7 +1147,6 @@ function handleExcelUpload(event) {
   reader.readAsArrayBuffer(file);
 }
 
-// ฟังก์ชันอัปโหลดไฟล์ผลแล็บ / HI เฉพาะส่วน
 function handleHiExcelUpload(event) {
   if (currentUserRole === 'viewer') {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถอัปโหลดข้อมูลได้');
@@ -1182,6 +1190,19 @@ function handleHiExcelUpload(event) {
     }
   };
   reader.readAsArrayBuffer(file);
+}
+
+function getFormalCategoryName(cat) {
+  const mapping = {
+    'TR': 'Power Transformer (TR)',
+    'HV': 'High Voltage System (HV)',
+    'MV': 'Medium Voltage Swgr. (MV)',
+    'LV': 'Low Voltage & Auxiliary (LV)',
+    'SCADA': 'SCADA & Control (SCADA)',
+    'Pole/Route': 'Underground Cable Route',
+    'เสา/สาย': 'Overhead Line & Pole'
+  };
+  return mapping[cat] || cat;
 }
 
 function populateDgaAssetDropdown() {
@@ -1712,6 +1733,7 @@ function renderTable(){
 
   } else if (currentTab === 'plan') {
     paginationBar.style.display = 'flex';
+    // เอาช่อง "สถานะ" ออกตามที่คุณต้องการ
     thead.innerHTML = `
       <tr>
         <th style="width:40px; text-align:center;">ลำดับ</th>
@@ -1723,8 +1745,7 @@ function renderTable(){
         <th style="width:140px; text-align:center;">ประเภทผลกระทบ</th>
         <th style="width:150px; text-align:center;">กลยุทธ์ตาม Logic Tree</th>
         <th style="width:130px; text-align:center;">กลยุทธ์บำรุงรักษา</th>
-        <th style="width:180px;">รายละเอียดแผนปฏิบัติการ</th>
-        <th style="width:95px; text-align:center;">สถานะ</th>
+        <th style="width:220px;">รายละเอียดแผนปฏิบัติการ</th>
       </tr>
     `;
 
@@ -1765,7 +1786,7 @@ function renderTable(){
     const disabledAttr = isReadOnly ? 'disabled' : '';
 
     if (totalPlan === 0) {
-      tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:40px; color:var(--muted);">ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:40px; color:var(--muted);">ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา</td></tr>`;
       paginationBar.style.display = 'none';
     } else {
       tbody.innerHTML = paginatedPlan.map((r, index) => {
@@ -1801,13 +1822,6 @@ function renderTable(){
               </select>
             </td>
             <td onclick="event.stopPropagation()"><input type="text" class="text-input" value="${escapeHtml(r.actionPlan || '')}" placeholder="ระบุแผนปฏิบัติการ..." ${disabledAttr} oninput="updateFmea(${r.id}, 'actionPlan', this.value)"></td>
-            <td style="text-align:center;" onclick="event.stopPropagation()">
-              <select class="text-input" style="text-align:center; padding:6px 4px;" ${isReadOnly ? 'disabled' : ''} onchange="updateFmea(${r.id}, 'status', this.value)">
-                <option value="รอแผนงาน" ${r.status === 'รอแผนงาน' ? 'selected' : ''}>รอแผน</option>
-                <option value="กำลังดำเนินการ" ${r.status === 'กำลังดำเนินการ' ? 'selected' : ''}>กำลังทำ</option>
-                <option value="เสร็จสิ้น" ${r.status === 'เสร็จสิ้น' ? 'selected' : ''}>เสร็จ</option>
-              </select>
-            </td>
           </tr>
         `;
       }).join('');
@@ -1924,7 +1938,7 @@ function updateHi(uid, field, val) {
 function openDrilldown(id) {
   const r = records.find(item => item.id === id);
   if (!r) return;
-  const rpn = (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d)||0);
+  const rpn = (Number(r.s)||0) * (Number(r.o)||0) * (Number(r.d||0));
 
   document.getElementById('modalComp').textContent = r.component;
   document.getElementById('modalCode').textContent = r.code;
@@ -1972,7 +1986,7 @@ function exportToCSV() {
   let csvContent = "\uFEFFลำดับ,อุปกรณ์,รหัส,โหมดความล้มเหลว,สาเหตุความเสียหาย,ความรุนแรง,ความถี่,การตรวจพบ,RPN,ประเภทผลกระทบ,กลยุทธ์แนะนำ,หมายเหตุ\n";
   records.forEach(r => {
     const s = Number(r.s) || 0;
-    const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
+    const rpn = s * (Number(r.o)||0) * (Number(r.d||0));
     csvContent += `"${r.id}","${r.component}","${r.code}","${r.desc}","${r.cause || ''}","${r.s || ''}","${r.o || ''}","${r.d || ''}","${rpn}","${r.category || ''}","${r.strategy || ''}","${r.note || ''}"\n`;
   });
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1990,8 +2004,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v89', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v89', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v90', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v90', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
