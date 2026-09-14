@@ -241,11 +241,11 @@
   }
   .branch-yes {
     background: rgba(20, 184, 166, 0.12); border: 1px solid var(--teal); border-radius: 6px; padding: 8px 12px;
-    font-size: 0.8rem; color: var(--teal); font-weight: 600; text-align: center;
+    font-size: 0.80rem; color: var(--teal); font-weight: 600; text-align: center;
   }
   .branch-no {
     background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px;
-    font-size: 0.8rem; color: var(--muted); text-align: center;
+    font-size: 0.80rem; color: var(--muted); text-align: center;
   }
   .flow-down-arrow {
     text-align: center; color: var(--muted); font-weight: bold; font-size: 1.1rem; line-height: 1;
@@ -254,29 +254,11 @@
   /* Excel Upload Box */
   .upload-box {
     background: var(--panel); border: 2px dashed var(--border); border-radius: var(--radius);
-    padding: 40px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px;
-    margin-bottom: 20px; transition: all 0.2s;
+    padding: 30px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;
+    margin-bottom: 16px; transition: all 0.2s; cursor: pointer;
   }
   .upload-box:hover { border-color: var(--primary); background: var(--panel-2); }
-  .upload-icon { font-size: 2.5rem; color: var(--primary); }
-
-  /* Modal Clean Flow Card Styles */
-  .modal-flow-grid {
-    display: flex; flex-direction: column; gap: 14px; padding: 10px 0;
-  }
-  .flow-card {
-    background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--primary);
-    padding: 14px 18px; border-radius: var(--radius); display: flex; flex-direction: column; gap: 6px;
-  }
-  .flow-card-header {
-    display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 0.9rem; color: var(--primary);
-  }
-  .flow-card-body {
-    font-size: 0.82rem; color: var(--text); line-height: 1.5;
-  }
-  .flow-card-footer {
-    font-size: 0.78rem; color: var(--teal); background: var(--teal-dim); padding: 6px 10px; border-radius: 6px; margin-top: 4px; font-weight: 600;
-  }
+  .upload-icon { font-size: 2.2rem; color: var(--primary); }
 
   /* DGA Analysis Styles */
   .dga-toolbar {
@@ -362,7 +344,7 @@
 </head>
 <body>
 
-<!-- Sidebar เมนูฝั่งซ้ายแบบทางการ (เพิ่มเมนูที่ 6: นำเข้าไฟล์ Excel) -->
+<!-- Sidebar เมนูฝั่งซ้ายแบบทางการ -->
 <aside class="sidebar">
   <div class="sidebar-brand">
     RCM <span class="accent">ENGINEERING SYSTEM</span>
@@ -374,7 +356,7 @@
     <button class="tab-btn" onclick="switchTab('plan', this)" id="btnPlan">3. แผนงานบำรุงรักษา (Action Plan)</button>
     <button class="tab-btn" onclick="switchTab('dga', this)" id="btnDga">4. วิเคราะห์ก๊าซละลาย (DGA)</button>
     <button class="tab-btn" onclick="switchTab('tree', this)" id="btnTree">5. Decision Logic Tree</button>
-    <button class="tab-btn" onclick="switchTab('import', this)" id="btnImport">6. นำเข้าไฟล์ Excel (Data Import)</button>
+    <button class="tab-btn" onclick="switchTab('import', this)" id="btnImport">6. นำเข้าข้อมูล (Data Import)</button>
   </div>
   
   <div class="sidebar-footer">
@@ -457,7 +439,6 @@
         </div>
       </div>
 
-      <!-- หมวดหมู่อุปกรณ์ชื่อทางการ -->
       <div class="chips" id="chips"></div>
     </div>
   </header>
@@ -470,7 +451,7 @@
     
     <div id="bannerContainer"></div>
 
-    <!-- Main Table View -->
+    <!-- Main Table View (FMEA) -->
     <div class="table-responsive" id="mainTableWrapper">
       <table>
         <thead id="tableHead"></thead>
@@ -658,18 +639,29 @@
       </div>
     </div>
 
-    <!-- Data Import View (แท็บที่ 6: นำเข้าไฟล์ Excel) -->
+    <!-- Data Import View (แท็บที่ 6: นำเข้าข้อมูลทั้ง FMEA และผลแล็บ HI) -->
     <div id="importView" style="display:none;">
       <div class="plan-info-banner">
         <b>โมดูลนำเข้าข้อมูลด้วยไฟล์ Excel (Data Import):</b><br>
-        คุณสามารถอัปโหลดไฟล์ Excel (.xlsx, .xls) ของคุณเข้ามาเพื่ออัปเดตฐานข้อมูล FMEA ในระบบได้ทันที โดยโครงสร้างคอลัมน์ในไฟล์ควรประกอบด้วย: <b>component, code, desc, cause, s, o, d, note</b>
+        คุณสามารถอัปโหลดไฟล์ Excel เพื่ออัปเดตฐานข้อมูลในระบบได้จากจุดนี้:
       </div>
 
-      <div class="upload-box" onclick="document.getElementById('excelFileInput').click()">
-        <div class="upload-icon">📂</div>
-        <div style="font-size: 1rem; font-weight: 700; color: var(--text);">คลิกเพื่อเลือกไฟล์ Excel หรือลากไฟล์มาวางที่นี่</div>
-        <div style="font-size: 0.8rem; color: var(--muted);">รองรับไฟล์นามสกุล .xlsx และ .xls</div>
-        <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display:none;" onchange="handleExcelUpload(event)">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 20px;">
+        <!-- อัปโหลด FMEA -->
+        <div class="upload-box" onclick="document.getElementById('excelFileInput').click()">
+          <div class="upload-icon">📊</div>
+          <div style="font-size: 0.95rem; font-weight: 700; color: var(--text);">อัปโหลดข้อมูล FMEA / RPN</div>
+          <div style="font-size: 0.78rem; color: var(--muted);">รองรับไฟล์ .xlsx (คอลัมน์: component, code, desc, cause, s, o, d, note)</div>
+          <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display:none;" onchange="handleExcelUpload(event)">
+        </div>
+
+        <!-- อัปโหลดผลแล็บ HI -->
+        <div class="upload-box" onclick="document.getElementById('hiExcelFileInput').click()">
+          <div class="upload-icon">🧪</div>
+          <div style="font-size: 0.95rem; font-weight: 700; color: var(--text);">อัปโหลดข้อมูลผลแล็บ / ดัชนีสุขภาพ (HI)</div>
+          <div style="font-size: 0.78rem; color: var(--muted);">รองรับไฟล์ .xlsx (คอลัมน์: component, testCategory, testItems, si, smax, wi)</div>
+          <input type="file" id="hiExcelFileInput" accept=".xlsx, .xls" style="display:none;" onchange="handleHiExcelUpload(event)">
+        </div>
       </div>
 
       <div id="importResultMsg" style="font-size: 0.85rem; color: var(--teal); text-align: center; margin-top: 10px; font-weight: 600;"></div>
@@ -724,37 +716,27 @@
     </h3>
     <div class="modal-flow-grid">
       <div class="flow-card">
-        <div class="flow-card-header">
-          <span>ขั้นตอนที่ 1: เช็คความเสี่ยงบุคคลที่ 3 (จากช่อง Note)</span>
-        </div>
+        <div class="flow-card-header"><span>ขั้นตอนที่ 1: เช็คความเสี่ยงบุคคลที่ 3 (จากช่อง Note)</span></div>
         <div class="flow-card-body"><b>ถ้าใช่:</b> ตัดออกจากเส้นทางบำรุงรักษาอุปกรณ์ทันที เพราะต้องแก้ด้วยมาตรการป้องกันหรือการแจ้งเตือน</div>
         <div class="flow-card-footer">ผลลัพธ์: มาตรการป้องกันเฉพาะ (ไม่ใช่ PM อุปกรณ์)</div>
       </div>
       <div class="flow-card">
-        <div class="flow-card-header">
-          <span>ขั้นตอนที่ 2: เช็คระดับความรุนแรง S = 5</span>
-        </div>
+        <div class="flow-card-header"><span>ขั้นตอนที่ 2: เช็คระดับความรุนแรง S = 5</span></div>
         <div class="flow-card-body"><b>ถ้าใช่:</b> จบที่การปรับปรุงระบบทันทีเนื่องจากเป็นความปลอดภัยสูงสุด</div>
         <div class="flow-card-footer">ผลลัพธ์: Redesign บังคับ / Scheduled Discard</div>
       </div>
       <div class="flow-card">
-        <div class="flow-card-header">
-          <span>ขั้นตอนที่ 3: เช็คระดับความรุนแรง S = 4 (อิงค่า D)</span>
-        </div>
+        <div class="flow-card-header"><span>ขั้นตอนที่ 3: เช็คระดับความรุนแรง S = 4 (อิงค่า D)</span></div>
         <div class="flow-card-body"><b>ถ้า D ≥ 3:</b> ทำ Time-based (PM) บังคับ / <b>ถ้า D < 3:</b> ใช้ Condition-based (PdM) แทนได้</div>
         <div class="flow-card-footer">ผลลัพธ์: Time-based (PM) หรือ Condition-based (PdM)</div>
       </div>
       <div class="flow-card">
-        <div class="flow-card-header">
-          <span>ขั้นตอนที่ 4: เช็คระดับความรุนแรง S = 3 (อิงค่า O)</span>
-        </div>
+        <div class="flow-card-header"><span>ขั้นตอนที่ 4: เช็คระดับความรุนแรง S = 3 (อิงค่า O)</span></div>
         <div class="flow-card-body"><b>ถ้า O ≥ 3:</b> ทำ Time-based (PM) ตามรอบ / <b>ถ้า O < 3:</b> เลือก PdM หรือ PM ตามความเหมาะสม</div>
         <div class="flow-card-footer">ผลลัพธ์: Time-based (PM) หรือ Condition-based (PdM)</div>
       </div>
       <div class="flow-card" style="border-left-color: #60a5fa; background: rgba(59, 130, 246, 0.08);">
-        <div class="flow-card-header" style="color: #60a5fa;">
-          <span>ขั้นตอนที่ 5: เงื่อนไขที่เหลือ (S ≤ 2)</span>
-        </div>
+        <div class="flow-card-header" style="color: #60a5fa;"><span>ขั้นตอนที่ 5: เงื่อนไขที่เหลือ (S ≤ 2)</span></div>
         <div class="flow-card-body">ตกไปที่กลยุทธ์ซ่อมเมื่อเสียหาย เนื่องจากผลกระทบต่อระบบต่ำมาก</div>
         <div class="flow-card-footer" style="color: #60a5fa; background: rgba(59, 130, 246, 0.15);">ผลลัพธ์: Run-to-failure (CM)</div>
       </div>
@@ -1057,23 +1039,23 @@ function initApp() {
   const savedTheme = localStorage.getItem('rcm_theme_mode');
   if (savedTheme === 'light') {
     document.body.classList.add('light-mode');
-    document.getElementById('modeToggleBtn').textContent = 'โหมดมืด';
-  } else {
     document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
+  } else {
+    document.getElementById('modeToggleBtn').textContent = 'โหมดมืด';
   }
 
-  ['v85','v86'].forEach(v => {
+  ['v86','v87'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v87');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v88');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v87');
+  const savedHi = localStorage.getItem('rcm_hi_data_v88');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -1098,7 +1080,7 @@ function initApp() {
   applyRolePermissions();
 }
 
-// ฟังก์ชันอัปโหลดและอ่านไฟล์ Excel (.xlsx, .xls)
+// ฟังก์ชันอัปโหลดไฟล์ FMEA
 function handleExcelUpload(event) {
   if (currentUserRole === 'viewer') {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถอัปโหลดข้อมูลได้');
@@ -1121,7 +1103,6 @@ function handleExcelUpload(event) {
         return;
       }
 
-      // แปลงข้อมูลให้อยู่ในรูปแบบโครงสร้าง RCM ที่ระบบรองรับ
       records = jsonRows.map((row, idx) => {
         let item = {
           id: row.id || (idx + 1),
@@ -1148,26 +1129,59 @@ function handleExcelUpload(event) {
       renderChips();
       renderTable();
 
-      document.getElementById('importResultMsg').textContent = `✓ นำเข้าข้อมูลจากไฟล์ "${file.name}" สำเร็จ (${records.length} รายการ)`;
+      document.getElementById('importResultMsg').textContent = `✓ นำเข้าข้อมูล FMEA จากไฟล์ "${file.name}" สำเร็จ (${records.length} รายการ)`;
     } catch(err) {
       console.error(err);
-      alert('เกิดข้อผิดพลาดในการอ่านไฟล์ Excel กรุณาตรวจสอบรูปแบบไฟล์');
+      alert('เกิดข้อผิดพลาดในการอ่านไฟล์ FMEA Excel');
     }
   };
   reader.readAsArrayBuffer(file);
 }
 
-function getFormalCategoryName(cat) {
-  const mapping = {
-    'TR': 'Power Transformer (TR)',
-    'HV': 'High Voltage System (HV)',
-    'MV': 'Medium Voltage Swgr. (MV)',
-    'LV': 'Low Voltage & Auxiliary (LV)',
-    'SCADA': 'SCADA & Control (SCADA)',
-    'Pole/Route': 'Underground Cable Route',
-    'เสา/สาย': 'Overhead Line & Pole'
+// ฟังก์ชันอัปโหลดไฟล์ผลแล็บ / HI เฉพาะส่วน
+function handleHiExcelUpload(event) {
+  if (currentUserRole === 'viewer') {
+    alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถอัปโหลดข้อมูลได้');
+    return;
+  }
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      const jsonRows = XLSX.utils.sheet_to_json(worksheet);
+
+      if (jsonRows.length === 0) {
+        alert('ไม่พบข้อมูลภายในไฟล์ผลแล็บ HI ที่อัปโหลด');
+        return;
+      }
+
+      hiRecords = jsonRows.map((row, idx) => ({
+        uid: 'hi_' + idx + '_' + Math.random().toString(36).substring(2, 7),
+        component: row.component || row.Component || 'TR_General',
+        testCategory: row.testCategory || row.TestCategory || 'Electrical Test',
+        testItems: row.testItems || row.TestItems || 'Parameter',
+        si: row.si !== undefined ? Number(row.si) : '',
+        smax: row.smax !== undefined ? Number(row.smax) : 100,
+        wi: row.wi !== undefined ? Number(row.wi) : 1
+      }));
+
+      saveData();
+      updateDashboardStats();
+      renderTable();
+
+      document.getElementById('importResultMsg').textContent = `✓ นำเข้าข้อมูลผลแล็บ HI จากไฟล์ "${file.name}" สำเร็จ (${hiRecords.length} รายการ)`;
+    } catch(err) {
+      console.error(err);
+      alert('เกิดข้อผิดพลาดในการอ่านไฟล์ผลแล็บ HI Excel');
+    }
   };
-  return mapping[cat] || cat;
+  reader.readAsArrayBuffer(file);
 }
 
 function populateDgaAssetDropdown() {
@@ -1350,8 +1364,8 @@ function switchTab(tab, el) {
     if(kpiStats) kpiStats.style.display = 'none';
     if(analyticsCharts) analyticsCharts.style.display = 'none';
   } else if(tab === 'import') {
-    titleSub.textContent = "นำเข้าข้อมูลด้วยไฟล์ Excel (Data Import)";
-    document.getElementById('tableInstruction').textContent = "อัปโหลดไฟล์ Excel เพื่ออัปเดตฐานข้อมูล FMEA ในระบบ";
+    titleSub.textContent = "นำเข้าข้อมูล (Data Import Center)";
+    document.getElementById('tableInstruction').textContent = "อัปโหลดไฟล์ Excel เพื่ออัปเดตฐานข้อมูล FMEA หรือผลแล็บ HI ในระบบ";
     document.getElementById('toolbarRow').style.display = 'none';
     document.getElementById('chips').style.display = 'none';
     tipBtn.style.display = 'none';
@@ -1958,7 +1972,7 @@ function exportToCSV() {
   let csvContent = "\uFEFFลำดับ,อุปกรณ์,รหัส,โหมดความล้มเหลว,สาเหตุความเสียหาย,ความรุนแรง,ความถี่,การตรวจพบ,RPN,ประเภทผลกระทบ,กลยุทธ์แนะนำ,หมายเหตุ\n";
   records.forEach(r => {
     const s = Number(r.s) || 0;
-    const rpn = s * (Number(r.o)||0) * (Number(r.d||0));
+    const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
     csvContent += `"${r.id}","${r.component}","${r.code}","${r.desc}","${r.cause || ''}","${r.s || ''}","${r.o || ''}","${r.d || ''}","${rpn}","${r.category || ''}","${r.strategy || ''}","${r.note || ''}"\n`;
   });
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1976,8 +1990,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v88', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v88', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v89', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v89', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
