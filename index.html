@@ -221,32 +221,33 @@
     padding: 14px 18px; border-radius: var(--radius); margin-bottom: 16px; font-size: 0.85rem; line-height: 1.6;
   }
 
-  /* Flow Chart UI Styles */
-  .flow-container {
-    display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 20px 10px;
+  /* Flow Chart UI Styles (แสดงผลแบบแยกทางเลือก 'ใช่' และ 'ไม่ใช่') */
+  .flow-wrapper {
+    display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px 12px;
     background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px;
   }
-  .flow-node {
-    background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--primary);
-    padding: 14px 20px; border-radius: var(--radius); width: 100%; max-width: 600px;
-    text-align: center; font-size: 0.88rem; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  .flow-step-box {
+    width: 100%; max-width: 650px; background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 18px; display: flex; flex-direction: column; gap: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
   }
-  .flow-node.start { border-left-color: var(--teal); color: var(--teal); font-family: 'IBM Plex Mono', monospace; }
-  .flow-node.decision { border-left-color: var(--primary); }
-  .flow-node.result { border-left-color: #60a5fa; color: #60a5fa; background: rgba(59, 130, 246, 0.08); }
-  .flow-arrow { color: var(--muted); font-size: 1.1rem; font-weight: bold; line-height: 1; }
-
-  /* Modal Flow Chart Styles */
-  .modal-flow {
-    display: flex; flex-direction: column; gap: 12px; padding: 10px 0;
+  .flow-cond {
+    font-size: 0.9rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px;
   }
-  .modal-step {
-    background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--primary);
-    padding: 12px 16px; border-radius: var(--radius); font-size: 0.85rem; line-height: 1.5;
+  .flow-branches {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px;
   }
-  .modal-step-title { font-weight: 700; color: var(--primary); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-  .modal-step-desc { color: var(--muted); font-size: 0.8rem; }
-  .modal-flow-arrow { text-align: center; color: var(--muted); font-weight: bold; font-size: 1rem; line-height: 0.5; }
+  .branch-yes {
+    background: rgba(20, 184, 166, 0.12); border: 1px solid var(--teal); border-radius: 6px; padding: 8px 12px;
+    font-size: 0.8rem; color: var(--teal); font-weight: 600; text-align: center;
+  }
+  .branch-no {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px;
+    font-size: 0.8rem; color: var(--muted); text-align: center;
+  }
+  .flow-down-arrow {
+    text-align: center; color: var(--muted); font-weight: bold; font-size: 1.1rem; line-height: 1;
+  }
 
   /* DGA Analysis Styles */
   .dga-toolbar {
@@ -569,26 +570,54 @@
       </div>
     </div>
 
-    <!-- Decision Logic Tree View (แท็บที่ 5 รูปแบบ Flow Chart พร้อมปุ่มกดดูเกณฑ์แบบ Flow ใน Modal) -->
+    <!-- Decision Logic Tree View (แท็บที่ 5 รูปแบบ Flow Chart ที่แยกทางเลือก 'ใช่' และ 'ไม่ใช่' ชัดเจน) -->
     <div id="treeView" style="display:none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
         <div style="font-size: 0.85rem; color: var(--muted);">แผนผังลำดับตรรกะการตัดสินใจเลือกกลยุทธ์บำรุงรักษาตามมาตรฐาน RCM</div>
         <button class="guideline-btn" onclick="openLogicTreeModal()">ดูเกณฑ์การตัดสินใจแบบ Flow (Logic Criteria)</button>
       </div>
 
-      <!-- Flow Chart Interactive UI -->
-      <div class="flow-container">
-        <div class="flow-node start">1. โหมดความล้มเหลว (FMEA Input: S, O, D, Note)</div>
-        <div class="flow-arrow">↓</div>
-        <div class="flow-node decision">2. เช็คความเสี่ยงบุคคลที่ 3 (จาก Note)</div>
-        <div class="flow-arrow">↓ [ไม่ใช่]</div>
-        <div class="flow-node decision">3. เช็คระดับความรุนแรง S = 5 (Safety-critical)</div>
-        <div class="flow-arrow">↓ [ไม่ใช่]</div>
-        <div class="flow-node decision">4. เช็คระดับความรุนแรง S = 4 (Operational) — อิงค่า D</div>
-        <div class="flow-arrow">↓ [ไม่ใช่]</div>
-        <div class="flow-node decision">5. เช็คระดับความรุนแรง S = 3 (Economic) — อิงค่า O</div>
-        <div class="flow-arrow">↓ [ไม่ใช่ (S ≤ 2)]</div>
-        <div class="flow-node result">6. ผลลัพธ์: Run-to-failure (CM) / จัดทำแผน Action Plan อัตโนมัติ</div>
+      <!-- Flow Chart Interactive UI with Branches -->
+      <div class="flow-wrapper">
+        <div class="flow-step-box" style="border-left-color: var(--teal); text-align: center;">
+          <div class="flow-cond" style="justify-content: center; color: var(--teal);">1. จุดเริ่มต้น: โหมดความล้มเหลว (FMEA Input: S, O, D, Note)</div>
+        </div>
+        <div class="flow-down-arrow">↓</div>
+
+        <div class="flow-step-box">
+          <div class="flow-cond">2. มีความเสี่ยงบุคคลที่ 3 หรือไม่? (จาก Note)</div>
+          <div class="flow-branches">
+            <div class="branch-yes">✓ ใช่ ➔ มาตรการป้องกันเฉพาะ (ไม่ใช่ PM อุปกรณ์)</div>
+            <div class="branch-no">✗ ไม่ใช่ ➔ ไปขั้นตอนถัดไป</div>
+          </div>
+        </div>
+        <div class="flow-down-arrow">↓</div>
+
+        <div class="flow-step-box">
+          <div class="flow-cond">3. ระดับความรุนแรง S = 5 หรือไม่? (Safety-critical)</div>
+          <div class="flow-branches">
+            <div class="branch-yes">✓ ใช่ ➔ Redesign บังคับ (ไม่สนค่า RPN)</div>
+            <div class="branch-no">✗ ไม่ใช่ ➔ ไปขั้นตอนถัดไป</div>
+          </div>
+        </div>
+        <div class="flow-down-arrow">↓</div>
+
+        <div class="flow-step-box">
+          <div class="flow-cond">4. ระดับความรุนแรง S = 4 หรือไม่? (Operational)</div>
+          <div class="flow-branches">
+            <div class="branch-yes">✓ ใช่ ➔ PM บังคับ หรือ PdM (แยกตามค่า D)</div>
+            <div class="branch-no">✗ ไม่ใช่ ➔ ไปขั้นตอนถัดไป</div>
+          </div>
+        </div>
+        <div class="flow-down-arrow">↓</div>
+
+        <div class="flow-step-box">
+          <div class="flow-cond">5. ระดับความรุนแรง S = 3 หรือไม่? (Economic)</div>
+          <div class="flow-branches">
+            <div class="branch-yes">✓ ใช่ ➔ PM หรือ PdM ตามรอบ (แยกตามค่า O)</div>
+            <div class="branch-no">✗ ไม่ใช่ (S ≤ 2) ➔ Run-to-failure (CM)</div>
+          </div>
+        </div>
       </div>
 
       <div class="section-label" style="margin-top: 24px;">
@@ -673,42 +702,42 @@
   </div>
 </div>
 
-<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree แบบ Flow Chart อธิบายเข้าใจง่าย -->
+<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree แบบ Flow Chart อธิบาย 5 ข้อตามภาพที่ 2 -->
 <div class="modal-overlay" id="logicTreeModal" onclick="handleOutsideClick(event, 'logicTreeModal')">
-  <div class="modal" style="max-width: 680px;">
+  <div class="modal" style="max-width: 700px;">
     <h3>
-      <span>เกณฑ์การตัดสินใจ Decision Logic Tree (อธิบายตามขั้นตอน)</span>
+      <span>ผังขั้นตอนเกณฑ์การตัดสินใจ Decision Logic Tree</span>
       <button class="modal-close" onclick="closeLogicTreeModal()">&times;</button>
     </h3>
     <div class="modal-flow">
       
       <div class="modal-step">
-        <div class="modal-step-title">1. เช็คก่อนว่าเป็นความเสี่ยงบุคคลที่ 3 หรือไม่</div>
-        <div class="modal-step-desc">ถ้าใช่ (เช่น เครนขุดโดนสาย, คนโดนไฟช็อตจากภายนอก) ตัดออกจากเส้นทางบำรุงรักษาอุปกรณ์ทันที เพราะต้องแก้ด้วยมาตรการป้องกันหรือการแจ้งเตือน ไม่ใช่การซ่อมอุปกรณ์</div>
+        <div class="modal-step-title">1. เช็คก่อนว่าเป็นความเสี่ยงบุคคลที่ 3 หรือไม่ (จาก Note)</div>
+        <div class="modal-step-desc"><b>ถ้าใช่:</b> (เช่น เครนขุดโดนสาย, คนโดนไฟช็อต) ➔ ตัดออกจากเส้นทางบำรุงรักษาอุปกรณ์ทันที เพราะต้องแก้ด้วยมาตรการป้องกัน/การแจ้งเตือน ไม่ใช่ซ่อมอุปกรณ์<br><b>ถ้าไม่ใช่:</b> ➔ ไปข้อ 2</div>
       </div>
-      <div class="modal-flow-arrow">↓ [ไม่ใช่]</div>
+      <div class="modal-flow-arrow">↓</div>
 
       <div class="modal-step">
         <div class="modal-step-title">2. เช็ค S = 5 (Safety-critical)</div>
-        <div class="modal-step-desc">ถ้าใช่ จบที่ <b>Redesign บังคับ</b> ทันที ไม่ต้องดูค่าอื่น เพราะเป็นกฎความปลอดภัยสูงสุดตามมาตรฐาน MIL-STD-1629A</div>
+        <div class="modal-step-desc"><b>ถ้าใช่:</b> ➔ จบที่ <b>Redesign บังคับ / Scheduled Discard</b> ทันที ไม่ต้องดูค่าอื่น เพราะเป็นกฎความปลอดภัยสูงสุดตาม MIL-STD-1629A<br><b>ถ้าไม่ใช่:</b> ➔ ไปข้อ 3</div>
       </div>
-      <div class="modal-flow-arrow">↓ [ไม่ใช่]</div>
+      <div class="modal-flow-arrow">↓</div>
 
       <div class="modal-step">
-        <div class="modal-step-title">3. เช็ค S = 4 (Operational) — แยกตามค่า D</div>
-        <div class="modal-step-desc">ถ้า D ≥ 3 (ตรวจจับล่วงหน้ายาก) ต้องบังคับทำ <b>PM ตามรอบเวลา</b> เพราะรอสัญญาณเตือนไม่ได้ / ถ้า D < 3 (ตรวจจับง่าย) ใช้ <b>PdM (CBM)</b> แทนได้ เพราะเห็นสัญญาณเตือนก่อนพังจริง</div>
+        <div class="modal-step-title">3. เช็ค S = 4 (Operational) — อิงค่า D (Detection)</div>
+        <div class="modal-step-desc"><b>ถ้าใช่:</b> ไปดูค่า D ต่อ ➔ ถ้า D ≥ 3 (ตรวจจับล่วงหน้ายาก) บังคับทำ <i>Time-based (PM) ตามรอบเวลา</i> / ถ้า D < 3 (ตรวจจับง่าย) ใช้ <i>Condition-based (PdM)</i> แทนได้<br><b>ถ้าไม่ใช่:</b> ➔ ไปข้อ 4</div>
       </div>
-      <div class="modal-flow-arrow">↓ [ไม่ใช่]</div>
+      <div class="modal-flow-arrow">↓</div>
 
       <div class="modal-step">
-        <div class="modal-step-title">4. เช็ค S = 3 (Economic) — แยกตามค่า O</div>
-        <div class="modal-step-desc">ถ้าเกิดบ่อย (O ≥ 3) คุ้มที่จะทำ <b>PM ตามรอบ</b> / ถ้าไม่บ่อย ปล่อยให้เลือก PdM หรือ PM ตามความเหมาะสมของหน้างาน</div>
+        <div class="modal-step-title">4. เช็ค S = 3 (Economic) — อิงค่า O (Occurrence)</div>
+        <div class="modal-step-desc"><b>ถ้าใช่:</b> ไปดูค่า O ต่อ ➔ ถ้าเกิดบ่อย (O ≥ 3) คุ้มที่จะทำ <i>Time-based (PM) ตามรอบ</i> / ถ้าไม่บ่อย ปล่อยให้เลือก <i>PdM หรือ PM ตามความเหมาะสมของหน้างาน</i><br><b>ถ้าไม่ใช่:</b> ➔ ไปข้อ 5</div>
       </div>
-      <div class="modal-flow-arrow">↓ [ไม่ใช่]</div>
+      <div class="modal-flow-arrow">↓</div>
 
       <div class="modal-step" style="border-left-color: #60a5fa; background: rgba(59, 130, 246, 0.08);">
         <div class="modal-step-title" style="color: #60a5fa;">5. ที่เหลือ (S ≤ 2)</div>
-        <div class="modal-step-desc">ตกไปที่ <b>Run-to-failure (CM)</b> ซ่อมเมื่อเกิดความเสียหาย เพราะผลกระทบต่ำมากจนไม่คุ้มทำ PM ล่วงหน้า</div>
+        <div class="modal-step-desc"><b>ถ้าไม่ใช่เงื่อนไขข้างต้นทั้งหมด:</b> ➔ ตกไปที่ <b>Run-to-failure (CM)</b> ซ่อมเมื่อเกิดความเสียหาย เพราะผลกระทบต่ำมากจนไม่คุ้มที่จะทำ PM ล่วงหน้า</div>
       </div>
 
     </div>
@@ -863,7 +892,7 @@ let records = [
   {"id": 80, "component": "HV_Cap", "code": "H201", "desc": "Capacitor bank ชำรุด", "cause": "เสื่อมสภาพ", "s": 3, "o": 2, "d": 1, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 81, "component": "HV_Cap", "code": "H202", "desc": "อุปกรณ์ชุดปลด-สับ Capacitor bank ไม่ทำงาน", "cause": "อุปกรณ์ทำงานผิดพลาด", "s": 3, "o": 2, "d": 1, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 82, "component": "HV_ShowReset", "code": "H301", "desc": "Alarm show reset ไม่ได้", "cause": "เสื่อมสภาพ", "s": 4, "o": 1, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 83, "component": "HV_DisRelay", "code": "H305", "desc": "Distance relay ชำรุด", "cause": "CT Malfunction, การตั้งค่าผิด", "s": 4, "o": 1, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 83, "component": "HV_DisRelay", "code": "H305", "desc": "Distance relay ชำรุด", "cause": "CT Malfunction, ตั้งค่าผิด", "s": 4, "o": 1, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 84, "component": "HV_Relay", "code": "H308", "desc": "Overcurrent relay ชำรุด", "cause": "ระบบควบคุมผิดพลาด", "s": 4, "o": 1, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 85, "component": "HV_OCRelay", "code": "H309", "desc": "Overcurrent relay เปลี่ยน", "cause": "เสื่อมสภาพ", "s": 4, "o": 1, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 86, "component": "MV_Relay", "code": "M311", "desc": "ซ่อม Relay เสีย", "cause": "เสื่อมสภาพ", "s": 3, "o": 2, "d": 3, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -1021,18 +1050,18 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
   }
 
-  ['v80','v81'].forEach(v => {
+  ['v81','v82'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v82');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v83');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v82');
+  const savedHi = localStorage.getItem('rcm_hi_data_v83');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -1679,7 +1708,7 @@ function renderLogicTreeTable() {
 
   treeTbody.innerHTML = records.map((r, index) => {
     const s = Number(r.s) || 0;
-    const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
+    const rpn = s * (Number(r.o)||0) * (Number(r.d||0));
     return `
       <tr onclick="openDrilldown(${r.id})">
         <td style="text-align:center;" class="num">${index + 1}</td>
@@ -1797,8 +1826,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v84', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v84', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v85', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v85', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
