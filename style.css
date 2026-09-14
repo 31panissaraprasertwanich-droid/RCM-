@@ -39,7 +39,7 @@ body{
 }
 .mono{font-family:'IBM Plex Mono', monospace;}
 
-/* Sidebar เมนูฝั่งซ้ายแบบทางการ */
+/* Sidebar เมนูฝั่งซ้าย */
 aside.sidebar {
   width: 270px;
   background: var(--panel);
@@ -166,7 +166,7 @@ main { padding: 24px 32px 60px; max-width: 1300px; margin: 0 auto; width: 100%; 
   width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
   border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel);
 }
-table{ width: 100%; min-width: 900px; border-collapse: collapse; font-size: 0.85rem; }
+table{ width: 100%; min-width: 1000px; border-collapse: collapse; font-size: 0.85rem; }
 thead th{
   text-align: left; font-size: 0.73rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
   padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--panel-2); white-space: nowrap;
@@ -174,7 +174,7 @@ thead th{
 
 tbody tr{ border-bottom: 1px solid var(--border); transition: background .1s ease; cursor: pointer; }
 tbody tr:hover{ background: var(--panel-2); }
-tbody td{ padding: 10px 16px; vertical-align: middle; }
+tbody td{ padding: 12px 16px; vertical-align: middle; }
 td.num{ color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; }
 
 .code-pill{
@@ -185,14 +185,14 @@ td.num{ color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size:
 
 input.score-input {
   width: 50px; background: var(--bg); border: 1px solid var(--border); color: var(--text);
-  padding: 5px; text-align: center; border-radius: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem;
+  padding: 6px; text-align: center; border-radius: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem;
 }
 input.score-input:focus { border-color: var(--primary); outline: none; }
 input.score-input:disabled { opacity: 0.5; cursor: not-allowed; }
 
 input.text-input, select.text-input {
   width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
-  padding: 7px 10px; border-radius: 6px; font-family: inherit; font-size: 0.82rem;
+  padding: 8px 12px; border-radius: 6px; font-family: inherit; font-size: 0.85rem; min-width: 140px;
 }
 input.text-input:focus, select.text-input:focus { border-color: var(--primary); outline: none; }
 input.text-input:disabled, select.text-input:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -205,7 +205,7 @@ input.text-input:disabled, select.text-input:disabled { opacity: 0.5; cursor: no
 .flag-orange { background: var(--primary-dim); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
 .flag-green { background: var(--teal-dim); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.3); }
 
-.note-input { min-width: 200px; }
+.note-input { min-width: 220px; }
 
 .plan-info-banner {
   background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--primary);
