@@ -305,7 +305,7 @@
 </head>
 <body>
 
-<!-- Sidebar เมนูฝั่งซ้ายแบบทางการ (เพิ่มเมนูที่ 5 Decision Logic Tree) -->
+<!-- Sidebar เมนูฝั่งซ้ายแบบทางการ -->
 <aside class="sidebar">
   <div class="sidebar-brand">
     RCM <span class="accent">ENGINEERING SYSTEM</span>
@@ -542,11 +542,13 @@
       </div>
     </div>
 
-    <!-- Decision Logic Tree View (แท็บใหม่ที่ 5) -->
+    <!-- Decision Logic Tree View (แท็บที่ 5 พร้อมกล่องอธิบายเกณฑ์การตัดสินใจ) -->
     <div id="treeView" style="display:none;">
       <div class="plan-info-banner">
-        <b>ผังตรรกะการตัดสินใจ (Decision Logic Tree) ตามมาตรฐาน RCM:</b><br>
-        ใช้สำหรับคัดกรองโหมดความล้มเหลวจากตาราง FMEA เพื่อจำแนกประเภทผลกระทบและหาข้อสรุปกลยุทธ์การบำรุงรักษาที่เหมาะสมที่สุดโดยอัตโนมัติ
+        <b>เกณฑ์การตัดสินใจของ Decision Logic Tree (ตามมาตรฐานสากล RCM):</b><br>
+        1. <b>Safety-critical (ความปลอดภัยและสิ่งแวดล้อม):</b> หากอุปกรณ์มีความรุนแรงสูงสุด (Severity = 5) ระบบจะจัดอยู่ในกลุ่มวิกฤตความปลอดภัยและแนะนำให้ใช้กลยุทธ์ <i>Redesign บังคับ / Scheduled Discard</i><br>
+        2. <b>Operational (ผลกระทบต่อระบบส่งจ่ายไฟฟ้า):</b> หากตรวจพบอาการเตือนล่วงหน้าได้จะแนะนำ <i>Condition-based (PdM)</i> แต่หากตรวจจับยากจะบังคับทำ <i>Time-based (PM)</i><br>
+        3. <b>Economic (ผลกระทบทางเศรษฐศาสตร์):</b> หากมีความเสียหายน้อยหรือค่าใช้จ่ายในการซ่อมต่ำ ระบบจะแนะนำให้ปล่อยจนเสียหายแล้วค่อยเปลี่ยน <i>Run-to-failure (CM)</i>
       </div>
       <div class="table-responsive">
         <table>
@@ -637,11 +639,11 @@
     <div style="font-size: 0.85rem; line-height: 1.6; color: var(--text);">
       <p><b>งานบำรุงรักษาเชิงป้องกันตามรอบเวลา (Preventive Maintenance - PM):</b><br>
       • เหมาะสำหรับอุปกรณ์หรือชิ้นส่วนที่มีอัตราการเสื่อมสภาพตามอายุการใช้งานที่แน่นอน (Wear-out failure)<br>
-      • ตัวอย่างเช่น การเปลี่ยนถ่ายน้ำมันหล่อลื่น, การเปลี่ยนซีลยางกันรั่วซึมตามรอบปี</p>
+      • เช่น การเปลี่ยนถ่ายน้ำมันหล่อลื่น, การเปลี่ยนซีลยางกันรั่วซึมตามรอบปี</p>
       
       <p><b>งานบำรุงรักษาตามสภาพ (Condition-Based Maintenance - CBM / PdM):</b><br>
       • เหมาะสำหรับอุปกรณ์หลักที่มีความสำคัญสูง ซึ่งสามารถตรวจวัดอาการเตือนล่วงหน้าได้ก่อนเกิดความเสียหายจริง<br>
-      • ตัวอย่างเช่น การตรวจวัดอุณหภูมิจุดต่อด้วยอินฟราเรด, การวิเคราะห์ก๊าซละลายในน้ำมัน (DGA)</p>
+      • เช่น การตรวจวัดอุณหภูมิจุดต่อด้วยอินฟราเรด, การวิเคราะห์ก๊าซละลายในน้ำมัน (DGA)</p>
     </div>
   </div>
 </div>
@@ -935,18 +937,18 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = 'โหมดมืด';
   }
 
-  ['v75','v76'].forEach(v => {
+  ['v76','v77'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v77');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v78');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v77');
+  const savedHi = localStorage.getItem('rcm_hi_data_v78');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -1278,7 +1280,6 @@ function renderTable(){
   const dgaView = document.getElementById('dgaView');
   const treeView = document.getElementById('treeView');
 
-  // จัดการการแสดงผลตามแท็บ
   if (currentTab === 'dga') {
     paginationBar.style.display = 'none';
     mainTableWrapper.style.display = 'none';
@@ -1588,14 +1589,13 @@ function renderTable(){
   }
 }
 
-// ฟังก์ชันเรนเดอร์ข้อมูลเฉพาะหน้า Decision Logic Tree (แท็บที่ 5)
 function renderLogicTreeTable() {
   const treeTbody = document.getElementById('treeTbody');
   if (!treeTbody) return;
 
   treeTbody.innerHTML = records.map((r, index) => {
     const s = Number(r.s) || 0;
-    const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
+    const rpn = s * (Number(r.o)||0) * (Number(r.d||0));
     return `
       <tr onclick="openDrilldown(${r.id})">
         <td style="text-align:center;" class="num">${index + 1}</td>
@@ -1704,8 +1704,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v78', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v78', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v79', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v79', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
