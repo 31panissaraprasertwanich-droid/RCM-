@@ -542,14 +542,13 @@
       </div>
     </div>
 
-    <!-- Decision Logic Tree View (แท็บที่ 5 พร้อมกล่องอธิบายเกณฑ์การตัดสินใจ) -->
+    <!-- Decision Logic Tree View (แท็บที่ 5 สะอาดตา พร้อมปุ่มกดดูเกณฑ์) -->
     <div id="treeView" style="display:none;">
-      <div class="plan-info-banner">
-        <b>เกณฑ์การตัดสินใจของ Decision Logic Tree (ตามมาตรฐานสากล RCM):</b><br>
-        1. <b>Safety-critical (ความปลอดภัยและสิ่งแวดล้อม):</b> หากอุปกรณ์มีความรุนแรงสูงสุด (Severity = 5) ระบบจะจัดอยู่ในกลุ่มวิกฤตความปลอดภัยและแนะนำให้ใช้กลยุทธ์ <i>Redesign บังคับ / Scheduled Discard</i><br>
-        2. <b>Operational (ผลกระทบต่อระบบส่งจ่ายไฟฟ้า):</b> หากตรวจพบอาการเตือนล่วงหน้าได้จะแนะนำ <i>Condition-based (PdM)</i> แต่หากตรวจจับยากจะบังคับทำ <i>Time-based (PM)</i><br>
-        3. <b>Economic (ผลกระทบทางเศรษฐศาสตร์):</b> หากมีความเสียหายน้อยหรือค่าใช้จ่ายในการซ่อมต่ำ ระบบจะแนะนำให้ปล่อยจนเสียหายแล้วค่อยเปลี่ยน <i>Run-to-failure (CM)</i>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+        <div style="font-size: 0.85rem; color: var(--muted);">แสดงตารางวิเคราะห์กลยุทธ์ตามเงื่อนไข Decision Logic Tree สากล</div>
+        <button class="guideline-btn" onclick="openLogicTreeModal()">ดูเกณฑ์การตัดสินใจ (Logic Criteria)</button>
       </div>
+
       <div class="table-responsive">
         <table>
           <thead>
@@ -589,7 +588,7 @@
   </footer>
 </div>
 
-<!-- Modal เกณฑ์มาตรฐาน -->
+<!-- Modal เกณฑ์มาตรฐาน FMEA -->
 <div class="modal-overlay" id="guidelineModal" onclick="handleOutsideClick(event, 'guidelineModal')">
   <div class="modal">
     <h3>
@@ -629,6 +628,32 @@
   </div>
 </div>
 
+<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree (ตามรูปตัวอย่าง) -->
+<div class="modal-overlay" id="logicTreeModal" onclick="handleOutsideClick(event, 'logicTreeModal')">
+  <div class="modal" style="max-width: 650px;">
+    <h3>
+      <span>เกณฑ์การตัดสินใจ Decision Logic Tree</span>
+      <button class="modal-close" onclick="closeLogicTreeModal()">&times;</button>
+    </h3>
+    <div style="font-size: 0.85rem; line-height: 1.7; color: var(--text);">
+      <p><b>1. เช็คความเสี่ยงบุคคลที่ 3 (จาก Note):</b><br>
+      • ถ้าใช่ (เช่น เครนขุดโดนสาย, คนโดนไฟช็อต) ตัดออกจากเส้นทางบำรุงรักษาอุปกรณ์ทันที เพราะต้องแก้ด้วยมาตรการป้องกัน/การแจ้งเตือน ไม่ใช่ซ่อมอุปกรณ์</p>
+      
+      <p><b>2. เช็ค S = 5 (Safety-critical):</b><br>
+      • ถ้าใช่ จบที่ <b>Redesign บังคับ / Scheduled Discard</b> ทันที ไม่ต้องดูค่าอื่น เพราะเป็นกฎความปลอดภัยสูงสุดจาก MIL-STD-1629A</p>
+      
+      <p><b>3. เช็ค S = 4 (Operational):</b><br>
+      • ไปดูค่า <b>D (Detection)</b> ต่อ: ถ้า $D \ge 3$ (ตรวจจับล่วงหน้ายาก) บังคับทำ <i>Time-based (PM) ตามรอบเวลา</i> / ถ้า $D < 3$ (ตรวจจับง่าย) ใช้ <i>Condition-based (PdM)</i> แทนได้</p>
+      
+      <p><b>4. เช็ค S = 3 (Economic):</b><br>
+      • ไปดูค่า <b>O (Occurrence)</b> ต่อ: ถ้าเกิดขึ้นบ่อย ($O \ge 3$) คุ้มที่จะทำ <i>Time-based (PM) ตามรอบ</i> / ถ้าไม่บ่อย ปล่อยให้เลือก <i>PdM หรือ PM ตามความเหมาะสม</i></p>
+      
+      <p><b>5. ที่เหลือ ($S \le 2$):</b><br>
+      • ตกไปที่ <b>Run-to-failure (CM)</b> เพราะผลกระทบต่ำมากจนไม่คุ้มที่จะทำ PM ล่วงหน้า</p>
+    </div>
+  </div>
+</div>
+
 <!-- Modal คำแนะนำการเลือกกลยุทธ์ PM/CBM -->
 <div class="modal-overlay" id="tipModal" onclick="handleOutsideClick(event, 'tipModal')">
   <div class="modal">
@@ -638,12 +663,10 @@
     </h3>
     <div style="font-size: 0.85rem; line-height: 1.6; color: var(--text);">
       <p><b>งานบำรุงรักษาเชิงป้องกันตามรอบเวลา (Preventive Maintenance - PM):</b><br>
-      • เหมาะสำหรับอุปกรณ์หรือชิ้นส่วนที่มีอัตราการเสื่อมสภาพตามอายุการใช้งานที่แน่นอน (Wear-out failure)<br>
-      • เช่น การเปลี่ยนถ่ายน้ำมันหล่อลื่น, การเปลี่ยนซีลยางกันรั่วซึมตามรอบปี</p>
+      • เหมาะสำหรับอุปกรณ์หรือชิ้นส่วนที่มีอัตราการเสื่อมสภาพตามอายุการใช้งานที่แน่นอน (Wear-out failure)</p>
       
       <p><b>งานบำรุงรักษาตามสภาพ (Condition-Based Maintenance - CBM / PdM):</b><br>
-      • เหมาะสำหรับอุปกรณ์หลักที่มีความสำคัญสูง ซึ่งสามารถตรวจวัดอาการเตือนล่วงหน้าได้ก่อนเกิดความเสียหายจริง<br>
-      • เช่น การตรวจวัดอุณหภูมิจุดต่อด้วยอินฟราเรด, การวิเคราะห์ก๊าซละลายในน้ำมัน (DGA)</p>
+      • เหมาะสำหรับอุปกรณ์หลักที่มีความสำคัญสูง ซึ่งสามารถตรวจวัดอาการเตือนล่วงหน้าได้ก่อนเกิดความเสียหายจริง</p>
     </div>
   </div>
 </div>
@@ -937,18 +960,18 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = 'โหมดมืด';
   }
 
-  ['v76','v77'].forEach(v => {
+  ['v77','v78'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v78');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v79');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v78');
+  const savedHi = localStorage.getItem('rcm_hi_data_v79');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -1595,7 +1618,7 @@ function renderLogicTreeTable() {
 
   treeTbody.innerHTML = records.map((r, index) => {
     const s = Number(r.s) || 0;
-    const rpn = s * (Number(r.o)||0) * (Number(r.d||0));
+    const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
     return `
       <tr onclick="openDrilldown(${r.id})">
         <td style="text-align:center;" class="num">${index + 1}</td>
@@ -1608,6 +1631,14 @@ function renderLogicTreeTable() {
       </tr>
     `;
   }).join('');
+}
+
+function openLogicTreeModal() {
+  document.getElementById('logicTreeModal').classList.add('open');
+}
+
+function closeLogicTreeModal() {
+  document.getElementById('logicTreeModal').classList.remove('open');
 }
 
 function updateFmea(id, field, val) {
@@ -1679,6 +1710,7 @@ function handleOutsideClick(event, modalId) {
     if (modalId === 'guidelineModal') closeGuidelineModal();
     if (modalId === 'drilldownModal') closeModal();
     if (modalId === 'tipModal') closeTipModal();
+    if (modalId === 'logicTreeModal') closeLogicTreeModal();
   }
 }
 
@@ -1704,8 +1736,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v79', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v79', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v80', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v80', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
