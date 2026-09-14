@@ -221,6 +221,21 @@
     padding: 14px 18px; border-radius: var(--radius); margin-bottom: 16px; font-size: 0.85rem; line-height: 1.6;
   }
 
+  /* Flow Chart UI Styles */
+  .flow-container {
+    display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 20px 10px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px;
+  }
+  .flow-node {
+    background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--primary);
+    padding: 14px 20px; border-radius: var(--radius); width: 100%; max-width: 600px;
+    text-align: center; font-size: 0.88rem; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  }
+  .flow-node.start { border-left-color: var(--teal); color: var(--teal); font-family: 'IBM Plex Mono', monospace; }
+  .flow-node.decision { border-left-color: var(--primary); }
+  .flow-node.result { border-left-color: #60a5fa; color: #60a5fa; background: rgba(59, 130, 246, 0.08); }
+  .flow-arrow { color: var(--muted); font-size: 1.1rem; font-weight: bold; line-height: 1; }
+
   /* DGA Analysis Styles */
   .dga-toolbar {
     background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px;
@@ -542,13 +557,31 @@
       </div>
     </div>
 
-    <!-- Decision Logic Tree View (แท็บที่ 5 สะอาดตา พร้อมปุ่มกดดูเกณฑ์ตามรูป) -->
+    <!-- Decision Logic Tree View (แท็บที่ 5 รูปแบบ Flow Chart พร้อมปุ่มกดดูเกณฑ์) -->
     <div id="treeView" style="display:none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-        <div style="font-size: 0.85rem; color: var(--muted);">แสดงตารางวิเคราะห์กลยุทธ์ตามเงื่อนไข Decision Logic Tree สากล</div>
-        <button class="guideline-btn" onclick="openLogicTreeModal()">ดูเกณฑ์การตัดสินใจ (Logic Criteria)</button>
+        <div style="font-size: 0.85rem; color: var(--muted);">แผนผังลำดับตรรกะการตัดสินใจเลือกกลยุทธ์บำรุงรักษาตามมาตรฐาน RCM</div>
+        <button class="guideline-btn" onclick="openLogicTreeModal()">ดูเกณฑ์การตัดสินใจแบบละเอียด (Logic Criteria)</button>
       </div>
 
+      <!-- Flow Chart Interactive UI -->
+      <div class="flow-container">
+        <div class="flow-node start">1. โหมดความล้มเหลว (FMEA Input: S, O, D, Note)</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node decision">2. เช็คความเสี่ยงบุคคลที่ 3 (จาก Note)</div>
+        <div class="flow-arrow">↓ [ไม่ใช่]</div>
+        <div class="flow-node decision">3. เช็คระดับความรุนแรง S = 5 (Safety-critical)</div>
+        <div class="flow-arrow">↓ [ไม่ใช่]</div>
+        <div class="flow-node decision">4. เช็คระดับความรุนแรง S = 4 (Operational) — อิงค่า D</div>
+        <div class="flow-arrow">↓ [ไม่ใช่]</div>
+        <div class="flow-node decision">5. เช็คระดับความรุนแรง S = 3 (Economic) — อิงค่า O</div>
+        <div class="flow-arrow">↓ [ไม่ใช่ ($S \le 2$)]</div>
+        <div class="flow-node result">6. ผลลัพธ์: Run-to-failure (CM) / จัดทำแผน Action Plan อัตโนมัติ</div>
+      </div>
+
+      <div class="section-label" style="margin-top: 24px;">
+        <span>ตารางสรุปผลการวิเคราะห์ Decision Logic Tree (222 รายการ)</span>
+      </div>
       <div class="table-responsive">
         <table>
           <thead>
@@ -628,7 +661,7 @@
   </div>
 </div>
 
-<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree (อัปเดตข้อความให้ตรงตาม 5 ข้อเป๊ะ) -->
+<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree แบบละเอียด -->
 <div class="modal-overlay" id="logicTreeModal" onclick="handleOutsideClick(event, 'logicTreeModal')">
   <div class="modal" style="max-width: 680px;">
     <h3>
@@ -960,18 +993,18 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
   }
 
-  ['v78','v79'].forEach(v => {
+  ['v79','v80'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v80');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v81');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v80');
+  const savedHi = localStorage.getItem('rcm_hi_data_v81');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -1736,8 +1769,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v81', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v81', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v82', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v82', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
