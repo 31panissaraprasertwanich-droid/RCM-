@@ -103,11 +103,11 @@
   
   .header-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
-  .mode-toggle-btn {
+  .mode-toggle-btn, .role-select {
     background: var(--panel-2); border: 1px solid var(--border); cursor: pointer; color: var(--text);
-    font-size: 0.85rem; padding: 6px 12px; border-radius: var(--radius); transition: all 0.15s;
+    font-size: 0.82rem; padding: 6px 12px; border-radius: var(--radius); font-family: inherit; transition: all 0.15s;
   }
-  .mode-toggle-btn:hover { border-color: var(--primary); }
+  .mode-toggle-btn:hover, .role-select:hover { border-color: var(--primary); }
 
   .action-btn, .save-btn, .guideline-btn, .tip-btn {
     background: var(--teal-dim); border: 1px solid var(--teal); color: var(--teal);
@@ -199,12 +199,14 @@
     padding: 5px; text-align: center; border-radius: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem;
   }
   input.score-input:focus { border-color: var(--primary); outline: none; }
+  input.score-input:disabled { opacity: 0.5; cursor: not-allowed; }
   
   input.text-input, select.text-input {
     width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
     padding: 7px 10px; border-radius: 6px; font-family: inherit; font-size: 0.82rem;
   }
   input.text-input:focus, select.text-input:focus { border-color: var(--primary); outline: none; }
+  input.text-input:disabled, select.text-input:disabled { opacity: 0.5; cursor: not-allowed; }
 
   /* Priority Flag Badges */
   .flag-badge {
@@ -334,9 +336,15 @@
         </div>
         
         <div class="header-controls">
-          <button class="mode-toggle-btn" id="modeToggleBtn" onclick="toggleLightDarkMode()" title="สลับโหมดการแสดงผล">เปลี่ยนโหมดสี</button>
+          <!-- ระบบเลือกสิทธิ์ผู้ใช้งาน (Role-Based Access Control) -->
+          <select id="userRoleSelect" class="role-select" onchange="onRoleChange()" title="เลือกสิทธิ์ผู้ใช้งาน">
+            <option value="admin">สิทธิ์: ผู้ดูแลระบบ (Admin)</option>
+            <option value="operator">สิทธิ์: ช่างปฏิบัติการ (Operator)</option>
+            <option value="viewer">สิทธิ์: ผู้ชมทั่วไป (Viewer)</option>
+          </select>
+          <button class="mode-toggle-btn" id="modeToggleBtn" onclick="toggleLightDarkMode()" title="สลับโหมดการแสดงผล">โหมดมืด</button>
           <button class="action-btn" onclick="exportToCSV()" title="ส่งออกข้อมูลเป็น CSV">ส่งออก CSV</button>
-          <button class="save-btn" onclick="saveData()">บันทึกข้อมูล</button>
+          <button class="save-btn" id="saveBtn" onclick="saveData()">บันทึกข้อมูล</button>
         </div>
       </div>
 
@@ -434,9 +442,9 @@
             <h4>1. Key Gas Method</h4>
             <div class="dga-desc">วิเคราะห์หาก๊าซหลักที่เป็นตัวบ่งชี้ความผิดปกติเด่นชัดภายในหม้อแปลง</div>
             <div class="dga-input-grid">
-              <div class="dga-field"><label>H2 (ppm)</label><input type="number" class="text-input" id="dga_h2" value="0"></div>
-              <div class="dga-field"><label>CH4 (ppm)</label><input type="number" class="text-input" id="dga_ch4" value="0"></div>
-              <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input" id="dga_c2h2" value="0"></div>
+              <div class="dga-field"><label>H2 (ppm)</label><input type="number" class="text-input dga-field-input" id="dga_h2" value="0"></div>
+              <div class="dga-field"><label>CH4 (ppm)</label><input type="number" class="text-input dga-field-input" id="dga_ch4" value="0"></div>
+              <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input dga-field-input" id="dga_c2h2" value="0"></div>
             </div>
           </div>
           <div>
@@ -451,9 +459,9 @@
             <h4>2. Rogers Ratio Method</h4>
             <div class="dga-desc">ประเมินความผิดปกติจากอัตราส่วนก๊าซมาตรฐาน 4 คู่</div>
             <div class="dga-input-grid">
-              <div class="dga-field"><label>C2H4 (ppm)</label><input type="number" class="text-input" id="dga_c2h4" value="0"></div>
-              <div class="dga-field"><label>C2H6 (ppm)</label><input type="number" class="text-input" id="dga_c2h6" value="0"></div>
-              <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input" id="dga_c2h2_2" value="0"></div>
+              <div class="dga-field"><label>C2H4 (ppm)</label><input type="number" class="text-input dga-field-input" id="dga_c2h4" value="0"></div>
+              <div class="dga-field"><label>C2H6 (ppm)</label><input type="number" class="text-input dga-field-input" id="dga_c2h6" value="0"></div>
+              <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input dga-field-input" id="dga_c2h2_2" value="0"></div>
             </div>
           </div>
           <div>
@@ -485,9 +493,9 @@
             <h4>4. Duval Triangle Method</h4>
             <div class="dga-desc">พล็อตสัดส่วนก๊าซ CH4, C2H4, C2H2 ลงบนสามเหลี่ยมพิกัดทางวิศวกรรม</div>
             <div class="dga-input-grid">
-              <div class="dga-field"><label>CH4 (ppm)</label><input type="number" class="text-input" id="dga_dv_ch4" value="10"></div>
-              <div class="dga-field"><label>C2H4 (ppm)</label><input type="number" class="text-input" id="dga_dv_c2h4" value="10"></div>
-              <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input" id="dga_dv_c2h2" value="10"></div>
+              <div class="dga-field"><label>CH4 (ppm)</label><input type="number" class="text-input dga-field-input" id="dga_dv_ch4" value="10"></div>
+              <div class="dga-field"><label>C2H4 (ppm)</label><input type="number" class="text-input dga-field-input" id="dga_dv_c2h4" value="10"></div>
+              <div class="dga-field"><label>C2H2 (ppm)</label><input type="number" class="text-input dga-field-input" id="dga_dv_c2h2" value="10"></div>
             </div>
             <div class="duval-box">
               <canvas id="duvalCanvas" width="220" height="180"></canvas>
@@ -506,9 +514,9 @@
             <h4>5. Dornenburg Ratio Method</h4>
             <div class="dga-desc">วิเคราะห์จากอัตราส่วนก๊าซ 4 คู่ สำหรับความผิดปกติรุนแรง</div>
             <div class="dga-input-grid">
-              <div class="dga-field"><label>CO (ppm)</label><input type="number" class="text-input" value="0"></div>
-              <div class="dga-field"><label>CO2 (ppm)</label><input type="number" class="text-input" value="0"></div>
-              <div class="dga-field"><label>H2 (ppm)</label><input type="number" class="text-input" value="0"></div>
+              <div class="dga-field"><label>CO (ppm)</label><input type="number" class="text-input dga-field-input" value="0"></div>
+              <div class="dga-field"><label>CO2 (ppm)</label><input type="number" class="text-input dga-field-input" value="0"></div>
+              <div class="dga-field"><label>H2 (ppm)</label><input type="number" class="text-input dga-field-input" value="0"></div>
             </div>
           </div>
           <div>
@@ -523,8 +531,8 @@
             <h4>6. Carbon Dioxide / CO Ratio</h4>
             <div class="dga-desc">ประเมินการเสื่อมสภาพของฉนวนกระดาษเซลลูโลสจากสัดส่วนก๊าซคาร์บอน</div>
             <div class="dga-input-grid">
-              <div class="dga-field"><label>CO (ppm)</label><input type="number" class="text-input" id="dga_co" value="0"></div>
-              <div class="dga-field"><label>CO2 (ppm)</label><input type="number" class="text-input" id="dga_co2" value="0"></div>
+              <div class="dga-field"><label>CO (ppm)</label><input type="number" class="text-input dga-field-input" id="dga_co" value="0"></div>
+              <div class="dga-field"><label>CO2 (ppm)</label><input type="number" class="text-input dga-field-input" id="dga_co2" value="0"></div>
               <div class="dga-field"><label>Ratio</label><input type="number" class="text-input" disabled placeholder="อัตราส่วน"></div>
             </div>
           </div>
@@ -648,6 +656,23 @@
 </div>
 
 <script>
+// ตัวแปรเก็บสิทธิ์ผู้ใช้งานปัจจุบัน ('admin', 'operator', 'viewer')
+let currentUserRole = 'admin';
+
+function onRoleChange() {
+  const roleSelect = document.getElementById('userRoleSelect');
+  currentUserRole = roleSelect ? roleSelect.value : 'admin';
+  applyRolePermissions();
+}
+
+function applyRolePermissions() {
+  const saveBtn = document.getElementById('saveBtn');
+  if (saveBtn) {
+    saveBtn.style.display = (currentUserRole === 'viewer') ? 'none' : 'inline-block';
+  }
+  renderTable();
+}
+
 // ชุดข้อมูลเริ่มต้น พร้อมเชื่อมโยงข้อมูลจาก Decision Logic Tree ครบถ้วน
 let records = [
   {"id": 1, "component": "TR_Counter L/A", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cause": "โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", "s": 2, "o": 2, "d": 2, "category": "Economic-minor", "strategy": "Run-to-failure (CM)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -885,18 +910,18 @@ function initApp() {
   const savedTheme = localStorage.getItem('rcm_theme_mode');
   if (savedTheme === 'light') {
     document.body.classList.add('light-mode');
-    document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
-  } else {
     document.getElementById('modeToggleBtn').textContent = 'โหมดมืด';
+  } else {
+    document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
   }
 
-  ['v71','v72'].forEach(v => {
+  ['v72','v73'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v73');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v74');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   } else {
@@ -911,7 +936,7 @@ function initApp() {
     });
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v73');
+  const savedHi = localStorage.getItem('rcm_hi_data_v74');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -933,6 +958,7 @@ function initApp() {
   updateDashboardStats();
   renderChips();
   renderTable();
+  applyRolePermissions();
 }
 
 function populateDgaAssetDropdown() {
@@ -963,6 +989,7 @@ function onDgaAssetChange() {
 }
 
 function addHiRow(compName) {
+  if (currentUserRole === 'viewer') return;
   const newUid = 'c_' + Date.now() + Math.random().toString(36).substring(2, 7);
   hiRecords.push({
     uid: newUid,
@@ -977,6 +1004,7 @@ function addHiRow(compName) {
 }
 
 function deleteHiRow(uid) {
+  if (currentUserRole === 'viewer') return;
   hiRecords = hiRecords.filter(item => item.uid !== uid);
   renderTable();
 }
@@ -1234,6 +1262,9 @@ function renderTable(){
     document.getElementById('countDisplay').style.display = 'inline';
   }
 
+  const isReadOnly = (currentUserRole === 'viewer');
+  const isOperator = (currentUserRole === 'operator');
+
   if (currentTab === 'fmea') {
     paginationBar.style.display = 'flex';
     thead.innerHTML = `
@@ -1286,6 +1317,8 @@ function renderTable(){
         flagText = 'ระดับเฝ้าระวัง';
       }
 
+      const disabledAttr = (isReadOnly || isOperator) ? 'disabled' : '';
+
       return `
         <tr onclick="openDrilldown(${r.id})">
           <td class="num">${r.id}</td>
@@ -1293,12 +1326,12 @@ function renderTable(){
           <td><span class="code-pill mono">${escapeHtml(r.code)}</span></td>
           <td>${highlight(r.desc, q)}</td>
           <td style="color:var(--muted);">${highlight(r.cause, q)}</td>
-          <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.s ?? ''}" oninput="updateFmea(${r.id}, 's', this.value)"></td>
-          <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.o ?? ''}" oninput="updateFmea(${r.id}, 'o', this.value)"></td>
-          <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.d ?? ''}" oninput="updateFmea(${r.id}, 'd', this.value)"></td>
+          <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.s ?? ''}" ${disabledAttr} oninput="updateFmea(${r.id}, 's', this.value)"></td>
+          <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.o ?? ''}" ${disabledAttr} oninput="updateFmea(${r.id}, 'o', this.value)"></td>
+          <td style="text-align:center;" onclick="event.stopPropagation()"><input type="number" min="1" max="10" class="score-input" value="${r.d ?? ''}" ${disabledAttr} oninput="updateFmea(${r.id}, 'd', this.value)"></td>
           <td style="text-align:center;" class="mono">${rpn > 0 ? rpn : '-'}</td>
           <td style="text-align:center;"><span class="flag-badge ${flagClass}">${flagText}</span></td>
-          <td onclick="event.stopPropagation()"><input type="text" class="text-input note-input" value="${escapeHtml(r.note || '')}" placeholder="ระบุหมายเหตุ..." oninput="updateFmea(${r.id}, 'note', this.value)"></td>
+          <td onclick="event.stopPropagation()"><input type="text" class="text-input note-input" value="${escapeHtml(r.note || '')}" placeholder="ระบุหมายเหตุ..." ${disabledAttr} oninput="updateFmea(${r.id}, 'note', this.value)"></td>
         </tr>
       `;
     }).join('');
@@ -1347,6 +1380,8 @@ function renderTable(){
     let globalTotalSmaxWi = 0;
     let rowIdx = 1;
 
+    const disabledAttr = isReadOnly ? 'disabled' : '';
+
     Object.keys(grouped).forEach(comp => {
       const items = grouped[comp];
       let compSiWi = 0;
@@ -1365,14 +1400,14 @@ function renderTable(){
           <tr>
             <td class="num">${rowIdx++}</td>
             <td><b>${escapeHtml(r.component)}</b></td>
-            <td><input type="text" class="text-input" value="${escapeHtml(r.testCategory || '')}" placeholder="ระบุหมวด..." oninput="updateHi('${r.uid}', 'testCategory', this.value)"></td>
-            <td><input type="text" class="text-input" value="${escapeHtml(r.testItems || '')}" placeholder="ระบุพารามิเตอร์..." oninput="updateHi('${r.uid}', 'testItems', this.value)"></td>
-            <td style="text-align:center;"><input type="number" class="score-input" value="${r.si ?? ''}" oninput="updateHi('${r.uid}', 'si', this.value)"></td>
-            <td style="text-align:center;"><input type="number" class="score-input" value="${r.smax ?? ''}" oninput="updateHi('${r.uid}', 'smax', this.value)"></td>
-            <td style="text-align:center;"><input type="number" class="score-input" value="${r.wi ?? ''}" oninput="updateHi('${r.uid}', 'wi', this.value)"></td>
+            <td><input type="text" class="text-input" value="${escapeHtml(r.testCategory || '')}" placeholder="ระบุหมวด..." ${disabledAttr} oninput="updateHi('${r.uid}', 'testCategory', this.value)"></td>
+            <td><input type="text" class="text-input" value="${escapeHtml(r.testItems || '')}" placeholder="ระบุพารามิเตอร์..." ${disabledAttr} oninput="updateHi('${r.uid}', 'testItems', this.value)"></td>
+            <td style="text-align:center;"><input type="number" class="score-input" value="${r.si ?? ''}" ${disabledAttr} oninput="updateHi('${r.uid}', 'si', this.value)"></td>
+            <td style="text-align:center;"><input type="number" class="score-input" value="${r.smax ?? ''}" ${disabledAttr} oninput="updateHi('${r.uid}', 'smax', this.value)"></td>
+            <td style="text-align:center;"><input type="number" class="score-input" value="${r.wi ?? ''}" ${disabledAttr} oninput="updateHi('${r.uid}', 'wi', this.value)"></td>
             <td style="text-align:center;" class="mono">${siWi}</td>
             <td style="text-align:center;">
-              <button class="del-row-btn" onclick="deleteHiRow('${r.uid}')" title="ลบรายการ">ลบ</button>
+              ${!isReadOnly ? `<button class="del-row-btn" onclick="deleteHiRow('${r.uid}')" title="ลบรายการ">ลบ</button>` : '-'}
             </td>
           </tr>
         `;
@@ -1386,7 +1421,7 @@ function renderTable(){
         <tr style="background:var(--panel-2); border-top:1px solid var(--border);">
           <td colspan="9" style="padding:10px 14px;">
             <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:8px;">
-              <button class="action-btn" onclick="addHiRow('${escapeHtml(comp)}')">เพิ่มรายการทดสอบให้ ${escapeHtml(comp)}</button>
+              ${!isReadOnly ? `<button class="action-btn" onclick="addHiRow('${escapeHtml(comp)}')">เพิ่มรายการทดสอบให้ ${escapeHtml(comp)}</button>` : '<span></span>'}
               <div style="font-size:0.8rem; color:var(--teal);">
                 <b>ผลรวมคะแนน:</b> <span class="mono">${compSiWi.toFixed(2)}</span> | <b>ดัชนีสุขภาพ (HI):</b> <span class="mono">${compHi}%</span>
               </div>
@@ -1452,6 +1487,8 @@ function renderTable(){
     const startIdxPlan = (currentPage - 1) * rowsPerPage;
     const paginatedPlan = filteredPlan.slice(startIdxPlan, startIdxPlan + rowsPerPage);
 
+    const disabledAttr = isReadOnly ? 'disabled' : '';
+
     if (totalPlan === 0) {
       tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:40px; color:var(--muted);">ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา</td></tr>`;
       paginationBar.style.display = 'none';
@@ -1483,14 +1520,14 @@ function renderTable(){
             <td style="font-size:0.78rem; color:var(--muted);">${escapeHtml(r.category || 'Economic-low')}</td>
             <td style="font-size:0.78rem; color:var(--teal); font-weight:600;">${escapeHtml(r.strategy || 'Condition-based (PdM)')}</td>
             <td style="text-align:center;" onclick="event.stopPropagation()">
-              <select class="text-input" style="text-align:center;" onchange="updateFmea(${r.id}, 'actionType', this.value)">
+              <select class="text-input" style="text-align:center;" ${disabledAttr} onchange="updateFmea(${r.id}, 'actionType', this.value)">
                 <option value="PM" ${r.actionType === 'PM' ? 'selected' : ''}>PM (ตามรอบ)</option>
                 <option value="CBM" ${r.actionType === 'CBM' ? 'selected' : ''}>CBM (ตามสภาพ)</option>
               </select>
             </td>
-            <td onclick="event.stopPropagation()"><input type="text" class="text-input" value="${escapeHtml(r.actionPlan || '')}" placeholder="ระบุแผนปฏิบัติการ..." oninput="updateFmea(${r.id}, 'actionPlan', this.value)"></td>
+            <td onclick="event.stopPropagation()"><input type="text" class="text-input" value="${escapeHtml(r.actionPlan || '')}" placeholder="ระบุแผนปฏิบัติการ..." ${disabledAttr} oninput="updateFmea(${r.id}, 'actionPlan', this.value)"></td>
             <td style="text-align:center;" onclick="event.stopPropagation()">
-              <select class="text-input" style="text-align:center;" onchange="updateFmea(${r.id}, 'status', this.value)">
+              <select class="text-input" style="text-align:center;" ${isReadOnly ? 'disabled' : ''} onchange="updateFmea(${r.id}, 'status', this.value)">
                 <option value="รอแผนงาน" ${r.status === 'รอแผนงาน' ? 'selected' : ''}>รอแผนงาน</option>
                 <option value="กำลังดำเนินการ" ${r.status === 'กำลังดำเนินการ' ? 'selected' : ''}>กำลังดำเนินการ</option>
                 <option value="เสร็จสิ้น" ${r.status === 'เสร็จสิ้น' ? 'selected' : ''}>เสร็จสิ้น</option>
@@ -1511,6 +1548,8 @@ function renderTable(){
 }
 
 function updateFmea(id, field, val) {
+  if (currentUserRole === 'viewer') return;
+  if (currentUserRole === 'operator' && ['s', 'o', 'd'].includes(field)) return;
   const item = records.find(r => r.id === id);
   if (item) {
     item[field] = val;
@@ -1522,6 +1561,7 @@ function updateFmea(id, field, val) {
 }
 
 function updateHi(uid, field, val) {
+  if (currentUserRole === 'viewer') return;
   const item = hiRecords.find(r => r.uid === uid);
   if (item) {
     item[field] = val;
@@ -1593,8 +1633,12 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v74', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v74', JSON.stringify(hiRecords));
+  if (currentUserRole === 'viewer') {
+    alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
+    return;
+  }
+  localStorage.setItem('rcm_excel_data_v75', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v75', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
