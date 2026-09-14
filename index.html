@@ -445,6 +445,7 @@
         </div>
       </div>
 
+      <!-- ปรับชื่อหมวดหมู่ให้เป็นชื่อทางการสากล -->
       <div class="chips" id="chips"></div>
     </div>
   </header>
@@ -588,7 +589,7 @@
       </div>
     </div>
 
-    <!-- Decision Logic Tree View (แท็บที่ 5 พร้อมปุ่มกดเปิดผังเกณฑ์แบบสะอาดตา) -->
+    <!-- Decision Logic Tree View (แท็บที่ 5 เพิ่มคอลัมน์ S ผลกระทบให้สอดคล้องกับ Flow) -->
     <div id="treeView" style="display:none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
         <div style="font-size: 0.85rem; color: var(--muted);">แสดงตารางวิเคราะห์กลยุทธ์ตามเงื่อนไข Decision Logic Tree และระดับผลกระทบ (S)</div>
@@ -1080,23 +1081,23 @@ function initApp() {
   const savedTheme = localStorage.getItem('rcm_theme_mode');
   if (savedTheme === 'light') {
     document.body.classList.add('light-mode');
-    document.getElementById('modeToggleBtn').textContent = 'โหมดมืด';
-  } else {
     document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
+  } else {
+    document.getElementById('modeToggleBtn').textContent = 'โหมดมืด';
   }
 
-  ['v82','v83'].forEach(v => {
+  ['v83','v84'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v84');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v85');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v84');
+  const savedHi = localStorage.getItem('rcm_hi_data_v85');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -1111,6 +1112,7 @@ function initApp() {
     }));
   }
 
+  // อัปเดตชื่อหมวดหมู่แบบทางการ
   categories = [...new Set(records.map(r => r.component ? r.component.split('_')[0] : 'OTHER'))];
   
   populateDgaAssetDropdown();
@@ -1119,6 +1121,20 @@ function initApp() {
   renderChips();
   renderTable();
   applyRolePermissions();
+}
+
+// แมปชื่อหมวดหมู่ย่อให้เป็นชื่อทางการสากล
+function getFormalCategoryName(cat) {
+  const mapping = {
+    'TR': 'Power Transformer (TR)',
+    'HV': 'High Voltage System (HV)',
+    'MV': 'Medium Voltage Swgr. (MV)',
+    'LV': 'Low Voltage & Auxiliary (LV)',
+    'SCADA': 'SCADA & Control (SCADA)',
+    'Pole/Route': 'Underground Cable Route',
+    'เสา/สาย': 'Overhead Line & Pole'
+  };
+  return mapping[cat] || cat;
 }
 
 function populateDgaAssetDropdown() {
@@ -1310,7 +1326,8 @@ function renderChips(){
   chipsWrap.appendChild(makeChip('แสดงทั้งหมด (' + records.length + ')', 'ALL'));
   categories.forEach(c => {
     const count = records.filter(r => (r.component ? r.component.split('_')[0] : 'OTHER') === c).length;
-    chipsWrap.appendChild(makeChip(c + ' (' + count + ')', c));
+    const formalName = getFormalCategoryName(c);
+    chipsWrap.appendChild(makeChip(formalName + ' (' + count + ')', c));
   });
 }
 
@@ -1750,7 +1767,7 @@ function renderLogicTreeTable() {
         <td><b>${escapeHtml(r.component)}</b></td>
         <td><span class="code-pill mono">${escapeHtml(r.code)}</span></td>
         <td>${escapeHtml(r.desc)}</td>
-        <td style="text-align:center;" class="mono" style="font-weight:bold;">${s > 0 ? s : '-'}</td>
+        <td style="text-align:center;" class="mono" style="font-weight:bold; color:var(--primary);">${s > 0 ? s : '-'}</td>
         <td style="text-align:center;" class="mono">${rpn > 0 ? rpn : '-'}</td>
         <td style="font-size:0.8rem; color:var(--muted);">${escapeHtml(r.category || 'Economic-low')}</td>
         <td style="font-size:0.8rem; color:var(--teal); font-weight:600;">${escapeHtml(r.strategy || 'Condition-based (PdM)')}</td>
