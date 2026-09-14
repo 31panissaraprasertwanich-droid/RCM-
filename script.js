@@ -226,7 +226,7 @@ let records = [
   {"id": 209, "component": "เสา/สาย", "code": "SM21", "desc": "รถชนเสา", "cause": "อุบัติเหตุรถชน", "s": 5, "o": 2, "d": 1, "category": "ความเสี่ยงบุคคลที่ 3 (Third-party)", "strategy": "มาตรการป้องกันเฉพาะ (ไม่ใช่ PM อุปกรณ์)", "note": "ความเสี่ยงจากบุคคลที่ 3 ต้องมีมาตรการป้องกันแยกต่างหาก", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 210, "component": "เสา/สาย", "code": "SM22", "desc": "Cable ชำรุด", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 211, "component": "เสา/สาย", "code": "SM23", "desc": "Terminator ชำรุด", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 212, "component": "เสา/สาย", "code": "SM24", "desc": "Lightning ชำรุด", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 212, "component": "เสา/สาย", "code": "SM24", "desc": "Lightning ชำรุด", "cause": "เสื่อmสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 213, "component": "เสา/สาย", "code": "SM25", "desc": "switch ปลดทาง Remote", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 214, "component": "เสา/สาย", "code": "SM26", "desc": "ชุด Interrupter ไม่ทำงาน", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 215, "component": "เสา/สาย", "code": "SM27", "desc": "switching ปลดสวิตซ์ในสายส่ง", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -255,13 +255,13 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
   }
 
-  ['v76','v77'].forEach(v => {
+  ['v77','v78'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v78');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v79');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   } else {
@@ -276,7 +276,7 @@ function initApp() {
     });
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v78');
+  const savedHi = localStorage.getItem('rcm_hi_data_v79');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -776,7 +776,6 @@ function renderTable(){
     emptyState.style.display = filteredHi.length === 0 ? 'block' : 'none';
 
   } else {
-    // หน้า Action Plan ที่ปรับให้โล่ง สะอาดตา และเป็นทางการ
     paginationBar.style.display = 'flex';
     thead.innerHTML = `
       <tr>
@@ -834,7 +833,7 @@ function renderTable(){
     } else {
       tbody.innerHTML = paginatedPlan.map((r, index) => {
         const s = Number(r.s) || 0;
-        const rpn = s * (Number(r.o)||0) * (Number(r.d||0));
+        const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
         
         let flagClass = 'flag-green';
         let flagText = 'ปานกลาง / ต่ำ';
@@ -974,8 +973,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v78', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v78', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v79', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v79', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
