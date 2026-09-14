@@ -172,7 +172,7 @@
 
   main { padding: 24px 32px 60px; max-width: 1400px; margin: 0 auto; width: 100%; }
 
-  /* Table Design - ปรับความกว้างตารางให้โปร่งโล่ง อ่านง่ายขึ้น ไม่เบียด */
+  /* Table Design */
   .table-responsive {
     width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
     border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel);
@@ -305,7 +305,7 @@
 </head>
 <body>
 
-<!-- Sidebar เมนูฝั่งซ้ายแบบทางการ -->
+<!-- Sidebar เมนูฝั่งซ้ายแบบทางการ (เพิ่มเมนูที่ 5 Decision Logic Tree) -->
 <aside class="sidebar">
   <div class="sidebar-brand">
     RCM <span class="accent">ENGINEERING SYSTEM</span>
@@ -316,6 +316,7 @@
     <button class="tab-btn" onclick="switchTab('hi', this)" id="btnHi">2. ดัชนีสุขภาพอุปกรณ์ (HI)</button>
     <button class="tab-btn" onclick="switchTab('plan', this)" id="btnPlan">3. แผนงานบำรุงรักษา (Action Plan)</button>
     <button class="tab-btn" onclick="switchTab('dga', this)" id="btnDga">4. วิเคราะห์ก๊าซละลาย (DGA)</button>
+    <button class="tab-btn" onclick="switchTab('tree', this)" id="btnTree">5. Decision Logic Tree</button>
   </div>
   
   <div class="sidebar-footer">
@@ -334,7 +335,6 @@
         </div>
         
         <div class="header-controls">
-          <!-- ระบบเลือกสิทธิ์ผู้ใช้งานพร้อมคำอธิบายความแตกต่าง -->
           <select id="userRoleSelect" class="role-select" onchange="onRoleChange()" title="เลือกระดับสิทธิ์การใช้งาน">
             <option value="admin">สิทธิ์: ผู้ดูแลระบบ (Admin - แก้ไขได้ทั้งหมด)</option>
             <option value="operator">สิทธิ์: ช่างปฏิบัติการ (Operator - แก้ไขแผนงานและผลแล็บ)</option>
@@ -347,7 +347,7 @@
       </div>
 
       <!-- KPI Summary Cards -->
-      <div class="dashboard-stats">
+      <div class="dashboard-stats" id="kpiStatsContainer">
         <div class="stat-card">
           <div class="stat-title">รายการอุปกรณ์ทั้งหมด</div>
           <div class="stat-value stat-total" id="statTotal">222</div>
@@ -539,6 +539,30 @@
             <div class="dga-result-box" id="res_dga_6">ผลลัพธ์: รอข้อมูลผลตรวจวิเคราะห์จากห้องปฏิบัติการ</div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Decision Logic Tree View (แท็บใหม่ที่ 5) -->
+    <div id="treeView" style="display:none;">
+      <div class="plan-info-banner">
+        <b>ผังตรรกะการตัดสินใจ (Decision Logic Tree) ตามมาตรฐาน RCM:</b><br>
+        ใช้สำหรับคัดกรองโหมดความล้มเหลวจากตาราง FMEA เพื่อจำแนกประเภทผลกระทบและหาข้อสรุปกลยุทธ์การบำรุงรักษาที่เหมาะสมที่สุดโดยอัตโนมัติ
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:50px; text-align:center;">ลำดับ</th>
+              <th style="width:140px;">อุปกรณ์</th>
+              <th style="width:75px;">รหัส</th>
+              <th>โหมดความล้มเหลว (Failure Mode)</th>
+              <th style="width:60px; text-align:center;">RPN</th>
+              <th style="width:160px;">ประเภทผลกระทบ</th>
+              <th style="width:200px;">กลยุทธ์บำรุงรักษาที่แนะนำ</th>
+            </tr>
+          </thead>
+          <tbody id="treeTbody"></tbody>
+        </table>
       </div>
     </div>
     
@@ -911,18 +935,18 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = 'โหมดมืด';
   }
 
-  ['v74','v75'].forEach(v => {
+  ['v75','v76'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v76');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v77');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v76');
+  const savedHi = localStorage.getItem('rcm_hi_data_v77');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -1066,6 +1090,8 @@ function switchTab(tab, el) {
   bannerContainer.innerHTML = '';
   const tipBtn = document.getElementById('tipButton');
   const titleSub = document.getElementById('modeTitleSub');
+  const kpiStats = document.getElementById('kpiStatsContainer');
+  const analyticsCharts = document.getElementById('analyticsCharts');
   
   if(tab === 'fmea') {
     titleSub.textContent = "การวิเคราะห์โหมดความล้มเหลวและผลกระทบ (FMEA & RPN Assessment)";
@@ -1073,18 +1099,24 @@ function switchTab(tab, el) {
     document.getElementById('toolbarRow').style.display = 'flex';
     document.getElementById('chips').style.display = 'flex';
     tipBtn.style.display = 'none';
+    if(kpiStats) kpiStats.style.display = 'grid';
+    if(analyticsCharts) analyticsCharts.style.display = 'grid';
   } else if(tab === 'hi') {
     titleSub.textContent = "ตารางโครงสร้างดัชนีสุขภาพอุปกรณ์ (Health Index - 222 รายการ)";
     document.getElementById('tableInstruction').textContent = "กรอกหมวดหมู่การทดสอบ พารามิเตอร์ และคะแนนสุขภาพ";
     document.getElementById('toolbarRow').style.display = 'flex';
     document.getElementById('chips').style.display = 'flex';
     tipBtn.style.display = 'none';
+    if(kpiStats) kpiStats.style.display = 'grid';
+    if(analyticsCharts) analyticsCharts.style.display = 'grid';
   } else if(tab === 'dga') {
     titleSub.textContent = "ระบบวิเคราะห์ก๊าซละลายในน้ำมันหม้อแปลง (Dissolved Gas Analysis)";
     document.getElementById('tableInstruction').textContent = "แสดงผลการคำนวณและวิเคราะห์ก๊าซในน้ำมันหม้อแปลงแยกตามรายตัวอุปกรณ์";
     document.getElementById('toolbarRow').style.display = 'none';
     document.getElementById('chips').style.display = 'none';
     tipBtn.style.display = 'none';
+    if(kpiStats) kpiStats.style.display = 'grid';
+    if(analyticsCharts) analyticsCharts.style.display = 'none';
     
     bannerContainer.innerHTML = `
       <div class="plan-info-banner">
@@ -1099,6 +1131,8 @@ function switchTab(tab, el) {
     document.getElementById('toolbarRow').style.display = 'flex';
     document.getElementById('chips').style.display = 'none';
     tipBtn.style.display = 'inline-block';
+    if(kpiStats) kpiStats.style.display = 'grid';
+    if(analyticsCharts) analyticsCharts.style.display = 'none';
     
     bannerContainer.innerHTML = `
       <div class="plan-info-banner">
@@ -1108,6 +1142,14 @@ function switchTab(tab, el) {
         3. กลุ่มปานกลางและต่ำ (S <= 3): เรียงลำดับตามคะแนนความเสี่ยง (RPN) จากมากไปน้อย
       </div>
     `;
+  } else if(tab === 'tree') {
+    titleSub.textContent = "ผังตรรกะการตัดสินใจ (Decision Logic Tree)";
+    document.getElementById('tableInstruction').textContent = "แสดงผลการวิเคราะห์ประเภทผลกระทบและกลยุทธ์แนะนำตามตำรา RCM";
+    document.getElementById('toolbarRow').style.display = 'none';
+    document.getElementById('chips').style.display = 'none';
+    tipBtn.style.display = 'none';
+    if(kpiStats) kpiStats.style.display = 'none';
+    if(analyticsCharts) analyticsCharts.style.display = 'none';
   }
   renderTable();
 }
@@ -1234,16 +1276,29 @@ function renderTable(){
   const paginationBar = document.getElementById('paginationBar');
   const mainTableWrapper = document.getElementById('mainTableWrapper');
   const dgaView = document.getElementById('dgaView');
+  const treeView = document.getElementById('treeView');
 
+  // จัดการการแสดงผลตามแท็บ
   if (currentTab === 'dga') {
     paginationBar.style.display = 'none';
     mainTableWrapper.style.display = 'none';
     dgaView.style.display = 'block';
+    treeView.style.display = 'none';
     document.getElementById('countDisplay').style.display = 'none';
     emptyState.style.display = 'none';
     return;
+  } else if (currentTab === 'tree') {
+    paginationBar.style.display = 'none';
+    mainTableWrapper.style.display = 'none';
+    dgaView.style.display = 'none';
+    treeView.style.display = 'block';
+    document.getElementById('countDisplay').style.display = 'none';
+    emptyState.style.display = 'none';
+    renderLogicTreeTable();
+    return;
   } else {
     dgaView.style.display = 'none';
+    treeView.style.display = 'none';
     mainTableWrapper.style.display = 'block';
     document.getElementById('countDisplay').style.display = 'inline';
   }
@@ -1421,7 +1476,7 @@ function renderTable(){
     visibleCountEl.textContent = filteredHi.length;
     emptyState.style.display = filteredHi.length === 0 ? 'block' : 'none';
 
-  } else {
+  } else if (currentTab === 'plan') {
     paginationBar.style.display = 'flex';
     thead.innerHTML = `
       <tr>
@@ -1533,6 +1588,28 @@ function renderTable(){
   }
 }
 
+// ฟังก์ชันเรนเดอร์ข้อมูลเฉพาะหน้า Decision Logic Tree (แท็บที่ 5)
+function renderLogicTreeTable() {
+  const treeTbody = document.getElementById('treeTbody');
+  if (!treeTbody) return;
+
+  treeTbody.innerHTML = records.map((r, index) => {
+    const s = Number(r.s) || 0;
+    const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
+    return `
+      <tr onclick="openDrilldown(${r.id})">
+        <td style="text-align:center;" class="num">${index + 1}</td>
+        <td><b>${escapeHtml(r.component)}</b></td>
+        <td><span class="code-pill mono">${escapeHtml(r.code)}</span></td>
+        <td>${escapeHtml(r.desc)}</td>
+        <td style="text-align:center;" class="mono">${rpn > 0 ? rpn : '-'}</td>
+        <td style="font-size:0.8rem; color:var(--muted);">${escapeHtml(r.category || 'Economic-low')}</td>
+        <td style="font-size:0.8rem; color:var(--teal); font-weight:600;">${escapeHtml(r.strategy || 'Condition-based (PdM)')}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
 function updateFmea(id, field, val) {
   if (currentUserRole === 'viewer') return;
   if (currentUserRole === 'operator' && ['s', 'o', 'd'].includes(field)) {
@@ -1627,8 +1704,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v77', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v77', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v78', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v78', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
