@@ -569,7 +569,7 @@
       </div>
     </div>
 
-    <!-- Decision Logic Tree View (แท็บที่ 5 รูปแบบ Flow Chart พร้อมปุ่มกดดูเกณฑ์) -->
+    <!-- Decision Logic Tree View (แท็บที่ 5 รูปแบบ Flow Chart พร้อมปุ่มกดดูเกณฑ์แบบ Flow ใน Modal) -->
     <div id="treeView" style="display:none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
         <div style="font-size: 0.85rem; color: var(--muted);">แผนผังลำดับตรรกะการตัดสินใจเลือกกลยุทธ์บำรุงรักษาตามมาตรฐาน RCM</div>
@@ -587,7 +587,7 @@
         <div class="flow-node decision">4. เช็คระดับความรุนแรง S = 4 (Operational) — อิงค่า D</div>
         <div class="flow-arrow">↓ [ไม่ใช่]</div>
         <div class="flow-node decision">5. เช็คระดับความรุนแรง S = 3 (Economic) — อิงค่า O</div>
-        <div class="flow-arrow">↓ [ไม่ใช่ ($S \le 2$)]</div>
+        <div class="flow-arrow">↓ [ไม่ใช่ (S ≤ 2)]</div>
         <div class="flow-node result">6. ผลลัพธ์: Run-to-failure (CM) / จัดทำแผน Action Plan อัตโนมัติ</div>
       </div>
 
@@ -673,48 +673,42 @@
   </div>
 </div>
 
-<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree แบบ Flow Chart -->
+<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree แบบ Flow Chart อธิบายเข้าใจง่าย -->
 <div class="modal-overlay" id="logicTreeModal" onclick="handleOutsideClick(event, 'logicTreeModal')">
-  <div class="modal" style="max-width: 700px;">
+  <div class="modal" style="max-width: 680px;">
     <h3>
-      <span>ผังขั้นตอนเกณฑ์การตัดสินใจ Decision Logic Tree</span>
+      <span>เกณฑ์การตัดสินใจ Decision Logic Tree (อธิบายตามขั้นตอน)</span>
       <button class="modal-close" onclick="closeLogicTreeModal()">&times;</button>
     </h3>
     <div class="modal-flow">
       
       <div class="modal-step">
-        <div class="modal-step-title">1. เริ่มต้นจากโหมดความล้มเหลว</div>
-        <div class="modal-step-desc">รับข้อมูลนำเข้าจากตาราง FMEA (ประกอบด้วยค่า S, O, D และช่อง Note)</div>
-      </div>
-      <div class="modal-flow-arrow">↓</div>
-
-      <div class="modal-step">
-        <div class="modal-step-title">2. เช็คความเสี่ยงบุคคลที่ 3 (จาก Note)</div>
-        <div class="modal-step-desc"><b>ถ้าใช่:</b> (เช่น เครนขุดโดนสาย, คนโดนไฟช็อต) ตัดออกจากเส้นทางบำรุงรักษาอุปกรณ์ทันที เพราะต้องแก้ด้วยมาตรการป้องกัน/การแจ้งเตือน ไม่ใช่ซ่อมอุปกรณ์</div>
+        <div class="modal-step-title">1. เช็คก่อนว่าเป็นความเสี่ยงบุคคลที่ 3 หรือไม่</div>
+        <div class="modal-step-desc">ถ้าใช่ (เช่น เครนขุดโดนสาย, คนโดนไฟช็อตจากภายนอก) ตัดออกจากเส้นทางบำรุงรักษาอุปกรณ์ทันที เพราะต้องแก้ด้วยมาตรการป้องกันหรือการแจ้งเตือน ไม่ใช่การซ่อมอุปกรณ์</div>
       </div>
       <div class="modal-flow-arrow">↓ [ไม่ใช่]</div>
 
       <div class="modal-step">
-        <div class="modal-step-title">3. เช็ค S = 5 (Safety-critical)</div>
-        <div class="modal-step-desc"><b>ถ้าใช่:</b> จบที่ <b>Redesign บังคับ / Scheduled Discard</b> ทันที ไม่ต้องดูค่าอื่น เพราะเป็นกฎความปลอดภัยสูงสุดจาก MIL-STD-1629A</div>
+        <div class="modal-step-title">2. เช็ค S = 5 (Safety-critical)</div>
+        <div class="modal-step-desc">ถ้าใช่ จบที่ <b>Redesign บังคับ</b> ทันที ไม่ต้องดูค่าอื่น เพราะเป็นกฎความปลอดภัยสูงสุดตามมาตรฐาน MIL-STD-1629A</div>
       </div>
       <div class="modal-flow-arrow">↓ [ไม่ใช่]</div>
 
       <div class="modal-step">
-        <div class="modal-step-title">4. เช็ค S = 4 (Operational) — อิงค่า D (Detection)</div>
-        <div class="modal-step-desc"><b>ถ้า D ≥ 3:</b> (ตรวจจับล่วงหน้ายาก) บังคับทำ <i>Time-based (PM) ตามรอบเวลา</i> เพราะรอสัญญาณเตือนไม่ได้<br><b>ถ้า D < 3:</b> (ตรวจจับง่าย) ใช้ <i>Condition-based (PdM)</i> แทนได้ เพราะเห็นสัญญาณเตือนก่อนพังจริง</div>
+        <div class="modal-step-title">3. เช็ค S = 4 (Operational) — แยกตามค่า D</div>
+        <div class="modal-step-desc">ถ้า D ≥ 3 (ตรวจจับล่วงหน้ายาก) ต้องบังคับทำ <b>PM ตามรอบเวลา</b> เพราะรอสัญญาณเตือนไม่ได้ / ถ้า D < 3 (ตรวจจับง่าย) ใช้ <b>PdM (CBM)</b> แทนได้ เพราะเห็นสัญญาณเตือนก่อนพังจริง</div>
       </div>
       <div class="modal-flow-arrow">↓ [ไม่ใช่]</div>
 
       <div class="modal-step">
-        <div class="modal-step-title">5. เช็ค S = 3 (Economic) — อิงค่า O (Occurrence)</div>
-        <div class="modal-step-desc"><b>ถ้า O ≥ 3:</b> (เกิดขึ้นบ่อย) คุ้มที่จะทำ <i>Time-based (PM) ตามรอบ</i><br><b>ถ้า O < 3:</b> ปล่อยให้เลือก <i>PdM หรือ PM ตามความเหมาะสมของหน้างาน</i></div>
+        <div class="modal-step-title">4. เช็ค S = 3 (Economic) — แยกตามค่า O</div>
+        <div class="modal-step-desc">ถ้าเกิดบ่อย (O ≥ 3) คุ้มที่จะทำ <b>PM ตามรอบ</b> / ถ้าไม่บ่อย ปล่อยให้เลือก PdM หรือ PM ตามความเหมาะสมของหน้างาน</div>
       </div>
-      <div class="modal-flow-arrow">↓ [ไม่ใช่ (S ≤ 2)]</div>
+      <div class="modal-flow-arrow">↓ [ไม่ใช่]</div>
 
       <div class="modal-step" style="border-left-color: #60a5fa; background: rgba(59, 130, 246, 0.08);">
-        <div class="modal-step-title" style="color: #60a5fa;">6. เงื่อนไขที่เหลือ (S ≤ 2)</div>
-        <div class="modal-step-desc">ตกไปที่ <b>Run-to-failure (CM)</b> เพราะผลกระทบต่ำมากจนไม่คุ้มที่จะทำ PM ล่วงหน้า</div>
+        <div class="modal-step-title" style="color: #60a5fa;">5. ที่เหลือ (S ≤ 2)</div>
+        <div class="modal-step-desc">ตกไปที่ <b>Run-to-failure (CM)</b> ซ่อมเมื่อเกิดความเสียหาย เพราะผลกระทบต่ำมากจนไม่คุ้มทำ PM ล่วงหน้า</div>
       </div>
 
     </div>
@@ -1685,7 +1679,7 @@ function renderLogicTreeTable() {
 
   treeTbody.innerHTML = records.map((r, index) => {
     const s = Number(r.s) || 0;
-    const rpn = s * (Number(r.o)||0) * (Number(r.d||0));
+    const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
     return `
       <tr onclick="openDrilldown(${r.id})">
         <td style="text-align:center;" class="num">${index + 1}</td>
@@ -1803,8 +1797,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v83', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v83', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v84', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v84', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
