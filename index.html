@@ -445,7 +445,7 @@
         </div>
       </div>
 
-      <!-- ปรับชื่อหมวดหมู่ให้เป็นชื่อทางการสากล -->
+      <!-- หมวดหมู่อุปกรณ์ชื่อทางการ -->
       <div class="chips" id="chips"></div>
     </div>
   </header>
@@ -589,7 +589,7 @@
       </div>
     </div>
 
-    <!-- Decision Logic Tree View (แท็บที่ 5 เพิ่มคอลัมน์ S ผลกระทบให้สอดคล้องกับ Flow) -->
+    <!-- Decision Logic Tree View (แท็บที่ 5 พร้อมแสดงผลคะแนน S อัตโนมัติเมื่อมีการแก้ไข) -->
     <div id="treeView" style="display:none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
         <div style="font-size: 0.85rem; color: var(--muted);">แสดงตารางวิเคราะห์กลยุทธ์ตามเงื่อนไข Decision Logic Tree และระดับผลกระทบ (S)</div>
@@ -1064,7 +1064,7 @@ let records = [
   {"id": 216, "component": "เสา/สาย", "code": "SM28", "desc": "ปลดสวิตซ์ผิดตัว", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 217, "component": "เสา/สาย", "code": "SM29", "desc": "อุปกรณ์ชำรุดภายในสถานี กฟน.", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 218, "component": "เสา/สาย", "code": "SM30", "desc": "ต้นไม้ (โดนอุปกรณ์สถานี กฟน.)", "cause": "เสื่อมสภาพ", "s": 4, "o": 3, "d": 1, "category": "Operational (ตรวจจับได้)", "strategy": "Condition-based (PdM)", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 219, "component": "เสา/สาย", "code": "SM31", "desc": "อุปกรณ์ชำรุดภายในสถานี กฟผ./กฟภ.", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 219, "component": "เสา/สาย", "code": "SM31", "desc": "อุปกรณ์ชำรุดภายในสถานี กฟผ./กฟภ.", "cause": "เสื่อમสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 220, "component": "เสา/สาย", "code": "SM32", "desc": "อุปกรณ์ชำรุดภายในสถานี ลูกค้า", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 221, "component": "เสา/สาย", "code": "SM33", "desc": "สายส่งไม่มีไฟ", "cause": "อื่นๆ", "s": 3, "o": 2, "d": 4, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 222, "component": "เสา/สาย", "code": "SM34", "desc": "Charge Line", "cause": "อื่นๆ", "s": 3, "o": 2, "d": 4, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"}
@@ -1081,23 +1081,23 @@ function initApp() {
   const savedTheme = localStorage.getItem('rcm_theme_mode');
   if (savedTheme === 'light') {
     document.body.classList.add('light-mode');
-    document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
-  } else {
     document.getElementById('modeToggleBtn').textContent = 'โหมดมืด';
+  } else {
+    document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
   }
 
-  ['v83','v84'].forEach(v => {
+  ['v84','v85'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v85');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v86');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v85');
+  const savedHi = localStorage.getItem('rcm_hi_data_v86');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -1112,7 +1112,6 @@ function initApp() {
     }));
   }
 
-  // อัปเดตชื่อหมวดหมู่แบบทางการ
   categories = [...new Set(records.map(r => r.component ? r.component.split('_')[0] : 'OTHER'))];
   
   populateDgaAssetDropdown();
@@ -1123,7 +1122,6 @@ function initApp() {
   applyRolePermissions();
 }
 
-// แมปชื่อหมวดหมู่ย่อให้เป็นชื่อทางการสากล
 function getFormalCategoryName(cat) {
   const mapping = {
     'TR': 'Power Transformer (TR)',
@@ -1754,13 +1752,63 @@ function renderTable(){
   }
 }
 
+// ฟังก์ชันคำนวณ Logic Tree อัตโนมัติเมื่อคะแนน S เปลี่ยน
+function calculateLogicTree(item) {
+  const s = Number(item.s) || 0;
+  const note = (item.note || '').toLowerCase();
+  
+  // 1. เช็คความเสี่ยงบุคคลที่ 3 จาก Note
+  if (note.includes('บุคคลที่ 3') || note.includes('รถชน') || note.includes('เครน') || note.includes('ผู้รับเหมา')) {
+    item.category = 'ความเสี่ยงบุคคลที่ 3 (Third-party)';
+    item.strategy = 'มาตรการป้องกันเฉพาะ (ไม่ใช่ PM อุปกรณ์)';
+    return;
+  }
+
+  // 2. เช็ค S = 5
+  if (s === 5) {
+    item.category = 'Safety-critical';
+    item.strategy = 'Redesign บังคับ / Scheduled Discard';
+    return;
+  }
+
+  // 3. เช็ค S = 4
+  if (s === 4) {
+    const d = Number(item.d) || 2;
+    if (d >= 3) {
+      item.category = 'Operational-significant (ตรวจจับยาก)';
+      item.strategy = 'Time-based (PM) บังคับ';
+    } else {
+      item.category = 'Operational (ตรวจจับได้)';
+      item.strategy = 'Condition-based (PdM)';
+    }
+    return;
+  }
+
+  // 4. เช็ค S = 3
+  if (s === 3) {
+    const o = Number(item.o) || 2;
+    if (o >= 3) {
+      item.category = 'Economic-low';
+      item.strategy = 'Time-based (PM)';
+    } else {
+      item.category = 'Economic-low';
+      item.strategy = 'Condition-based (PdM) หรือ PM ตามรอบ';
+    }
+    return;
+  }
+
+  // 5. ที่เหลือ S <= 2
+  item.category = 'Economic-minor';
+  item.strategy = 'Run-to-failure (CM)';
+}
+
 function renderLogicTreeTable() {
   const treeTbody = document.getElementById('treeTbody');
   if (!treeTbody) return;
 
   treeTbody.innerHTML = records.map((r, index) => {
     const s = Number(r.s) || 0;
-    const rpn = s * (Number(r.o)||0) * (Number(r.d||0));
+    const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
     return `
       <tr onclick="openDrilldown(${r.id})">
         <td style="text-align:center;" class="num">${index + 1}</td>
@@ -1794,6 +1842,10 @@ function updateFmea(id, field, val) {
   const item = records.find(r => r.id === id);
   if (item) {
     item[field] = val;
+    // เมื่อมีการเปลี่ยนคะแนนหรือหมายเหตุ ให้รันระบบคำนวณ Logic Tree อัตโนมัติทันที
+    if (['s', 'o', 'd', 'note'].includes(field)) {
+      calculateLogicTree(item);
+    }
     if (['s', 'o', 'd'].includes(field)) {
       updateDashboardStats();
     }
@@ -1861,7 +1913,7 @@ function exportToCSV() {
   let csvContent = "\uFEFFลำดับ,อุปกรณ์,รหัส,โหมดความล้มเหลว,สาเหตุความเสียหาย,ความรุนแรง,ความถี่,การตรวจพบ,RPN,ประเภทผลกระทบ,กลยุทธ์แนะนำ,หมายเหตุ\n";
   records.forEach(r => {
     const s = Number(r.s) || 0;
-    const rpn = s * (Number(r.o)||0) * (Number(r.d)||0);
+    const rpn = s * (Number(r.o)||0) * (Number(r.d||0));
     csvContent += `"${r.id}","${r.component}","${r.code}","${r.desc}","${r.cause || ''}","${r.s || ''}","${r.o || ''}","${r.d || ''}","${rpn}","${r.category || ''}","${r.strategy || ''}","${r.note || ''}"\n`;
   });
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1879,8 +1931,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v86', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v86', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v87', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v87', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
