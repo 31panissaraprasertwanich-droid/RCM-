@@ -644,7 +644,7 @@
 </div>
 
 <script>
-// ชุดข้อมูลเริ่มต้นตรงเป๊ะกับไฟล์ RCM 9-9.xlsx
+// ชุดข้อมูลเริ่มต้น 222 รายการ
 let records = [
   {"id": 1, "component": "TR_Counter L/A", "code": "T001", "desc": "Counter Lightning Arrester ชำรุด", "cause": "โครงแตก, ซีลเสื่อมสภาพ, กลไกชำรุด", "s": 2, "o": 2, "d": 2, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 2, "component": "TR_OLevelGauge", "code": "T002", "desc": "Oil level gauge ชำรุด", "cause": "โครงแตก, กลไกชำรุด", "s": 3, "o": 2, "d": 1, "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -886,13 +886,13 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = 'โหมดมืด';
   }
 
-  ['v68','v69'].forEach(v => {
+  ['v69','v70'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v70');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v71');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   } else {
@@ -907,7 +907,7 @@ function initApp() {
     });
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v70');
+  const savedHi = localStorage.getItem('rcm_hi_data_v71');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -945,8 +945,10 @@ function populateDgaAssetDropdown() {
 }
 
 function onDgaAssetChange() {
-  const val = document.getElementById('dgaAssetSelect'].value;
+  const selectEl = document.getElementById('dgaAssetSelect');
   const statusEl = document.getElementById('dgaAssetStatus');
+  if (!selectEl || !statusEl) return;
+  const val = selectEl.value;
   if (val) {
     statusEl.textContent = `กำลังวิเคราะห์อุปกรณ์: [ ${val} ]`;
     statusEl.style.color = 'var(--primary)';
@@ -1134,7 +1136,8 @@ function changePage(direction) {
 }
 
 function calcDga(methodNo) {
-  const asset = document.getElementById('dgaAssetSelect').value;
+  const assetEl = document.getElementById('dgaAssetSelect');
+  const asset = assetEl ? assetEl.value : '';
   if (!asset && methodNo === 4) {
     alert("กรุณาเลือกอุปกรณ์หม้อแปลงที่ต้องการวิเคราะห์ก่อนทำการคำนวณ");
     return;
@@ -1576,8 +1579,8 @@ function exportToCSV() {
 }
 
 function saveData() {
-  localStorage.setItem('rcm_excel_data_v71', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v71', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v72', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v72', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
