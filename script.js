@@ -226,7 +226,7 @@ let records = [
   {"id": 209, "component": "เสา/สาย", "code": "SM21", "desc": "รถชนเสา", "cause": "อุบัติเหตุรถชน", "s": 5, "o": 2, "d": 1, "category": "ความเสี่ยงบุคคลที่ 3 (Third-party)", "strategy": "มาตรการป้องกันเฉพาะ (ไม่ใช่ PM อุปกรณ์)", "note": "ความเสี่ยงจากบุคคลที่ 3 ต้องมีมาตรการป้องกันแยกต่างหาก", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 210, "component": "เสา/สาย", "code": "SM22", "desc": "Cable ชำรุด", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 211, "component": "เสา/สาย", "code": "SM23", "desc": "Terminator ชำรุด", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 212, "component": "เสา/สาย", "code": "SM24", "desc": "Lightning ชำรุด", "cause": "เสื่อmสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 212, "component": "เสา/สาย", "code": "SM24", "desc": "Lightning ชำรุด", "cause": "เสื่อมสภาพ", "s": 4, "o": 2, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 213, "component": "เสา/สาย", "code": "SM25", "desc": "switch ปลดทาง Remote", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 214, "component": "เสา/สาย", "code": "SM26", "desc": "ชุด Interrupter ไม่ทำงาน", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 215, "component": "เสา/สาย", "code": "SM27", "desc": "switching ปลดสวิตซ์ในสายส่ง", "cause": "Technical Error", "s": 3, "o": 2, "d": 2, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -255,13 +255,13 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
   }
 
-  ['v77','v78'].forEach(v => {
+  ['v78','v79'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v79');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v80');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   } else {
@@ -276,7 +276,7 @@ function initApp() {
     });
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v79');
+  const savedHi = localStorage.getItem('rcm_hi_data_v80');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -657,6 +657,7 @@ function renderTable(){
         flagText = 'ระดับเฝ้าระวัง';
       }
 
+      // ช่าง (Operator) และผู้ชม (Viewer) ไม่มีสิทธิ์แก้ไขตาราง FMEA (ล็อกเป็น disabled)
       const disabledAttr = (isReadOnly || isOperator) ? 'disabled' : '';
 
       return `
@@ -720,6 +721,7 @@ function renderTable(){
     let globalTotalSmaxWi = 0;
     let rowIdx = 1;
 
+    // ช่าง (Operator) มีสิทธิ์กรอกคะแนนทดสอบสุขภาพ HI ได้ แต่ห้ามลบแถวโครงสร้างหลัก
     const disabledAttr = isReadOnly ? 'disabled' : '';
 
     Object.keys(grouped).forEach(comp => {
@@ -747,7 +749,7 @@ function renderTable(){
             <td style="text-align:center;"><input type="number" class="score-input" value="${r.wi ?? ''}" ${disabledAttr} oninput="updateHi('${r.uid}', 'wi', this.value)"></td>
             <td style="text-align:center;" class="mono">${siWi}</td>
             <td style="text-align:center;">
-              ${!isReadOnly ? `<button class="del-row-btn" onclick="deleteHiRow('${r.uid}')" title="ลบรายการ">ลบ</button>` : '-'}
+              ${currentUserRole === 'admin' ? `<button class="del-row-btn" onclick="deleteHiRow('${r.uid}')" title="ลบรายการ">ลบ</button>` : '-'}
             </td>
           </tr>
         `;
@@ -761,7 +763,7 @@ function renderTable(){
         <tr style="background:var(--panel-2); border-top:1px solid var(--border);">
           <td colspan="9" style="padding:10px 14px;">
             <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:8px;">
-              ${!isReadOnly ? `<button class="action-btn" onclick="addHiRow('${escapeHtml(comp)}')">เพิ่มรายการทดสอบให้ ${escapeHtml(comp)}</button>` : '<span></span>'}
+              ${currentUserRole === 'admin' ? `<button class="action-btn" onclick="addHiRow('${escapeHtml(comp)}')">เพิ่มรายการทดสอบให้ ${escapeHtml(comp)}</button>` : '<span></span>'}
               <div style="font-size:0.8rem; color:var(--teal);">
                 <b>ผลรวมคะแนน:</b> <span class="mono">${compSiWi.toFixed(2)}</span> | <b>ดัชนีสุขภาพ (HI):</b> <span class="mono">${compHi}%</span>
               </div>
@@ -785,9 +787,9 @@ function renderTable(){
         <th>โหมดความล้มเหลว (Failure Mode)</th>
         <th style="width:55px; text-align:center;">RPN</th>
         <th style="width:140px; text-align:center;">กลุ่มความสำคัญ</th>
-        <th style="width:120px; text-align:center;">กลยุทธ์บำรุงรักษา</th>
-        <th style="width:200px;">รายละเอียดแผนปฏิบัติการ</th>
-        <th style="width:100px; text-align:center;">สถานะ</th>
+        <th style="width:140px; text-align:center;">กลยุทธ์บำรุงรักษา</th>
+        <th style="width:250px;">รายละเอียดแผนปฏิบัติการ</th>
+        <th style="width:120px; text-align:center;">สถานะ</th>
       </tr>
     `;
 
@@ -885,7 +887,9 @@ function renderTable(){
 
 function updateFmea(id, field, val) {
   if (currentUserRole === 'viewer') return;
+  // ช่าง (Operator) ห้ามแก้ไขคะแนน S, O, D แต่แก้ไข Action Plan และ Status ได้
   if (currentUserRole === 'operator' && ['s', 'o', 'd'].includes(field)) return;
+  
   const item = records.find(r => r.id === id);
   if (item) {
     item[field] = val;
@@ -973,8 +977,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v79', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v79', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v80', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v80', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
