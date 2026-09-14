@@ -221,7 +221,7 @@
     padding: 14px 18px; border-radius: var(--radius); margin-bottom: 16px; font-size: 0.85rem; line-height: 1.6;
   }
 
-  /* Flow Chart UI Styles (แสดงผลแบบแยกทางเลือก 'ใช่' และ 'ไม่ใช่') */
+  /* Flow Chart UI Styles */
   .flow-wrapper {
     display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px 12px;
     background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px;
@@ -247,6 +247,24 @@
   }
   .flow-down-arrow {
     text-align: center; color: var(--muted); font-weight: bold; font-size: 1.1rem; line-height: 1;
+  }
+
+  /* Modal Clean Flow Card Styles */
+  .modal-flow-grid {
+    display: flex; flex-direction: column; gap: 14px; padding: 10px 0;
+  }
+  .flow-card {
+    background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--primary);
+    padding: 14px 18px; border-radius: var(--radius); display: flex; flex-direction: column; gap: 6px;
+  }
+  .flow-card-header {
+    display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 0.9rem; color: var(--primary);
+  }
+  .flow-card-body {
+    font-size: 0.82rem; color: var(--text); line-height: 1.5;
+  }
+  .flow-card-footer {
+    font-size: 0.78rem; color: var(--teal); background: var(--teal-dim); padding: 6px 10px; border-radius: 6px; margin-top: 4px; font-weight: 600;
   }
 
   /* DGA Analysis Styles */
@@ -456,7 +474,7 @@
             <option value="">-- กรุณาเลือกอุปกรณ์หม้อแปลง --</option>
           </select>
         </div>
-        <div style="font-size: 0.8rem; color: var(--teal); font-family: 'IBM Plex Mono', monospace;">
+        <div style="font-size: 0.80rem; color: var(--teal); font-family: 'IBM Plex Mono', monospace;">
           สถานะ: <span id="dgaAssetStatus">ยังไม่ได้เลือกอุปกรณ์</span>
         </div>
       </div>
@@ -570,14 +588,14 @@
       </div>
     </div>
 
-    <!-- Decision Logic Tree View (แท็บที่ 5 รูปแบบ Flow Chart ที่แยกทางเลือก 'ใช่' และ 'ไม่ใช่' ชัดเจน) -->
+    <!-- Decision Logic Tree View (แท็บที่ 5 พร้อมปุ่มกดเปิดผังเกณฑ์แบบสะอาดตา) -->
     <div id="treeView" style="display:none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-        <div style="font-size: 0.85rem; color: var(--muted);">แผนผังลำดับตรรกะการตัดสินใจเลือกกลยุทธ์บำรุงรักษาตามมาตรฐาน RCM</div>
-        <button class="guideline-btn" onclick="openLogicTreeModal()">ดูเกณฑ์การตัดสินใจแบบ Flow (Logic Criteria)</button>
+        <div style="font-size: 0.85rem; color: var(--muted);">แสดงตารางวิเคราะห์กลยุทธ์ตามเงื่อนไข Decision Logic Tree และระดับผลกระทบ (S)</div>
+        <button class="guideline-btn" onclick="openLogicTreeModal()">ดูผังเกณฑ์การตัดสินใจ (Logic Flow)</button>
       </div>
 
-      <!-- Flow Chart Interactive UI with Branches -->
+      <!-- Flow Chart Interactive UI -->
       <div class="flow-wrapper">
         <div class="flow-step-box" style="border-left-color: var(--teal); text-align: center;">
           <div class="flow-cond" style="justify-content: center; color: var(--teal);">1. จุดเริ่มต้น: โหมดความล้มเหลว (FMEA Input: S, O, D, Note)</div>
@@ -621,19 +639,20 @@
       </div>
 
       <div class="section-label" style="margin-top: 24px;">
-        <span>ตารางสรุปผลการวิเคราะห์ Decision Logic Tree (222 รายการ)</span>
+        <span>ตารางสรุปผลการวิเคราะห์ Decision Logic Tree (พร้อมแสดงคะแนน S ผลกระทบ)</span>
       </div>
       <div class="table-responsive">
         <table>
           <thead>
             <tr>
-              <th style="width:50px; text-align:center;">ลำดับ</th>
-              <th style="width:140px;">อุปกรณ์</th>
-              <th style="width:75px;">รหัส</th>
+              <th style="width:40px; text-align:center;">ลำดับ</th>
+              <th style="width:120px;">อุปกรณ์</th>
+              <th style="width:65px;">รหัส</th>
               <th>โหมดความล้มเหลว (Failure Mode)</th>
+              <th style="width:50px; text-align:center;">S</th>
               <th style="width:60px; text-align:center;">RPN</th>
-              <th style="width:160px;">ประเภทผลกระทบ</th>
-              <th style="width:200px;">กลยุทธ์บำรุงรักษาที่แนะนำ</th>
+              <th style="width:150px; text-align:center;">ประเภทผลกระทบ</th>
+              <th style="width:180px; text-align:center;">กลยุทธ์บำรุงรักษาที่แนะนำ</th>
             </tr>
           </thead>
           <tbody id="treeTbody"></tbody>
@@ -702,42 +721,58 @@
   </div>
 </div>
 
-<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree แบบ Flow Chart อธิบาย 5 ข้อตามภาพที่ 2 -->
+<!-- Modal เกณฑ์การตัดสินใจ Decision Logic Tree แบบการ์ดขั้นตอนสะอาดตา -->
 <div class="modal-overlay" id="logicTreeModal" onclick="handleOutsideClick(event, 'logicTreeModal')">
-  <div class="modal" style="max-width: 700px;">
+  <div class="modal" style="max-width: 720px;">
     <h3>
-      <span>ผังขั้นตอนเกณฑ์การตัดสินใจ Decision Logic Tree</span>
+      <span>รายละเอียดเกณฑ์การตัดสินใจ Decision Logic Tree</span>
       <button class="modal-close" onclick="closeLogicTreeModal()">&times;</button>
     </h3>
-    <div class="modal-flow">
+    <div class="modal-flow-grid">
       
-      <div class="modal-step">
-        <div class="modal-step-title">1. เช็คก่อนว่าเป็นความเสี่ยงบุคคลที่ 3 หรือไม่ (จาก Note)</div>
-        <div class="modal-step-desc"><b>ถ้าใช่:</b> (เช่น เครนขุดโดนสาย, คนโดนไฟช็อต) ➔ ตัดออกจากเส้นทางบำรุงรักษาอุปกรณ์ทันที เพราะต้องแก้ด้วยมาตรการป้องกัน/การแจ้งเตือน ไม่ใช่ซ่อมอุปกรณ์<br><b>ถ้าไม่ใช่:</b> ➔ ไปข้อ 2</div>
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span>ขั้นตอนที่ 1: เช็คความเสี่ยงบุคคลที่ 3 (จากช่อง Note)</span>
+          <span style="font-size:0.75rem; color:var(--muted);">เงื่อนไขเบื้องต้น</span>
+        </div>
+        <div class="flow-card-body"><b>ถ้าใช่:</b> (เช่น เครนขุดโดนสาย, คนโดนไฟช็อต) ตัดออกจากเส้นทางบำรุงรักษาอุปกรณ์ทันที เพราะต้องแก้ด้วยมาตรการป้องกันหรือการแจ้งเตือน ไม่ใช่การซ่อมอุปกรณ์</div>
+        <div class="flow-card-footer">ผลลัพธ์: มาตรการป้องกันเฉพาะ (ไม่ใช่ PM อุปกรณ์)</div>
       </div>
-      <div class="modal-flow-arrow">↓</div>
 
-      <div class="modal-step">
-        <div class="modal-step-title">2. เช็ค S = 5 (Safety-critical)</div>
-        <div class="modal-step-desc"><b>ถ้าใช่:</b> ➔ จบที่ <b>Redesign บังคับ / Scheduled Discard</b> ทันที ไม่ต้องดูค่าอื่น เพราะเป็นกฎความปลอดภัยสูงสุดตาม MIL-STD-1629A<br><b>ถ้าไม่ใช่:</b> ➔ ไปข้อ 3</div>
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span>ขั้นตอนที่ 2: เช็คระดับความรุนแรง S = 5</span>
+          <span style="font-size:0.75rem; color:var(--danger);">Safety-critical</span>
+        </div>
+        <div class="flow-card-body"><b>ถ้าใช่:</b> จบที่การปรับปรุงระบบทันทีเนื่องจากเป็นความปลอดภัยสูงสุด ไม่ต้องพิจารณาค่าอื่นเพิ่มเติม</div>
+        <div class="flow-card-footer">ผลลัพธ์: Redesign บังคับ / Scheduled Discard</div>
       </div>
-      <div class="modal-flow-arrow">↓</div>
 
-      <div class="modal-step">
-        <div class="modal-step-title">3. เช็ค S = 4 (Operational) — อิงค่า D (Detection)</div>
-        <div class="modal-step-desc"><b>ถ้าใช่:</b> ไปดูค่า D ต่อ ➔ ถ้า D ≥ 3 (ตรวจจับล่วงหน้ายาก) บังคับทำ <i>Time-based (PM) ตามรอบเวลา</i> / ถ้า D < 3 (ตรวจจับง่าย) ใช้ <i>Condition-based (PdM)</i> แทนได้<br><b>ถ้าไม่ใช่:</b> ➔ ไปข้อ 4</div>
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span>ขั้นตอนที่ 3: เช็คระดับความรุนแรง S = 4 — อิงค่า D (Detection)</span>
+          <span style="font-size:0.75rem; color:var(--primary);">Operational Impact</span>
+        </div>
+        <div class="flow-card-body"><b>ถ้า D ≥ 3:</b> (ตรวจจับล่วงหน้ายาก) บังคับทำ Time-based (PM) ตามรอบเวลา เพราะรอสัญญาณเตือนไม่ได้<br><b>ถ้า D < 3:</b> (ตรวจจับง่าย) ใช้ Condition-based (PdM) แทนได้ เพราะเห็นสัญญาณเสื่อมก่อนพังจริง</div>
+        <div class="flow-card-footer">ผลลัพธ์: Time-based (PM) บังคับ หรือ Condition-based (PdM)</div>
       </div>
-      <div class="modal-flow-arrow">↓</div>
 
-      <div class="modal-step">
-        <div class="modal-step-title">4. เช็ค S = 3 (Economic) — อิงค่า O (Occurrence)</div>
-        <div class="modal-step-desc"><b>ถ้าใช่:</b> ไปดูค่า O ต่อ ➔ ถ้าเกิดบ่อย (O ≥ 3) คุ้มที่จะทำ <i>Time-based (PM) ตามรอบ</i> / ถ้าไม่บ่อย ปล่อยให้เลือก <i>PdM หรือ PM ตามความเหมาะสมของหน้างาน</i><br><b>ถ้าไม่ใช่:</b> ➔ ไปข้อ 5</div>
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span>ขั้นตอนที่ 4: เช็คระดับความรุนแรง S = 3 — อิงค่า O (Occurrence)</span>
+          <span style="font-size:0.75rem; color:var(--primary);">Economic Impact</span>
+        </div>
+        <div class="flow-card-body"><b>ถ้า O ≥ 3:</b> (เกิดขึ้นบ่อย) คุ้มค่าที่จะทำ Time-based (PM) ตามรอบเวลา<br><b>ถ้า O < 3:</b> ปล่อยให้เลือก Condition-based (PdM) หรือ PM ตามความเหมาะสมของหน้างาน</div>
+        <div class="flow-card-footer">ผลลัพธ์: Time-based (PM) ตามรอบ หรือ Condition-based (PdM)</div>
       </div>
-      <div class="modal-flow-arrow">↓</div>
 
-      <div class="modal-step" style="border-left-color: #60a5fa; background: rgba(59, 130, 246, 0.08);">
-        <div class="modal-step-title" style="color: #60a5fa;">5. ที่เหลือ (S ≤ 2)</div>
-        <div class="modal-step-desc"><b>ถ้าไม่ใช่เงื่อนไขข้างต้นทั้งหมด:</b> ➔ ตกไปที่ <b>Run-to-failure (CM)</b> ซ่อมเมื่อเกิดความเสียหาย เพราะผลกระทบต่ำมากจนไม่คุ้มที่จะทำ PM ล่วงหน้า</div>
+      <div class="flow-card" style="border-left-color: #60a5fa; background: rgba(59, 130, 246, 0.08);">
+        <div class="flow-card-header" style="color: #60a5fa;">
+          <span>ขั้นตอนที่ 5: เงื่อนไขที่เหลือ (S ≤ 2)</span>
+          <span style="font-size:0.75rem; color:var(--muted);">Minor Impact</span>
+        </div>
+        <div class="flow-card-body">ตกไปที่กลยุทธ์ซ่อมเมื่อเสียหาย เนื่องจากผลกระทบต่อระบบต่ำมากจนไม่คุ้มค่าที่จะทำ PM ล่วงหน้า</div>
+        <div class="flow-card-footer" style="color: #60a5fa; background: rgba(59, 130, 246, 0.15);">ผลลัพธ์: Run-to-failure (CM)</div>
       </div>
 
     </div>
@@ -892,7 +927,7 @@ let records = [
   {"id": 80, "component": "HV_Cap", "code": "H201", "desc": "Capacitor bank ชำรุด", "cause": "เสื่อมสภาพ", "s": 3, "o": 2, "d": 1, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 81, "component": "HV_Cap", "code": "H202", "desc": "อุปกรณ์ชุดปลด-สับ Capacitor bank ไม่ทำงาน", "cause": "อุปกรณ์ทำงานผิดพลาด", "s": 3, "o": 2, "d": 1, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 82, "component": "HV_ShowReset", "code": "H301", "desc": "Alarm show reset ไม่ได้", "cause": "เสื่อมสภาพ", "s": 4, "o": 1, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
-  {"id": 83, "component": "HV_DisRelay", "code": "H305", "desc": "Distance relay ชำรุด", "cause": "CT Malfunction, ตั้งค่าผิด", "s": 4, "o": 1, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
+  {"id": 83, "component": "HV_DisRelay", "code": "H305", "desc": "Distance relay ชำรุด", "cause": "CT Malfunction, การตั้งค่าผิด", "s": 4, "o": 1, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 84, "component": "HV_Relay", "code": "H308", "desc": "Overcurrent relay ชำรุด", "cause": "ระบบควบคุมผิดพลาด", "s": 4, "o": 1, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 85, "component": "HV_OCRelay", "code": "H309", "desc": "Overcurrent relay เปลี่ยน", "cause": "เสื่อมสภาพ", "s": 4, "o": 1, "d": 3, "category": "Operational-significant (ตรวจจับยาก)", "strategy": "Time-based (PM) บังคับ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
   {"id": 86, "component": "MV_Relay", "code": "M311", "desc": "ซ่อม Relay เสีย", "cause": "เสื่อมสภาพ", "s": 3, "o": 2, "d": 3, "category": "Economic-low", "strategy": "Condition-based (PdM) หรือ PM ตามรอบ", "note": "", "actionType": "PM", "actionPlan": "", "status": "รอแผนงาน"},
@@ -1050,18 +1085,18 @@ function initApp() {
     document.getElementById('modeToggleBtn').textContent = 'โหมดสว่าง';
   }
 
-  ['v81','v82'].forEach(v => {
+  ['v82','v83'].forEach(v => {
     localStorage.removeItem('rcm_excel_data_' + v);
     localStorage.removeItem('rcm_hi_data_' + v);
     localStorage.removeItem('rcm_cehi_data_' + v);
   });
 
-  const savedFmea = localStorage.getItem('rcm_excel_data_v83');
+  const savedFmea = localStorage.getItem('rcm_excel_data_v84');
   if (savedFmea) {
     try { records = JSON.parse(savedFmea); } catch(e) {}
   }
 
-  const savedHi = localStorage.getItem('rcm_hi_data_v83');
+  const savedHi = localStorage.getItem('rcm_hi_data_v84');
   if (savedHi) {
     try { hiRecords = JSON.parse(savedHi); } catch(e) {}
   } else {
@@ -1715,6 +1750,7 @@ function renderLogicTreeTable() {
         <td><b>${escapeHtml(r.component)}</b></td>
         <td><span class="code-pill mono">${escapeHtml(r.code)}</span></td>
         <td>${escapeHtml(r.desc)}</td>
+        <td style="text-align:center;" class="mono" style="font-weight:bold;">${s > 0 ? s : '-'}</td>
         <td style="text-align:center;" class="mono">${rpn > 0 ? rpn : '-'}</td>
         <td style="font-size:0.8rem; color:var(--muted);">${escapeHtml(r.category || 'Economic-low')}</td>
         <td style="font-size:0.8rem; color:var(--teal); font-weight:600;">${escapeHtml(r.strategy || 'Condition-based (PdM)')}</td>
@@ -1826,8 +1862,8 @@ function saveData() {
     alert('สิทธิ์ผู้ชมทั่วไปไม่สามารถบันทึกข้อมูลได้');
     return;
   }
-  localStorage.setItem('rcm_excel_data_v85', JSON.stringify(records));
-  localStorage.setItem('rcm_hi_data_v85', JSON.stringify(hiRecords));
+  localStorage.setItem('rcm_excel_data_v86', JSON.stringify(records));
+  localStorage.setItem('rcm_hi_data_v86', JSON.stringify(hiRecords));
   alert('บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว');
 }
 
